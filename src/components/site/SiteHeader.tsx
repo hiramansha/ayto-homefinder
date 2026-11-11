@@ -7,6 +7,7 @@ import { scrollToId } from "./utils";
 
 const links = [
   { id: "listings", label: "Properties" },
+  { id: "ads", label: "Offers" },
   { id: "services", label: "Services" },
   { id: "emi", label: "EMI Calculator" },
   { id: "reviews", label: "Reviews" },

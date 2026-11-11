@@ -6,3 +6,4 @@
 - [ ] Optional: make contact form deliver messages to a real inbox (needs user go-ahead)
 - [x] Sharpen blurry photos + bring back cartoon cart images near the end
 - [x] Give user the full project as a ZIP download
+- [ ] Add ads section: own AYTO offers + partner (others) ads + "Advertise with us"
