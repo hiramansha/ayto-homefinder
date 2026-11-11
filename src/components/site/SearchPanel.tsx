@@ -116,7 +116,7 @@ export function SearchPanel({
               <SlidersHorizontal className="h-4 w-4 text-gold" />
               More filters
               {count > 0 && (
-                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-gold px-1.5 text-[11px] font-bold text-gold-foreground">{count}</span>
+                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-gold px-1.5 text-[11px] font-bold text-primary">{count}</span>
               )}
               <ChevronDown className={cn("h-4 w-4 transition", more && "rotate-180")} />
             </button>

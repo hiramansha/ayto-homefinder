@@ -1,4 +1,4 @@
-import { Bath, BedDouble, MapPin, Ruler } from "lucide-react";
+import { Bath, BedDouble, Check, MapPin, Ruler } from "lucide-react";
 import type { Property } from "@/data/properties";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,18 @@ export function PropertyDialog({
                   </div>
                 ))}
               </div>
+              {!!p.features?.length && (
+                <div className="mt-6">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Features</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {p.features.map((f) => (
+                      <span key={f} className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-xs font-medium text-foreground">
+                        <Check className="h-3 w-3 text-gold" /> {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
               <Button variant="forest" size="xl" className="mt-7 w-full" onClick={() => onInquire(p)}>
                 Ask about this property
               </Button>
