@@ -115,7 +115,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
           </nav>
 
           <div className="flex items-center gap-3">
-            {/* Post Property Button (Matched with Book a Consultation gold style) */}
+            {/* Post Property Button (Matched with Book a Consultation gold background) */}
             <Button
               variant="gold"
               size="lg"
@@ -259,4 +259,73 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
                     step="0.01"
                     required
                     placeholder="e.g. 5.5"
-                    className="w-full rounded-md border border-forest-foreground/20 bg-forest-deep/50 p-2.5
+                    className="w-full rounded-md border border-forest-foreground/20 bg-forest-deep/50 p-2.5 text-white placeholder-forest-foreground/40 focus:border-gold focus:outline-none"
+                    value={formData.crore}
+                    onChange={(e) => setFormData({ ...formData, crore: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Area Size</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 10 Marla / 1 Kanal"
+                    className="w-full rounded-md border border-forest-foreground/20 bg-forest-deep/50 p-2.5 text-white placeholder-forest-foreground/40 focus:border-gold focus:outline-none"
+                    value={formData.area}
+                    onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-2">Features / Amenities</label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {FEATURES_LIST.map((feat) => (
+                    <label key={feat} className="flex items-center gap-1.5 text-xs text-forest-foreground/80 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gold/40 text-gold focus:ring-gold"
+                        checked={formData.features.includes(feat)}
+                        onChange={() => handleFeatureToggle(feat)}
+                      />
+                      {feat}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Your Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Full Name"
+                    className="w-full rounded-md border border-forest-foreground/20 bg-forest-deep/50 p-2.5 text-white placeholder-forest-foreground/40 focus:border-gold focus:outline-none"
+                    value={formData.contactName}
+                    onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="03XX XXXXXXX"
+                    className="w-full rounded-md border border-forest-foreground/20 bg-forest-deep/50 p-2.5 text-white placeholder-forest-foreground/40 focus:border-gold focus:outline-none"
+                    value={formData.contactPhone}
+                    onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <Button type="submit" variant="gold" size="lg" className="w-full mt-4">
+                Submit Listing Request
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
