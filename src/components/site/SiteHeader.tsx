@@ -77,9 +77,9 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+ const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Shukriya! Aap ki property request submit ho chuki hai. AYTO team jald verify karke listing live kar degi.");
+    alert("Thank you! Your property listing request has been submitted successfully. The AYTO team will verify it shortly before publishing.");
     setShowPostModal(false);
   };
 
