@@ -1,0 +1,7 @@
+[
+ {"capability":"code","source":"github index.html (static, single file)","outcome":"rebuilt as React sections","status":"in_progress","next_action":"verify preview"},
+ {"capability":"schema/records/auth","source":"none (hardcoded listings, no backend)","outcome":"not applicable","status":"verified","next_action":"none"},
+ {"capability":"saved favourites","source":"browser localStorage","outcome":"kept in browser storage","status":"in_progress","next_action":"verify"},
+ {"capability":"contact form","source":"client-only fake send","outcome":"kept client-only","status":"accepted","next_action":"offer real inbox via Lovable Cloud later"},
+ {"capability":"assets","source":"embedded base64 images","outcome":"kept 7, replaced 10 with new photos incl. hero","status":"done","next_action":"none"}
+]
