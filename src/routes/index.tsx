@@ -92,7 +92,10 @@ function Index() {
       <SiteHeader
         savedCount={saved.length}
         onShowSaved={() => {
-          if (!saved.length) return toast("Tap the heart on a property to save it");
+          if (!saved.length) {
+            toast("Tap the heart on a property to save it");
+            return;
+          }
           setShowSaved(true);
           scrollToId("listings");
         }}
