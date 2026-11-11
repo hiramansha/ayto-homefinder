@@ -9,6 +9,8 @@ import { SearchPanel } from "@/components/site/SearchPanel";
 import { PropertyCard } from "@/components/site/PropertyCard";
 import { PropertyDialog } from "@/components/site/PropertyDialog";
 import { Spotlight } from "@/components/site/Spotlight";
+import { Advertisements } from "@/components/site/Advertisements";
+import { adMessage, advertiseMessage } from "@/data/ads";
 import { Stats } from "@/components/site/Stats";
 import { Services } from "@/components/site/Services";
 import { EmiCalculator } from "@/components/site/EmiCalculator";
@@ -85,6 +87,11 @@ function Index() {
     scrollToId("contact");
   };
 
+  const ask = (text: string) => {
+    setPrefill({ text, nonce: Date.now() });
+    scrollToId("contact");
+  };
+
   const featured = properties[0]!;
 
   return (
@@ -127,6 +134,7 @@ function Index() {
         </section>
 
         <Spotlight onView={() => setOpen(featured)} onInquire={() => inquire(featured)} />
+        <Advertisements onAd={(ad) => ask(adMessage(ad))} onAdvertise={() => ask(advertiseMessage)} />
         <Stats />
         <Services />
         <EmiCalculator />
