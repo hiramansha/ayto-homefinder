@@ -1,4 +1,5 @@
-import { Bath, BedDouble, Check, MapPin, Ruler } from "lucide-react";
+import { useState } from "react";
+import { Bath, BedDouble, Check, MapPin, Ruler, PlusCircle } from "lucide-react";
 import type { Property } from "@/data/properties";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
