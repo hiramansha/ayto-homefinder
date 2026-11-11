@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { validateContact, type ContactInput } from "@/lib/property-math";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import cartoon from "@/assets/cartoon-cart-homes.jpg";
 import { Reveal, SectionHeading } from "./utils";
 
 const field =
@@ -61,6 +62,13 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-10 flex items-center gap-6 overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-luxe">
+            <img src={cartoon} alt="Figure pushing a shopping cart full of houses" loading="lazy" width={1024} height={1024} className="h-32 w-32 shrink-0 rounded-xl object-contain sm:h-40 sm:w-40" />
+            <div>
+              <p className="font-display text-2xl font-semibold text-primary">Free consultation</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Tell us your budget and we will shortlist homes that fit it.</p>
+            </div>
           </div>
         </Reveal>
 
