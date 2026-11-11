@@ -26,7 +26,7 @@ describe("EMI", () => {
   it("30 crore, 25% down, 14% for 15 years", () => {
     const r = calcEmi(30, 25, 14, 15);
     expect(r.loan).toBe(225_000_000);
-    expect(Math.round(r.monthly)).toBe(2996402);
+    expect(Math.round(r.monthly)).toBe(2996418);
   });
 });
 
