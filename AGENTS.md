@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Site is a single landing page (`src/routes/index.tsx`) composed from sections in `src/components/site/`; keep new sections there so the page stays readable.
+- Listing data lives in `src/data/properties.ts`; pricing, filtering, EMI and contact validation are pure functions in `src/lib/property-math.ts` with tests beside them, so rules stay testable without the UI.
