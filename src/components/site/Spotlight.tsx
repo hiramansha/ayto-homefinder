@@ -21,12 +21,13 @@ const features = [
 
 export function Spotlight({ onView, onInquire }: { onView: () => void; onInquire: () => void }) {
   const [i, setI] = useState(0);
+  const shot = shots[i] ?? shots[0]!;
   return (
     <section className="bg-secondary py-24 md:py-32">
       <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-[1.1fr_0.9fr]">
         <Reveal>
           <div className="overflow-hidden rounded-2xl shadow-luxe">
-            <img src={shots[i].src} alt={shots[i].alt} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+            <img src={shot.src} alt={shot.alt} loading="lazy" className="aspect-[4/3] w-full object-cover" />
           </div>
           <div className="mt-4 flex gap-3">
             {shots.map((s, k) => (

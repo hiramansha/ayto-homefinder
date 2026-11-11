@@ -18,7 +18,7 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
         <div>
           <h4 className="eyebrow text-gold-soft">Explore</h4>
           <div className="mt-4">
-            {[["listings", "Properties"], ["services", "Services"], ["emi", "EMI calculator"], ["contact", "Contact"]].map(([id, l]) => (
+            {([["listings", "Properties"], ["services", "Services"], ["emi", "EMI calculator"], ["contact", "Contact"]] as const).map(([id, l]) => (
               <button key={id} className={link} onClick={() => scrollToId(id)}>
                 {l}
               </button>

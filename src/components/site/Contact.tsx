@@ -92,7 +92,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, error, children }: { label: string; error?: string | undefined; children: React.ReactNode }) {
   return (
     <label className="grid gap-2 text-sm font-medium text-foreground">
       {label}

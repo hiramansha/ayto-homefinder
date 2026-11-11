@@ -10,7 +10,7 @@ export function Testimonials() {
     const t = setInterval(() => setI((x) => (x + 1) % T.length), 6000);
     return () => clearInterval(t);
   }, []);
-  const cur = T[i];
+  const cur = T[i] ?? T[0]!;
   return (
     <section id="reviews" className="py-24 md:py-32">
       <div className="mx-auto max-w-4xl px-5 text-center md:px-8">

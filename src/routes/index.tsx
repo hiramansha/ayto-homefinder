@@ -85,7 +85,7 @@ function Index() {
     scrollToId("contact");
   };
 
-  const featured = properties[0];
+  const featured = properties[0]!;
 
   return (
     <div id="top">
