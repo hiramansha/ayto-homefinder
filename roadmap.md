@@ -4,3 +4,5 @@
 - [x] Rebuild site with professional design (all sections, filters, EMI, contact)
 - [x] Finish quickly (user request)
 - [ ] Optional: make contact form deliver messages to a real inbox (needs user go-ahead)
+- [ ] Sharpen blurry photos + bring back cartoon cart images near the end
+- [ ] Give user the full project as a ZIP download
