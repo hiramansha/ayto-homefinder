@@ -19,7 +19,7 @@ export function Hero() {
       <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
         <div className="max-w-2xl animate-rise">
           <p className="eyebrow flex items-center gap-3 text-gold-soft">
-            <span className="h-px w-10 bg-gold" /> Lahore · Islamabad · Karachi
+            <span className="h-px w-10 bg-gold" /> Lahore
           </p>
           <h1 className="mt-6 text-5xl font-semibold leading-[1.02] text-forest-foreground sm:text-6xl lg:text-[5.4rem]">
             Find a home that
