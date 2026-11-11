@@ -1,6 +1,18 @@
 export type Purpose = "Sale" | "Rent";
 export type PropertyType = "House" | "Apartment" | "Plot" | "Commercial";
 
+export const FEATURES = [
+  "Furnished",
+  "Parking",
+  "Lift",
+  "Security",
+  "Garden",
+  "Corner",
+  "Swimming pool",
+  "Servant quarter",
+] as const;
+export type Feature = (typeof FEATURES)[number];
+
 export interface PropertyBase {
   id: number;
   title: string;
@@ -13,6 +25,21 @@ export interface PropertyBase {
   baths: number;
   area: string;
   location: string;
+  features?: Feature[];
+  /** How many days ago the listing was added. */
+  listedDaysAgo?: number;
+}
+
+/** Converts "10 Marla", "2 Kanal", "500 sq yd" or "1,650 sqft" to Marla (1 Marla = 225 sqft). */
+export function areaInMarla(area: string): number {
+  const m = area.replace(/,/g, "").match(/([\d.]+)\s*(.*)/);
+  if (!m) return 0;
+  const n = Number(m[1]);
+  const unit = (m[2] ?? "").toLowerCase();
+  if (unit.startsWith("kanal")) return n * 20;
+  if (unit.startsWith("marla")) return n;
+  if (unit.includes("yd")) return (n * 9) / 225;
+  return n / 225;
 }
 
 /** 1 crore and above shows as Crore, below shows as Lakh (1 crore = 100 lakh). */
@@ -25,37 +52,87 @@ export function priceLabel(p: Pick<PropertyBase, "crore" | "purpose">): string {
   return `PKR ${formatAmount(p.crore)}${p.purpose === "Rent" ? " / month" : ""}`;
 }
 
+export type Sort = "newest" | "asc" | "desc" | "size";
+
 export interface Filters {
   purpose: "All" | Purpose;
   query: string;
   city: string;
+  location: string;
   type: string;
-  /** Max price in crore; 100 means any price. */
+  /** Price range in crore; 0 means no limit. */
+  minCrore: number;
   maxCrore: number;
-  sort: "newest" | "asc" | "desc";
+  /** Minimum bedrooms / bathrooms; 0 means any. */
+  minBeds: number;
+  minBaths: number;
+  /** Size range in Marla; 0 means no limit. */
+  minMarla: number;
+  maxMarla: number;
+  /** Listing must have every selected feature. */
+  features: Feature[];
+  /** Only listings added within this many days; 0 means any time. */
+  addedWithin: number;
+  sort: Sort;
 }
 
 export const defaultFilters: Filters = {
   purpose: "All",
   query: "",
   city: "",
+  location: "",
   type: "",
-  maxCrore: 100,
+  minCrore: 0,
+  maxCrore: 0,
+  minBeds: 0,
+  minBaths: 0,
+  minMarla: 0,
+  maxMarla: 0,
+  features: [],
+  addedWithin: 0,
   sort: "newest",
 };
 
+/** Number of filters that differ from the defaults (purpose tab and sort not counted). */
+export function activeFilterCount(f: Filters): number {
+  let n = 0;
+  if (f.query.trim()) n++;
+  if (f.city) n++;
+  if (f.location) n++;
+  if (f.type) n++;
+  if (f.minCrore || f.maxCrore) n++;
+  if (f.minBeds) n++;
+  if (f.minBaths) n++;
+  if (f.minMarla || f.maxMarla) n++;
+  if (f.addedWithin) n++;
+  return n + f.features.length;
+}
+
 export function filterProperties<T extends PropertyBase>(list: T[], f: Filters): T[] {
   const q = f.query.trim().toLowerCase();
-  const out = list.filter(
-    (x) =>
+  const out = list.filter((x) => {
+    const marla = areaInMarla(x.area);
+    const feats = x.features ?? [];
+    return (
       (f.purpose === "All" || x.purpose === f.purpose) &&
       (!f.city || x.city === f.city) &&
+      (!f.location || x.location === f.location) &&
       (!f.type || x.type === f.type) &&
-      (f.maxCrore >= 100 || x.crore <= f.maxCrore) &&
-      (!q || `${x.title} ${x.location} ${x.city}`.toLowerCase().includes(q)),
-  );
+      (!f.minCrore || x.crore >= f.minCrore) &&
+      (!f.maxCrore || x.crore <= f.maxCrore) &&
+      (!f.minBeds || x.beds >= f.minBeds) &&
+      (!f.minBaths || x.baths >= f.minBaths) &&
+      (!f.minMarla || marla >= f.minMarla) &&
+      (!f.maxMarla || marla <= f.maxMarla) &&
+      f.features.every((ft) => feats.includes(ft)) &&
+      (!f.addedWithin || (x.listedDaysAgo ?? Infinity) <= f.addedWithin) &&
+      (!q || `${x.title} ${x.location} ${x.city} ${x.type}`.toLowerCase().includes(q))
+    );
+  });
+  if (f.sort === "newest") out.sort((a, b) => (a.listedDaysAgo ?? 999) - (b.listedDaysAgo ?? 999));
   if (f.sort === "asc") out.sort((a, b) => a.crore - b.crore);
   if (f.sort === "desc") out.sort((a, b) => b.crore - a.crore);
+  if (f.sort === "size") out.sort((a, b) => areaInMarla(b.area) - areaInMarla(a.area));
   return out;
 }
 

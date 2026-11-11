@@ -120,7 +120,7 @@ function Index() {
               </div>
             ) : (
               <div className="mt-12 rounded-xl border border-dashed border-border p-14 text-center text-muted-foreground">
-                No properties match these filters. Try a higher price or reset the search.
+                No properties match these filters. Remove a filter or reset the search.
               </div>
             )}
           </div>
