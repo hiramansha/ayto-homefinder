@@ -116,10 +116,18 @@ function Index() {
         <Hero />
         <SearchPanel filters={filters} onChange={update} onReset={() => update(defaultFilters)} />
 
+        {/* Welcome to AYTO + Current Running Project right below Filters */}
+        <div className="mt-14">
+          <Spotlight onView={() => setOpen(featured)} onInquire={() => inquire(featured)} />
+        </div>
+
         <section id="listings" className="py-24 md:py-28">
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="flex flex-wrap items-end justify-between gap-4">
-              <SectionHeading eyebrow="Handpicked for you" title={showSaved ? "Your saved properties" : "Featured properties"} />
+              <SectionHeading
+                eyebrow="Handpicked for you"
+                title={showSaved ? "Your saved properties" : "Discover the Most Recommended Properties"}
+              />
               <p className="text-sm text-muted-foreground">
                 {list.length} {list.length === 1 ? "property" : "properties"} {showSaved ? "saved" : "found"}
               </p>
@@ -138,7 +146,6 @@ function Index() {
           </div>
         </section>
 
-        <Spotlight onView={() => setOpen(featured)} onInquire={() => inquire(featured)} />
         <Advertisements onAd={(ad) => ask(adMessage(ad))} onAdvertise={() => ask(advertiseMessage)} />
         <Stats />
         <Services />
