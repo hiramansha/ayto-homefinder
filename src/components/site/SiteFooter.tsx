@@ -57,7 +57,7 @@ export function SiteFooter({
               </span>
               <div>
                 <p className="font-semibold text-white">Our Address</p>
-                <p className="text-xs text-white/65">Main Boulevard, DHA Phase 6 / Phase 8, Lahore</p>
+                <p className="text-xs text-white/65">E65 DHA Phase 12, Multan Road, Lahore</p>
               </div>
             </li>
 
@@ -137,8 +137,8 @@ export function SiteFooter({
 
         <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-lg">
           <iframe
-            title="AYTO Properties Lahore Location"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=74.3800%2C31.4550%2C74.4750%2C31.5050&layer=mapnik&marker=31.4785%2C74.4320"
+            title="AYTO Properties E65 DHA Phase 12 Multan Road Lahore"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=74.1650%2C31.3750%2C74.2450%2C31.4250&layer=mapnik&marker=31.3995%2C74.2050"
             className="h-52 w-full border-0"
             loading="lazy"
           />
