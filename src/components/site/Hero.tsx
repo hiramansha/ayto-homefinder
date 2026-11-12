@@ -74,7 +74,6 @@ export function Hero() {
 
   return (
     <section className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-forest-deep pt-20">
-      {/* Auto-changing full-screen background slides with smooth crossfade & zoom */}
       {slides.map((slide, index) => (
         <div
           key={`${slide.title}-${index}`}
@@ -92,7 +91,6 @@ export function Hero() {
         </div>
       ))}
 
-      {/* Dark luxury overlay */}
       <div
         className={`absolute inset-0 -z-10 transition-colors duration-1000 ${
           active.isBrandSlide ? "bg-forest-deep/85" : "bg-black/55"
@@ -100,7 +98,6 @@ export function Hero() {
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-deep/95 via-transparent to-forest-deep/75" />
 
-      {/* Left Circular Rotating Text Button */}
       <button
         type="button"
         onClick={prevSlide}
@@ -128,7 +125,6 @@ export function Hero() {
         </span>
       </button>
 
-      {/* Right Circular Rotating Text Button */}
       <button
         type="button"
         onClick={nextSlide}
@@ -156,7 +152,6 @@ export function Hero() {
         </span>
       </button>
 
-      {/* Center Editorial Content (Brand Emblem Slide + Property Slides) */}
       <div className="relative z-10 mx-auto max-w-5xl px-5 text-center">
         {active.isBrandSlide && (
           <div
@@ -194,7 +189,6 @@ export function Hero() {
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
           </button>
 
-          {/* Mobile Prev/Next arrows */}
           <div className="flex items-center gap-2 md:hidden">
             <button
               type="button"
@@ -215,7 +209,6 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Slide Progress Dots */}
         <div className="mt-10 flex items-center justify-center gap-2.5">
           {slides.map((s, idx) => (
             <button
