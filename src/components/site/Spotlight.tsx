@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { ArrowRight, Building2, Check, MapPin, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Building2, Check, MapPin } from "lucide-react";
 import exterior from "@/assets/property-modern-family-house.jpg";
 import bedroom from "@/assets/master-bedroom.jpg";
-import { Button } from "@/components/ui/button";
+import heroVilla from "@/assets/hero-villa.jpg";
+import logo from "@/assets/ayto-logo.jpg";
 import { cn } from "@/lib/utils";
 import { Reveal, scrollToId } from "./utils";
 
@@ -25,135 +26,186 @@ export function Spotlight({ onView, onInquire }: { onView: () => void; onInquire
   const shot = shots[i] ?? shots[0]!;
 
   return (
-    <>
-      {/* 1. Editorial Brand Welcome Section ("Welcome to AYTO") */}
-      <section className="relative overflow-hidden bg-background py-20 md:py-28">
-        <div className="pointer-events-none absolute -right-24 top-10 h-80 w-80 rounded-full bg-gold/10 blur-3xl" />
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 md:px-8 lg:grid-cols-[0.95fr_1.05fr]">
+    <div id="about" className="relative isolate overflow-hidden bg-[#141414] text-white">
+      {/* Subtle Geometric Pattern */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+          backgroundSize: "36px 36px",
+        }}
+      />
+
+      {/* Diagonal Glowing Gold Light Beams */}
+      <div className="pointer-events-none absolute -right-20 top-0 -z-10 h-full w-[560px] overflow-hidden opacity-90">
+        <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+        <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+        <div className="absolute right-72 top-[-10%] h-[42%] w-[2px] -rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f]/80 to-transparent shadow-[0_0_18px_2px_rgba(244,208,111,0.45)]" />
+      </div>
+
+      {/* SECTION 1: Geometric Office Collage + "Welcome to AYTO" */}
+      <section className="py-20 md:py-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 md:px-8 lg:grid-cols-[0.92fr_1.08fr]">
           <Reveal>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-gold" />
-              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-                Welcome to AYTO Properties
-              </span>
-            </div>
-            <h2 className="mt-5 font-display text-4xl font-bold leading-[1.12] tracking-tight text-foreground sm:text-5xl">
-              A Trusted Name in Lahore Real Estate & Turnkey Construction.
-            </h2>
-            <div className="mt-6 flex flex-wrap items-center gap-6 border-t border-border pt-6 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2 font-medium text-foreground">
-                <ShieldCheck className="h-4 w-4 text-gold" /> LDA & DHA Approved
-              </span>
-              <span className="flex items-center gap-2 font-medium text-foreground">
-                <Building2 className="h-4 w-4 text-gold" /> Residential & High-Rise Consultancy
-              </span>
+            <div className="mx-auto max-w-[430px] overflow-hidden rounded-[2rem] border-[5px] border-white bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.9)]">
+              <div className="relative flex items-center justify-between bg-[#1b1b1b] px-4 py-3 text-white">
+                <div className="flex items-center gap-2.5">
+                  <img
+                    src={logo}
+                    alt="AYTO Properties"
+                    className="h-10 w-10 rounded-full border border-[#f4d06f] object-cover"
+                  />
+                  <div>
+                    <p className="font-sans text-sm font-extrabold tracking-wider text-white">
+                      AYTO PROPERTIES & BUILDERS
+                    </p>
+                    <p className="text-[10px] tracking-widest text-[#f4d06f]">
+                      REALTORS • DEVELOPERS • CONSULTANTS
+                    </p>
+                  </div>
+                </div>
+                <Building2 className="h-5 w-5 text-[#f4d06f]" />
+              </div>
+
+              <div className="relative grid h-[370px] grid-cols-2 grid-rows-2 gap-1.5 bg-white pt-1.5">
+                <div className="group overflow-hidden">
+                  <img
+                    src={heroVilla}
+                    alt="AYTO Luxury Villa"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+                <div className="group overflow-hidden">
+                  <img
+                    src={exterior}
+                    alt="AYTO Architectural Project"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+                <div className="group overflow-hidden">
+                  <img
+                    src={bedroom}
+                    alt="AYTO Interior Design"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+                <div className="group overflow-hidden">
+                  <img
+                    src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"
+                    alt="AYTO Corporate Office Lahore"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+
+                <div className="pointer-events-none absolute left-1/2 top-1/2 h-36 w-36 -translate-x-1/2 -translate-y-1/2 rotate-45 overflow-hidden border-[5px] border-white bg-[#141414] shadow-2xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80"
+                    alt="AYTO Executive Lounge"
+                    className="h-full w-full -rotate-45 scale-125 object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </Reveal>
 
           <Reveal delay={120}>
-            <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
-              AYTO Properties offers professional, transparent, and result-driven solutions across residential,
-              commercial, and investment sectors in Lahore. With deep market intelligence in DHA, Bahria Town, and
-              Lake City, we guide families and overseas investors through buying, selling, and turnkey A-class
-              construction with complete legal clarity.
+            <h2 className="font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-[2.6rem]">
+              Welcome to AYTO
+            </h2>
+
+            <p className="mt-5 text-sm leading-[1.85] text-white/80 sm:text-base">
+              AYTO Properties is a trusted name in property solutions, offering professional and
+              result-driven services across residential, commercial, and investment sectors in Lahore.
+              With strong market knowledge and a commitment to transparency, we guide clients through
+              buying, selling, and investment decisions with confidence. In addition to traditional
+              real estate services, AYTO Properties specializes in turnkey construction and high-rise
+              project consultancy, providing expert guidance for homeowners, developers, and overseas
+              investors seeking to plan, evaluate, and execute modern developments. Whether you are
+              exploring property options or aiming to invest in large-scale projects, AYTO Properties
+              ensures a smooth, informed, and successful real estate experience.
             </p>
+
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Button
-                variant="forest"
-                size="xl"
+              <button
+                type="button"
                 onClick={() => scrollToId("services")}
-                className="group shadow-luxe transition-all duration-300 hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-2.5 rounded-full bg-[#f4d06f] px-7 py-3.5 text-xs font-bold tracking-wide text-[#141414] shadow-[0_10px_28px_-6px_rgba(244,208,111,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white sm:text-sm"
               >
                 More About AYTO
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </Button>
-              <Button
-                variant="outline"
-                size="xl"
-                onClick={() => scrollToId("contact")}
-                className="border-gold/50 bg-transparent text-foreground transition-all duration-300 hover:border-gold hover:bg-gold/10"
-              >
-                Book Free Consultation
-              </Button>
+              </button>
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* 2. Flagship / Current Running Project Showcase */}
-      <section className="relative overflow-hidden bg-forest-deep py-24 text-forest-foreground md:py-32">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(212,175,55,0.14),transparent_55%)]" />
-        <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-[1.05fr_0.95fr]">
+      {/* SECTION 2: Current Running Project Showcase */}
+      <section id="spotlight" className="border-t border-white/10 py-20 md:py-28">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 md:px-8 lg:grid-cols-[1fr_1fr]">
           <Reveal>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/15 px-4 py-1.5">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-gold" />
-              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-soft">
-                Current Flagship Project
-              </span>
-            </div>
-
-            <h2 className="mt-5 font-display text-4xl font-bold leading-tight text-white sm:text-5xl">
-              Modern Designer Residence, DHA Phase 6
-            </h2>
-
-            <p className="mt-4 text-base leading-relaxed text-forest-foreground/80 sm:text-lg">
-              Setting a new benchmark for contemporary luxury living in Lahore. Positioned in prime DHA Phase 6,
-              this 10 Marla architectural masterpiece combines imported finishes, smart layouts, and serene family
-              comfort.
+            <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-[#f4d06f]">
+              CURRENT RUNNING PROJECT
             </p>
 
-            <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-gold-soft">
-              <span className="inline-flex items-center gap-1.5">
-                <MapPin className="h-4 w-4 text-gold" /> DHA Phase 6, Lahore • 10 Marla • 5 Beds
-              </span>
-              <span className="rounded-full border border-gold/30 bg-white/5 px-3 py-1 text-xs font-medium">
-                Marketed Exclusively by AYTO Group
-              </span>
+            <h2 className="mt-2 font-sans text-3xl font-bold text-white sm:text-4xl md:text-5xl">
+              AYTO Residency, DHA Phase 6
+            </h2>
+
+            <p className="mt-4 text-sm leading-relaxed text-white/75 sm:text-base">
+              AYTO Residency sets a new standard for contemporary urban living in Lahore. Positioned
+              in prime DHA Phase 6, it brings together elegant architectural design, efficient layouts,
+              and world-class amenities in one complete lifestyle destination.
+            </p>
+
+            <div className="mt-5 space-y-1.5 text-xs text-white/80 sm:text-sm">
+              <p className="flex items-center gap-2 font-medium text-[#f4d06f]">
+                <MapPin className="h-4 w-4" /> DHA Phase 6, Lahore • 10 Marla • 5 Bedrooms
+              </p>
+              <p className="text-white/60">Marketed exclusively by AYTO Properties & Builders</p>
             </div>
 
-            <p className="mt-6 font-display text-4xl font-bold text-gold-soft">PKR 8.5 Crore</p>
-
-            <ul className="mt-7 grid gap-3 sm:grid-cols-2">
+            <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
               {features.map((f) => (
-                <li key={f} className="flex items-center gap-3 text-sm text-forest-foreground/90">
-                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-gold/40 bg-gold/15">
-                    <Check className="h-3.5 w-3.5 text-gold-soft" />
+                <li key={f} className="flex items-center gap-2.5 text-xs text-white/85 sm:text-sm">
+                  <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#f4d06f]/20 text-[#f4d06f]">
+                    <Check className="h-3 w-3" />
                   </span>
                   {f}
                 </li>
               ))}
             </ul>
 
-            <div className="mt-9 flex flex-wrap gap-4">
-              <Button
-                variant="gold"
-                size="xl"
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <button
+                type="button"
                 onClick={onView}
-                className="group shadow-[0_12px_32px_-8px_rgba(212,175,55,0.5)] transition-all duration-300 hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-2 rounded-full bg-[#f4d06f] px-7 py-3.5 text-xs font-bold text-[#141414] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white sm:text-sm"
               >
                 View Project
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </Button>
-              <Button
-                variant="outline"
-                size="xl"
-                onClick={onInquire}
-                className="border-gold/50 bg-transparent text-gold-soft transition-all duration-300 hover:border-gold hover:bg-gold/15"
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onInquire();
+                  scrollToId("contact");
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-white/35 bg-transparent px-7 py-3.5 text-xs font-semibold text-white transition-all duration-300 hover:border-[#f4d06f] hover:text-[#f4d06f] sm:text-sm"
               >
                 Request A Visit
-              </Button>
+              </button>
             </div>
           </Reveal>
 
           <Reveal delay={120}>
-            <div className="group relative overflow-hidden rounded-2xl border border-gold/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.65)]">
+            <div className="group overflow-hidden rounded-3xl border border-white/15 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)]">
               <img
                 src={shot.src}
                 alt={shot.alt}
                 loading="lazy"
-                className="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                className="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest-deep/60 via-transparent to-transparent" />
             </div>
             <div className="mt-4 flex gap-3">
               {shots.map((s, k) => (
@@ -163,10 +215,8 @@ export function Spotlight({ onView, onInquire }: { onView: () => void; onInquire
                   onClick={() => setI(k)}
                   aria-label={`Show ${s.alt}`}
                   className={cn(
-                    "h-20 w-28 overflow-hidden rounded-xl border-2 transition-all duration-300",
-                    k === i
-                      ? "scale-105 border-gold opacity-100 shadow-md"
-                      : "border-white/15 opacity-60 hover:opacity-95",
+                    "h-16 w-24 overflow-hidden rounded-xl border-2 transition-all duration-300",
+                    k === i ? "scale-105 border-[#f4d06f] opacity-100" : "border-white/15 opacity-55 hover:opacity-95",
                   )}
                 >
                   <img src={s.src} alt="" loading="lazy" className="h-full w-full object-cover" />
@@ -176,6 +226,6 @@ export function Spotlight({ onView, onInquire }: { onView: () => void; onInquire
           </Reveal>
         </div>
       </section>
-    </>
+    </div>
   );
 }
