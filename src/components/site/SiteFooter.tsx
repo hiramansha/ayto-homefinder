@@ -12,7 +12,7 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
             <span className="font-display text-2xl font-bold tracking-[0.18em] text-gold-soft">AYTO</span>
           </div>
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-forest-muted">
-            Smart Property Solution. Buying, selling, renting and managing property across Pakistan with clear prices and honest advice.
+            Smart Property Solution. Buying, selling, renting and managing property across Lahore with clear prices and honest advice.
           </p>
         </div>
         <div>
@@ -38,7 +38,7 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
         <div>
           <h4 className="eyebrow text-gold-soft">Contact</h4>
           <div className="mt-4 space-y-2 text-sm text-forest-muted">
-            <p>AYTO Properties, Pakistan</p>
+            <p>AYTO Properties, Lahore</p>
             <p>info2aytoproperties@gmail.com</p>
             <p>Mon–Sat, 10am to 7pm</p>
           </div>
