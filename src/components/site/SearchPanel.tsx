@@ -90,8 +90,8 @@ export function SearchPanel({
   if (filters.addedWithin) chips.push({ l: ADDED.find((a) => a.v === filters.addedWithin)?.l ?? "", clear: { addedWithin: 0 } });
 
   return (
-    <div className="relative z-10 mx-auto -mt-24 max-w-7xl px-5 md:px-8">
-      <div className="rounded-2xl border border-border bg-card p-5 shadow-luxe md:p-7">
+    <div className="relative z-10 mx-auto mt-10 max-w-7xl px-5 animate-rise md:mt-14 md:px-8">
+      <div className="rounded-2xl border border-gold/25 bg-card p-5 shadow-luxe transition-all duration-500 hover:border-gold/50 md:p-7">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="inline-flex rounded-lg bg-muted p-1">
             {tabs.map((t) => (
