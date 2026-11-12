@@ -39,7 +39,7 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
           <h4 className="eyebrow text-gold-soft">Contact</h4>
           <div className="mt-4 space-y-2 text-sm text-forest-muted">
             <p>AYTO Properties, Pakistan</p>
-            <p>info@aytoproperties.com</p>
+            <p>info2aytoproperties@gmail.com</p>
             <p>Mon–Sat, 10am to 7pm</p>
           </div>
         </div>
