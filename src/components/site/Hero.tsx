@@ -1,43 +1,50 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import logo from "@/assets/ayto-logo.png";
+import { ArrowLeft, ArrowRight, Building2 } from "lucide-react";
 import heroVilla from "@/assets/hero-villa.jpg";
 import spotlightHouse from "@/assets/spotlight-house.jpg";
 import adPlots from "@/assets/ad-plots.jpg";
 import adInterior from "@/assets/ad-interior.jpg";
 import { scrollToId } from "./utils";
 
-const slides = [
+interface HeroSlide {
+  isBrandSlide: boolean;
+  image: string;
+  subtitle: string;
+  title: string;
+  cta: string;
+}
+
+const slides: HeroSlide[] = [
   {
-    isLogoSlide: true,
+    isBrandSlide: true,
     image: heroVilla,
     subtitle: "LAHORE’S PREMIER REAL ESTATE & BUILDERS",
     title: "AYTO Properties",
     cta: "Request A Visit",
   },
   {
-    isLogoSlide: false,
+    isBrandSlide: false,
     image: heroVilla,
     subtitle: "DHA • BAHRIA TOWN • LAKE CITY",
     title: "Luxury Villas & Homes",
     cta: "Request A Visit",
   },
   {
-    isLogoSlide: false,
+    isBrandSlide: false,
     image: spotlightHouse,
     subtitle: "A-CLASS GREY STRUCTURE & FINISHING",
     title: "Turnkey Construction",
     cta: "Request A Visit",
   },
   {
-    isLogoSlide: false,
+    isBrandSlide: false,
     image: adPlots,
     subtitle: "VERIFIED HIGH-ROI INVESTMENTS",
     title: "Residential & Commercial Plots",
     cta: "Request A Visit",
   },
   {
-    isLogoSlide: false,
+    isBrandSlide: false,
     image: adInterior,
     subtitle: "MODERN ARCHITECTURE & INTERIORS",
     title: "Designer Living Spaces",
@@ -46,19 +53,24 @@ const slides = [
 ];
 
 export function Hero() {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState<number>(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const timer = window.setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
     }, 4500);
-    return () => clearInterval(timer);
+    return () => window.clearInterval(timer);
   }, []);
 
-  const prevSlide = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => {
+    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+  };
 
-  const active = slides[current]!;
+  const nextSlide = () => {
+    setCurrent((prev) => (prev + 1) % slides.length);
+  };
+
+  const active = slides[current] ?? slides[0]!;
 
   return (
     <section className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-forest-deep pt-20">
@@ -67,7 +79,7 @@ export function Hero() {
         <div
           key={`${slide.title}-${index}`}
           className={`absolute inset-0 -z-20 transition-opacity duration-1000 ease-in-out ${
-            index === current ? "opacity-100" : "opacity-0 pointer-events-none"
+            index === current ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
         >
           <img
@@ -80,10 +92,10 @@ export function Hero() {
         </div>
       ))}
 
-      {/* Dark luxury overlay (extra deep on Logo slide so gold logo shines) */}
+      {/* Dark luxury overlay */}
       <div
         className={`absolute inset-0 -z-10 transition-colors duration-1000 ${
-          active.isLogoSlide ? "bg-forest-deep/85" : "bg-black/55"
+          active.isBrandSlide ? "bg-forest-deep/85" : "bg-black/55"
         }`}
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-deep/95 via-transparent to-forest-deep/75" />
@@ -144,18 +156,17 @@ export function Hero() {
         </span>
       </button>
 
-      {/* Center Editorial Content (Logo Slide + Property Slides) */}
+      {/* Center Editorial Content (Brand Emblem Slide + Property Slides) */}
       <div className="relative z-10 mx-auto max-w-5xl px-5 text-center">
-        {active.isLogoSlide && (
+        {active.isBrandSlide && (
           <div
-            key={`logo-${current}`}
-            className="mx-auto mb-6 flex h-28 w-28 animate-rise items-center justify-center rounded-full border-2 border-gold/60 bg-forest-deep/90 p-3 shadow-[0_0_50px_rgba(212,175,55,0.45)] sm:h-36 sm:w-36"
+            key={`brand-${current}`}
+            className="mx-auto mb-6 flex h-28 w-28 animate-rise flex-col items-center justify-center rounded-full border-2 border-gold/70 bg-forest-deep/90 shadow-[0_0_50px_rgba(212,175,55,0.45)] sm:h-32 sm:w-32"
           >
-            <img
-              src={logo}
-              alt="AYTO Properties Logo"
-              className="h-full w-full animate-float rounded-full object-contain"
-            />
+            <Building2 className="h-9 w-9 text-gold-soft sm:h-10 sm:w-10" />
+            <span className="mt-1 font-display text-xl font-bold tracking-[0.2em] text-gold-soft">
+              AYTO
+            </span>
           </div>
         )}
 
