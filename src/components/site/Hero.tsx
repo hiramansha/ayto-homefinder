@@ -24,7 +24,6 @@ const highlights = [
 export function Hero() {
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col justify-between overflow-hidden bg-forest-deep pb-12 pt-32 md:pb-16 md:pt-40">
-      {/* Cinematic slow-zoom villa background */}
       <img
         src={hero}
         alt="Modern luxury villa with warm lights at dusk"
@@ -36,7 +35,6 @@ export function Hero() {
       <div className="absolute inset-0 -z-10 bg-hero-overlay" />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.16),transparent_55%)]" />
 
-      {/* Main Editorial Hero Content */}
       <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
         <div className="max-w-3xl animate-rise">
           <div className="inline-flex items-center gap-3 rounded-full border border-gold/40 bg-forest-deep/75 px-4 py-1.5 backdrop-blur-md">
@@ -92,7 +90,6 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Bottom Floating Architectural Glass Strip */}
       <div className="mx-auto mt-16 w-full max-w-7xl px-5 md:px-8">
         <div className="grid gap-4 sm:grid-cols-3">
           {highlights.map((item) => {
