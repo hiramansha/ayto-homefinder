@@ -2,26 +2,43 @@ import logo from "@/assets/ayto-logo.jpg";
 import { scrollToId } from "./utils";
 
 export function SiteFooter({ onType }: { onType: (t: string) => void }) {
-  const link = "block py-1 text-left text-sm text-forest-muted transition-colors hover:text-gold-soft";
+  const link = "block py-1.5 text-left text-sm text-forest-muted transition-all duration-200 hover:translate-x-1 hover:text-gold-soft";
   const socialBtn =
-    "flex h-10 w-10 items-center justify-center rounded-full border border-gold/40 text-gold-soft transition-colors hover:border-gold hover:bg-gold hover:text-forest-deep";
+    "flex h-10 w-10 items-center justify-center rounded-full border border-gold/40 text-gold-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:bg-gold hover:text-forest-deep";
+
+  const propertyTypes = [
+    { value: "House", label: "Houses" },
+    { value: "Apartment", label: "Apartments" },
+    { value: "Plot", label: "Plots" },
+    { value: "Commercial", label: "Commercial" },
+  ];
 
   return (
     <>
-      <footer className="bg-forest-deep text-forest-foreground">
+      <footer className="border-t border-gold/20 bg-forest-deep text-forest-foreground">
         <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 md:grid-cols-[1.6fr_1fr_1fr_1.2fr] md:px-8">
           <div>
             <div className="flex items-center gap-3">
-              <img src={logo} alt="" loading="lazy" className="h-12 w-12 rounded-full border border-gold/60 object-cover object-[50%_25%]" />
-              <span className="font-display text-2xl font-bold tracking-[0.18em] text-gold-soft">AYTO</span>
+              <img
+                src={logo}
+                alt="AYTO Properties"
+                loading="lazy"
+                className="h-12 w-12 rounded-full border border-gold/60 object-cover object-[50%_25%]"
+              />
+              <div>
+                <span className="block font-display text-2xl font-bold tracking-[0.18em] text-gold-soft">AYTO</span>
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.24em] text-forest-muted">
+                  Properties & Builders
+                </span>
+              </div>
             </div>
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-forest-muted">
-              Smart Property Solution. Buying, selling, renting and managing property across Lahore with clear prices and honest advice.
+              At AYTO Properties & Builders, our vision is simple: to offer transparent guidance, turnkey construction,
+              and high-ROI real estate opportunities across Lahore that create lasting value.
             </p>
 
             {/* Social Media Links */}
             <div className="mt-6 flex items-center gap-3">
-              {/* Facebook */}
               <a
                 href="https://www.facebook.com/aytoproperties"
                 target="_blank"
@@ -35,7 +52,6 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
                 </svg>
               </a>
 
-              {/* Instagram */}
               <a
                 href="https://www.instagram.com/aytoproperties"
                 target="_blank"
@@ -51,7 +67,6 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
                 </svg>
               </a>
 
-              {/* X (Twitter) */}
               <a
                 href="https://x.com/aytoproperties"
                 target="_blank"
@@ -65,7 +80,6 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
                 </svg>
               </a>
 
-              {/* WhatsApp */}
               <a
                 href="https://wa.me/923314972426?text=Hello%20AYTO%20Properties,%20I%20would%20like%20to%20inquire%20about%20a%20property%20in%20Lahore."
                 target="_blank"
@@ -82,9 +96,17 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
           </div>
 
           <div>
-            <h4 className="eyebrow text-gold-soft">Explore</h4>
+            <h4 className="eyebrow text-gold-soft">Useful Links</h4>
             <div className="mt-4">
-              {([["listings", "Properties"], ["services", "Services"], ["emi", "EMI calculator"], ["contact", "Contact"]] as const).map(([id, l]) => (
+              {(
+                [
+                  ["listings", "Properties"],
+                  ["services", "Services"],
+                  ["emi", "EMI Calculator"],
+                  ["reviews", "Client Stories"],
+                  ["contact", "Contact Us"],
+                ] as const
+              ).map(([id, l]) => (
                 <button key={id} className={link} onClick={() => scrollToId(id)}>
                   {l}
                 </button>
@@ -93,22 +115,27 @@ export function SiteFooter({ onType }: { onType: (t: string) => void }) {
           </div>
 
           <div>
-            <h4 className="eyebrow text-gold-soft">Property types</h4>
+            <h4 className="eyebrow text-gold-soft">Property Types</h4>
             <div className="mt-4">
-              {["House", "Apartment", "Plot", "Commercial"].map((t) => (
-                <button key={t} className={link} onClick={() => onType(t)}>
-                  {t}s
+              {propertyTypes.map((t) => (
+                <button key={t.value} className={link} onClick={() => onType(t.value)}>
+                  {t.label}
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <h4 className="eyebrow text-gold-soft">Contact</h4>
-            <div className="mt-4 space-y-2 text-sm text-forest-muted">
+            <h4 className="eyebrow text-gold-soft">Get In Touch</h4>
+            <div className="mt-4 space-y-2.5 text-sm text-forest-muted">
               <p>AYTO Properties, Lahore</p>
               <p>
-                <a href="https://wa.me/923314972426" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-gold-soft">
+                <a
+                  href="https://wa.me/923314972426"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-gold-soft transition-colors hover:text-gold"
+                >
                   0331-4972426
                 </a>
               </p>
