@@ -79,7 +79,6 @@ export function Index() {
     }
   };
 
-  // Intercept "Request A Visit", "Get a Quote", "Contact Us" or "Home" clicks
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
@@ -149,13 +148,13 @@ export function Index() {
       />
 
       {isQueryPage ? (
-        /* DEDICATED NEXT PAGE: QUERY FORM VIEW */
+        /* COMPACT QUERY FORM PAGE (NO EXTRA TOP GAP) */
         <main className="pt-20">
-          <div className="mx-auto max-w-4xl px-5 pt-8 md:px-8">
+          <div className="mx-auto max-w-2xl px-4 pt-3 md:px-6">
             <button
               type="button"
               onClick={() => goToHomePage("top")}
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-4 py-2 text-xs font-medium text-white/85 transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-white/85 transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
             >
               <ArrowLeft className="h-3.5 w-3.5" /> Back to Home
             </button>
