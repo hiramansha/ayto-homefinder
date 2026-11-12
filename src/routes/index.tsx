@@ -23,13 +23,18 @@ import { SectionHeading, scrollToId } from "@/components/site/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AYTO Properties – Buy, Sell & Rent Property in Pakistan" },
+      { title: "AYTO Properties – Luxury Real Estate & Builders in Lahore" },
       {
         name: "description",
-        content: "Verified houses, apartments, plots and commercial spaces in Lahore, Islamabad and Karachi. Clear prices and honest advice from AYTO Properties.",
+        content:
+          "Verified luxury houses, apartments, plots, commercial spaces and turnkey construction in Lahore. Clear prices and honest advice from AYTO Properties.",
       },
-      { property: "og:title", content: "AYTO Properties – Smart Property Solution" },
-      { property: "og:description", content: "Find a home that fits your future. Buy, sell and rent property in Lahore, Islamabad and Karachi." },
+      { property: "og:title", content: "AYTO Properties – Luxury Real Estate & Builders in Lahore" },
+      {
+        property: "og:description",
+        content:
+          "Find or build a home that fits your future. Buy, sell, rent and construct property in Lahore with AYTO Properties.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
