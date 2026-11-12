@@ -100,12 +100,17 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
             </div>
           </div>
 
-          <div className="mt-8 overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
-            <img src={cartoon} alt="AYTO Properties Lahore" loading="lazy" className="h-44 w-full object-cover" />
-            <div className="p-4">
-              <p className="font-display text-base font-semibold text-foreground">Free consultation</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Tell us your budget and we will shortlist homes that fit it.
+          <div className="mt-8 flex flex-col items-center gap-4 overflow-hidden rounded-2xl border border-border/70 bg-white p-5 shadow-sm sm:flex-row">
+            <img
+              src={cartoon}
+              alt="AYTO Properties Lahore"
+              loading="lazy"
+              className="h-36 w-36 shrink-0 object-contain"
+            />
+            <div className="text-center sm:text-left">
+              <p className="font-display text-lg font-semibold text-foreground">Free consultation</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Tell us your budget and we will shortlist verified homes and plots in Lahore that fit it.
               </p>
             </div>
           </div>
