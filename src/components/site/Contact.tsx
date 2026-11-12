@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Clock, Mail, MapPin, Send } from "lucide-react";
+import { Clock, Mail, MapPin, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
 import { validateContact, type ContactInput } from "@/lib/property-math";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Reveal, SectionHeading } from "./utils";
 
 const field =
   "w-full rounded-lg border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/25";
+
 const empty: ContactInput = { name: "", phone: "", email: "", message: "" };
 
 export function Contact({ prefill }: { prefill: { text: string; nonce: number } }) {
@@ -24,7 +25,8 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
     return () => clearTimeout(t);
   }, [prefill]);
 
-  const set = (k: keyof ContactInput) => (e: { target: { value: string } }) => setV((s) => ({ ...s, [k]: e.target.value }));
+  const set = (k: keyof ContactInput) => (e: { target: { value: string } }) =>
+    setV((s) => ({ ...s, [k]: e.target.value }));
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -35,77 +37,138 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
     setTimeout(() => {
       setSending(false);
       setV(empty);
-      toast.success("Message sent. We will contact you soon.");
-    }, 900);
+      toast.success("Message received! An AYTO agent in Lahore will contact you shortly.");
+    }, 500);
   };
 
-  const info = [
-    { i: MapPin, t: "Office", d: "AYTO Properties, Pakistan" },
-    { i: Mail, t: "Email", d: "info2aytoproperties@gmail.com" },
-    { i: Clock, t: "Hours", d: "Mon–Sat, 10am to 7pm" },
-  ];
-
   return (
-    <section id="contact" className="bg-secondary py-24 md:py-32">
-      <div className="mx-auto grid max-w-7xl gap-14 px-5 md:px-8 lg:grid-cols-2">
+    <section id="contact" className="bg-muted/35 py-20 md:py-28">
+      <div className="mx-auto grid max-w-7xl gap-12 px-5 lg:grid-cols-[1fr_1.15fr] md:px-8">
         <Reveal>
-          <SectionHeading eyebrow="Get in touch" title="Let’s find your property" sub="Send a message and an agent will reply within one working day." />
-          <div className="mt-10 space-y-6">
-            {info.map(({ i: Icon, t, d }) => (
-              <div key={t} className="flex items-center gap-4">
-                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-primary text-gold-soft">
-                  <Icon className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{t}</p>
-                  <p className="text-sm text-muted-foreground">{d}</p>
-                </div>
+          <SectionHeading
+            eyebrow="Get in touch"
+            title="Let’s find your property"
+            subtitle="Send a message and an agent will reply within one working day."
+          />
+
+          <div className="mt-8 space-y-4">
+            <div className="flex items-start gap-3.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-forest-deep text-gold-soft">
+                <MapPin className="h-4 w-4" />
               </div>
-            ))}
+              <div>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Office</p>
+                <p className="text-sm font-medium text-foreground">AYTO Properties, Lahore</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-forest-deep text-gold-soft">
+                <Phone className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Phone / WhatsApp</p>
+                <a
+                  href="https://wa.me/923314972426?text=Hello%20AYTO%20Properties,%20I%20would%20like%20to%20inquire%20about%20a%20property%20in%20Lahore."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-foreground transition-colors hover:text-gold"
+                >
+                  0331-4972426
+                </a>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-forest-deep text-gold-soft">
+                <Mail className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Email</p>
+                <p className="text-sm font-medium text-foreground">info2aytoproperties@gmail.com</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-forest-deep text-gold-soft">
+                <Clock className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Hours</p>
+                <p className="text-sm font-medium text-foreground">Mon–Sat, 10am to 7pm</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-10 flex items-center gap-6 overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-luxe">
-            <img src={cartoon} alt="Figure pushing a shopping cart full of houses" loading="lazy" width={1024} height={1024} className="h-32 w-32 shrink-0 rounded-xl object-contain sm:h-40 sm:w-40" />
-            <div>
-              <p className="font-display text-2xl font-semibold text-primary">Free consultation</p>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">Tell us your budget and we will shortlist homes that fit it.</p>
+
+          <div className="mt-8 overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+            <img src={cartoon} alt="AYTO Properties Lahore" loading="lazy" className="h-44 w-full object-cover" />
+            <div className="p-4">
+              <p className="font-display text-base font-semibold text-foreground">Free consultation</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Tell us your budget and we will shortlist homes that fit it.
+              </p>
             </div>
           </div>
         </Reveal>
 
         <Reveal delay={100}>
-          <form onSubmit={submit} noValidate className="space-y-5 rounded-2xl border border-border bg-card p-7 shadow-luxe md:p-10">
-            <h3 className="text-3xl font-semibold">Send us a message</h3>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Name" error={err.name}>
-                <input ref={nameRef} className={cn(field, err.name && "border-destructive")} autoComplete="name" value={v.name} onChange={set("name")} />
-              </Field>
-              <Field label="Phone" error={err.phone}>
-                <input className={cn(field, err.phone && "border-destructive")} inputMode="tel" autoComplete="tel" placeholder="03XX XXXXXXX" value={v.phone} onChange={set("phone")} />
-              </Field>
+          <form onSubmit={submit} noValidate className="rounded-2xl border border-border/70 bg-card p-6 shadow-sm sm:p-8">
+            <h3 className="font-display text-2xl font-semibold text-foreground">Send us a message</h3>
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground">Name</label>
+                <input ref={nameRef} value={v.name} onChange={set("name")} className={cn(field, err.name && "border-destructive")} />
+                {err.name && <p className="mt-1 text-xs text-destructive">{err.name}</p>}
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground">Phone</label>
+                <input
+                  value={v.phone}
+                  onChange={set("phone")}
+                  placeholder="03XX XXXXXXX"
+                  className={cn(field, err.phone && "border-destructive")}
+                />
+                {err.phone && <p className="mt-1 text-xs text-destructive">{err.phone}</p>}
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground">Email</label>
+                <input
+                  type="email"
+                  value={v.email}
+                  onChange={set("email")}
+                  className={cn(field, err.email && "border-destructive")}
+                />
+                {err.email && <p className="mt-1 text-xs text-destructive">{err.email}</p>}
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground">Message</label>
+                <textarea
+                  rows={4}
+                  value={v.message}
+                  onChange={set("message")}
+                  placeholder="Tell us what you are looking for"
+                  className={cn(field, err.message && "border-destructive")}
+                />
+                {err.message && <p className="mt-1 text-xs text-destructive">{err.message}</p>}
+              </div>
+
+              <Button
+                type="submit"
+                disabled={sending}
+                className="w-full bg-forest-deep py-6 text-sm font-medium text-gold-soft hover:bg-forest-deep/90"
+              >
+                <Send className="mr-2 h-4 w-4" />
+                {sending ? "Sending..." : "Send message"}
+              </Button>
+
+              <p className="text-center text-xs text-muted-foreground">We never share your details.</p>
             </div>
-            <Field label="Email" error={err.email}>
-              <input type="email" className={cn(field, err.email && "border-destructive")} autoComplete="email" value={v.email} onChange={set("email")} />
-            </Field>
-            <Field label="Message" error={err.message}>
-              <textarea rows={5} className={cn(field, "resize-y", err.message && "border-destructive")} placeholder="Tell us what you are looking for" value={v.message} onChange={set("message")} />
-            </Field>
-            <Button type="submit" variant="forest" size="xl" className="w-full" disabled={sending}>
-              {sending ? "Sending…" : "Send message"} <Send />
-            </Button>
-            <p className="text-center text-xs text-muted-foreground">We never share your details.</p>
           </form>
         </Reveal>
       </div>
     </section>
-  );
-}
-
-function Field({ label, error, children }: { label: string; error?: string | undefined; children: React.ReactNode }) {
-  return (
-    <label className="grid gap-2 text-sm font-medium text-foreground">
-      {label}
-      {children}
-      {error && <span className="text-xs text-destructive">{error}</span>}
-    </label>
   );
 }
