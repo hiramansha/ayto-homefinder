@@ -1,168 +1,184 @@
+import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import logo from "@/assets/ayto-logo.jpg";
 import { scrollToId } from "./utils";
 
-export function SiteFooter({ onType }: { onType: (t: string) => void }) {
-  const link = "block py-1.5 text-left text-sm text-forest-muted transition-all duration-200 hover:translate-x-1 hover:text-gold-soft";
-  const socialBtn =
-    "flex h-10 w-10 items-center justify-center rounded-full border border-gold/40 text-gold-soft transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:bg-gold hover:text-forest-deep";
-
-  const propertyTypes = [
-    { value: "House", label: "Houses" },
-    { value: "Apartment", label: "Apartments" },
-    { value: "Plot", label: "Plots" },
-    { value: "Commercial", label: "Commercial" },
-  ];
+export function SiteFooter({
+  onType,
+  onOpenQuery,
+}: {
+  onType?: (t: string) => void;
+  onOpenQuery?: () => void;
+}) {
+  const go = (id: string) => {
+    if (id === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    scrollToId(id);
+  };
 
   return (
-    <>
-      <footer className="border-t border-gold/20 bg-forest-deep text-forest-foreground">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 md:grid-cols-[1.6fr_1fr_1fr_1.2fr] md:px-8">
-          <div>
-            <div className="flex items-center gap-3">
-              <img
-                src={logo}
-                alt="AYTO Properties"
-                loading="lazy"
-                className="h-12 w-12 rounded-full border border-gold/60 object-cover object-[50%_25%]"
-              />
+    <footer id="offices" className="border-t border-white/10 bg-[#0a0a0a] text-white">
+      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 md:grid-cols-[1.15fr_1fr_0.75fr_1.1fr] md:px-8">
+        <div>
+          <button
+            type="button"
+            onClick={() => go("top")}
+            className="flex items-center gap-3 text-left"
+          >
+            <img
+              src={logo}
+              alt="AYTO Properties"
+              className="h-14 w-14 rounded-full border border-[#f4d06f]/70 object-cover object-[50%_25%]"
+            />
+            <div>
+              <span className="block font-display text-xl font-bold tracking-[0.2em] text-[#f4d06f]">
+                AYTO
+              </span>
+              <span className="block text-[9px] font-semibold uppercase tracking-[0.24em] text-white/70">
+                Properties & Builders
+              </span>
+            </div>
+          </button>
+
+          <p className="mt-5 max-w-xs text-xs leading-relaxed text-white/75 sm:text-sm">
+            At AYTO Properties & Builders, our vision is simple: to offer transparent guidance,
+            innovative solutions, and real estate opportunities across Lahore that create lasting
+            value.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-base font-bold text-white">Get In Touch</h3>
+          <ul className="mt-5 space-y-4 text-xs text-white/80 sm:text-sm">
+            <li className="flex items-start gap-3">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/30 text-white">
+                <MapPin className="h-3.5 w-3.5" />
+              </span>
               <div>
-                <span className="block font-display text-2xl font-bold tracking-[0.18em] text-gold-soft">AYTO</span>
-                <span className="block text-[10px] font-semibold uppercase tracking-[0.24em] text-forest-muted">
-                  Properties & Builders
-                </span>
+                <p className="font-semibold text-white">Our Address</p>
+                <p className="text-xs text-white/65">Main Boulevard, DHA Phase 6 / Phase 8, Lahore</p>
               </div>
-            </div>
-            <p className="mt-5 max-w-xs text-sm leading-relaxed text-forest-muted">
-              At AYTO Properties & Builders, our vision is simple: to offer transparent guidance, turnkey construction,
-              and high-ROI real estate opportunities across Lahore that create lasting value.
-            </p>
+            </li>
 
-            {/* Social Media Links */}
-            <div className="mt-6 flex items-center gap-3">
-              <a
-                href="https://www.facebook.com/aytoproperties"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="AYTO Properties Facebook"
-                title="AYTO Properties on Facebook"
-                className={socialBtn}
-              >
-                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M13.5 22v-8.2h2.8l.4-3.2h-3.2V8.5c0-.9.3-1.6 1.6-1.6h1.7V4c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.4H7.5v3.2h2.7V22h3.3z" />
-                </svg>
-              </a>
-
-              <a
-                href="https://www.instagram.com/aytoproperties"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="AYTO Properties Instagram"
-                title="AYTO Properties on Instagram"
-                className={socialBtn}
-              >
-                <svg className="h-4 w-4 fill-none stroke-current" strokeWidth="2" viewBox="0 0 24 24">
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                </svg>
-              </a>
-
-              <a
-                href="https://x.com/aytoproperties"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="AYTO Properties X (Twitter)"
-                title="AYTO Properties on X (Twitter)"
-                className={socialBtn}
-              >
-                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-
-              <a
-                href="https://wa.me/923314972426?text=Hello%20AYTO%20Properties,%20I%20would%20like%20to%20inquire%20about%20a%20property%20in%20Lahore."
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="AYTO Properties WhatsApp"
-                title="Chat with AYTO Properties on WhatsApp"
-                className={socialBtn}
-              >
-                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.82 14.01c-.24.68-1.41 1.3-1.96 1.38-.51.08-1.15.11-1.86-.12-.43-.14-.98-.32-1.69-.63-2.98-1.29-4.92-4.29-5.07-4.49-.15-.2-1.21-1.61-1.21-3.07 0-1.46.77-2.18 1.04-2.48.27-.3.59-.37.79-.37.2 0 .4 0 .57.01.18.01.43-.07.67.51.24.59.83 2.03.9 2.18.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.65-.07.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.35.07.12.07.72-.17 1.4z" />
-                </svg>
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="eyebrow text-gold-soft">Useful Links</h4>
-            <div className="mt-4">
-              {(
-                [
-                  ["listings", "Properties"],
-                  ["services", "Services"],
-                  ["emi", "EMI Calculator"],
-                  ["reviews", "Client Stories"],
-                  ["contact", "Contact Us"],
-                ] as const
-              ).map(([id, l]) => (
-                <button key={id} className={link} onClick={() => scrollToId(id)}>
-                  {l}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h4 className="eyebrow text-gold-soft">Property Types</h4>
-            <div className="mt-4">
-              {propertyTypes.map((t) => (
-                <button key={t.value} className={link} onClick={() => onType(t.value)}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h4 className="eyebrow text-gold-soft">Get In Touch</h4>
-            <div className="mt-4 space-y-2.5 text-sm text-forest-muted">
-              <p>AYTO Properties, Lahore</p>
-              <p>
+            <li className="flex items-start gap-3">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/30 text-white">
+                <Phone className="h-3.5 w-3.5" />
+              </span>
+              <div>
+                <p className="font-semibold text-white">Phone Number</p>
                 <a
                   href="https://wa.me/923314972426"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-gold-soft transition-colors hover:text-gold"
+                  className="text-xs text-white/65 transition hover:text-[#f4d06f]"
                 >
-                  0331-4972426
+                  +92 331-4972426
                 </a>
-              </p>
-              <p>info2aytoproperties@gmail.com</p>
-              <p>Mon–Sat, 10am to 7pm</p>
-            </div>
+              </div>
+            </li>
+
+            <li className="flex items-start gap-3">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/30 text-white">
+                <Mail className="h-3.5 w-3.5" />
+              </span>
+              <div>
+                <p className="font-semibold text-white">Email Address</p>
+                <p className="text-xs text-white/65">info2aytoproperties@gmail.com</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-base font-bold text-white">Useful Links</h3>
+          <ul className="mt-5 space-y-3 text-xs sm:text-sm">
+            <li>
+              <button
+                type="button"
+                onClick={() => go("top")}
+                className="font-medium text-[#f4d06f] transition hover:text-white"
+              >
+                Home
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => go("about")}
+                className="text-white/75 transition hover:text-[#f4d06f]"
+              >
+                About Us
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => go("listings")}
+                className="text-white/75 transition hover:text-[#f4d06f]"
+              >
+                Properties
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onOpenQuery) onOpenQuery();
+                  else go("contact");
+                }}
+                className="text-white/75 transition hover:text-[#f4d06f]"
+              >
+                Request A Visit
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-lg">
+          <iframe
+            title="AYTO Properties Lahore Location"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=74.3800%2C31.4550%2C74.4750%2C31.5050&layer=mapnik&marker=31.4785%2C74.4320"
+            className="h-52 w-full border-0"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 py-5">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 text-xs text-white/55 sm:flex-row md:px-8">
+          <p>© 2026 AYTO Properties & Builders. All Rights Reserved.</p>
+          <div className="flex items-center gap-3">
+            <a
+              href="https://wa.me/923314972426"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="grid h-7 w-7 place-items-center rounded-full bg-white text-[#0a0a0a] transition hover:bg-[#f4d06f]"
+            >
+              <Facebook className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="https://wa.me/923314972426"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="grid h-7 w-7 place-items-center rounded-full bg-white text-[#0a0a0a] transition hover:bg-[#f4d06f]"
+            >
+              <Instagram className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="https://wa.me/923314972426"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              className="grid h-7 w-7 place-items-center rounded-full bg-white text-[#0a0a0a] transition hover:bg-[#f4d06f]"
+            >
+              <Youtube className="h-3.5 w-3.5" />
+            </a>
           </div>
         </div>
-
-        <div className="border-t border-forest-foreground/10 py-6 text-center text-xs text-forest-muted">
-          © {new Date().getFullYear()} AYTO Properties. All rights reserved.
-        </div>
-      </footer>
-
-      {/* Floating WhatsApp Icon Button */}
-      <a
-        href="https://wa.me/923314972426?text=Hello%20AYTO%20Properties,%20I%20am%20interested%20in%20a%20property%20in%20Lahore."
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat on WhatsApp"
-        title="Chat on WhatsApp"
-        className="fixed bottom-6 right-6 z-50 flex h-[54px] w-[54px] items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl transition-all duration-200 hover:scale-110 hover:bg-[#1ebe5d]"
-      >
-        <svg className="h-7 w-7 fill-current" viewBox="0 0 24 24">
-          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.82 14.01c-.24.68-1.41 1.3-1.96 1.38-.51.08-1.15.11-1.86-.12-.43-.14-.98-.32-1.69-.63-2.98-1.29-4.92-4.29-5.07-4.49-.15-.2-1.21-1.61-1.21-3.07 0-1.46.77-2.18 1.04-2.48.27-.3.59-.37.79-.37.2 0 .4 0 .57.01.18.01.43-.07.67.51.24.59.83 2.03.9 2.18.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.65-.07.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.35.07.12.07.72-.17 1.4z" />
-        </svg>
-      </a>
-    </>
+      </div>
+    </footer>
   );
 }
