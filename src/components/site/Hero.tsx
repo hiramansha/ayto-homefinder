@@ -1,226 +1,120 @@
-import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Building2 } from "lucide-react";
-import heroVilla from "@/assets/hero-villa.jpg";
-import spotlightHouse from "@/assets/spotlight-house.jpg";
-import adPlots from "@/assets/ad-plots.jpg";
-import adInterior from "@/assets/ad-interior.jpg";
+import { ArrowRight, Building2, Compass, MessageCircle, ShieldCheck, Star } from "lucide-react";
+import hero from "@/assets/hero-villa.jpg";
+import { Button } from "@/components/ui/button";
 import { scrollToId } from "./utils";
 
-interface HeroSlide {
-  isBrandSlide: boolean;
-  image: string;
-  subtitle: string;
-  title: string;
-  cta: string;
-}
-
-const slides: HeroSlide[] = [
+const highlights = [
   {
-    isBrandSlide: true,
-    image: heroVilla,
-    subtitle: "LAHORE’S PREMIER REAL ESTATE & BUILDERS",
-    title: "AYTO Properties",
-    cta: "Request A Visit",
+    icon: Building2,
+    title: "Turnkey Luxury Villas",
+    desc: "Grey structure & A-class finishing in DHA & Bahria",
   },
   {
-    isBrandSlide: false,
-    image: heroVilla,
-    subtitle: "DHA • BAHRIA TOWN • LAKE CITY",
-    title: "Luxury Villas & Homes",
-    cta: "Request A Visit",
+    icon: Compass,
+    title: "Prime Lahore Locations",
+    desc: "Verified residential & commercial plots in top phases",
   },
   {
-    isBrandSlide: false,
-    image: spotlightHouse,
-    subtitle: "A-CLASS GREY STRUCTURE & FINISHING",
-    title: "Turnkey Construction",
-    cta: "Request A Visit",
-  },
-  {
-    isBrandSlide: false,
-    image: adPlots,
-    subtitle: "VERIFIED HIGH-ROI INVESTMENTS",
-    title: "Residential & Commercial Plots",
-    cta: "Request A Visit",
-  },
-  {
-    isBrandSlide: false,
-    image: adInterior,
-    subtitle: "MODERN ARCHITECTURE & INTERIORS",
-    title: "Designer Living Spaces",
-    cta: "Request A Visit",
+    icon: ShieldCheck,
+    title: "100% Transparent Deals",
+    desc: "Direct owner & builder pricing with legal verification",
   },
 ];
 
 export function Hero() {
-  const [current, setCurrent] = useState<number>(0);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 4500);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const prevSlide = () => {
-    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
-  const nextSlide = () => {
-    setCurrent((prev) => (prev + 1) % slides.length);
-  };
-
-  const active = slides[current] ?? slides[0]!;
-
   return (
-    <section className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-forest-deep pt-20">
-      {slides.map((slide, index) => (
-        <div
-          key={`${slide.title}-${index}`}
-          className={`absolute inset-0 -z-20 transition-opacity duration-1000 ease-in-out ${
-            index === current ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-        >
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className={`h-full w-full object-cover transition-transform duration-[6000ms] ease-out ${
-              index === current ? "scale-110" : "scale-100"
-            }`}
-          />
-        </div>
-      ))}
-
-      <div
-        className={`absolute inset-0 -z-10 transition-colors duration-1000 ${
-          active.isBrandSlide ? "bg-forest-deep/85" : "bg-black/55"
-        }`}
+    <section className="relative isolate flex min-h-[100svh] flex-col justify-between overflow-hidden bg-forest-deep pb-12 pt-32 md:pb-16 md:pt-40">
+      {/* Cinematic slow-zoom villa background */}
+      <img
+        src={hero}
+        alt="Modern luxury villa with warm lights at dusk"
+        width={1920}
+        height={1088}
+        fetchPriority="high"
+        className="absolute inset-0 -z-20 h-full w-full animate-ken-burns object-cover object-[65%_center] scale-105"
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-deep/95 via-transparent to-forest-deep/75" />
+      <div className="absolute inset-0 -z-10 bg-hero-overlay" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.16),transparent_55%)]" />
 
-      <button
-        type="button"
-        onClick={prevSlide}
-        aria-label="Previous slide"
-        className="group absolute bottom-10 left-5 z-20 hidden h-28 w-28 items-center justify-center md:bottom-16 md:left-12 md:flex lg:h-32 lg:w-32"
-      >
-        <svg
-          viewBox="0 0 120 120"
-          className="h-full w-full animate-[spin_16s_linear_infinite] text-white/85 transition-colors group-hover:text-gold-soft"
-        >
-          <defs>
-            <path
-              id="leftCirclePath"
-              d="M 60, 60 m -44, 0 a 44,44 0 1,1 88,0 a 44,44 0 1,1 -88,0"
-            />
-          </defs>
-          <text fontSize="10.2" fontWeight="600" letterSpacing="2.4" fill="currentColor">
-            <textPath href="#leftCirclePath" startOffset="0%">
-              Explore and find Your Dream place •
-            </textPath>
-          </text>
-        </svg>
-        <span className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-forest-deep">
-          <ArrowLeft className="h-5 w-5" />
-        </span>
-      </button>
-
-      <button
-        type="button"
-        onClick={nextSlide}
-        aria-label="Next slide"
-        className="group absolute bottom-10 right-5 z-20 hidden h-28 w-28 items-center justify-center md:bottom-16 md:right-12 md:flex lg:h-32 lg:w-32"
-      >
-        <svg
-          viewBox="0 0 120 120"
-          className="h-full w-full animate-[spin_16s_linear_infinite] text-white/85 transition-colors group-hover:text-gold-soft"
-        >
-          <defs>
-            <path
-              id="rightCirclePath"
-              d="M 60, 60 m -44, 0 a 44,44 0 1,1 88,0 a 44,44 0 1,1 -88,0"
-            />
-          </defs>
-          <text fontSize="11" fontWeight="600" letterSpacing="3.5" fill="currentColor">
-            <textPath href="#rightCirclePath" startOffset="0%">
-              Need Help? • Need Help? •
-            </textPath>
-          </text>
-        </svg>
-        <span className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-forest-deep">
-          <ArrowRight className="h-5 w-5" />
-        </span>
-      </button>
-
-      <div className="relative z-10 mx-auto max-w-5xl px-5 text-center">
-        {active.isBrandSlide && (
-          <div
-            key={`brand-${current}`}
-            className="mx-auto mb-6 flex h-28 w-28 animate-rise flex-col items-center justify-center rounded-full border-2 border-gold/70 bg-forest-deep/90 shadow-[0_0_50px_rgba(212,175,55,0.45)] sm:h-32 sm:w-32"
-          >
-            <Building2 className="h-9 w-9 text-gold-soft sm:h-10 sm:w-10" />
-            <span className="mt-1 font-display text-xl font-bold tracking-[0.2em] text-gold-soft">
-              AYTO
+      {/* Main Editorial Hero Content */}
+      <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
+        <div className="max-w-3xl animate-rise">
+          <div className="inline-flex items-center gap-3 rounded-full border border-gold/40 bg-forest-deep/75 px-4 py-1.5 backdrop-blur-md">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-gold" />
+            <span className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-gold-soft">
+              Lahore’s Premier Real Estate & Builders
             </span>
           </div>
-        )}
 
-        <p
-          key={`sub-${current}`}
-          className="animate-rise text-xs font-semibold uppercase tracking-[0.28em] text-gold-soft sm:text-sm"
-        >
-          {active.subtitle}
-        </p>
+          <h1 className="mt-7 font-display text-5xl font-semibold leading-[1.03] tracking-tight text-forest-foreground sm:text-6xl lg:text-[5.2rem]">
+            Crafting Landmark Homes
+            <span className="block italic text-gold-soft">& High-Yield Futures.</span>
+          </h1>
 
-        <h1
-          key={`title-${current}`}
-          className="mt-3 animate-rise font-sans text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-6xl lg:text-[4.6rem]"
-        >
-          {active.title}
-        </h1>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-forest-foreground/85 sm:text-lg">
+            From luxury designer residences in DHA & Bahria Town to turnkey grey-structure construction and prime
+            commercial investments — AYTO Properties delivers excellence at every step.
+          </p>
 
-        <div key={`cta-${current}`} className="mt-8 flex flex-wrap items-center justify-center gap-4 animate-rise">
-          <button
-            type="button"
-            onClick={() => scrollToId("contact")}
-            className="group inline-flex items-center gap-3 rounded-full bg-[#f4d06f] px-8 py-4 text-sm font-semibold text-forest-deep shadow-[0_14px_34px_-8px_rgba(244,208,111,0.65)] transition-all duration-300 hover:-translate-y-1 hover:bg-gold-soft sm:text-base"
-          >
-            {active.cta}
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
-          </button>
-
-          <div className="flex items-center gap-2 md:hidden">
-            <button
-              type="button"
-              onClick={prevSlide}
-              aria-label="Previous"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white backdrop-blur-md"
+          <div className="mt-9 flex flex-wrap items-center gap-4">
+            <Button
+              variant="gold"
+              size="xl"
+              onClick={() => scrollToId("listings")}
+              className="group shadow-[0_12px_32px_-8px_rgba(212,175,55,0.5)] transition-all duration-300 hover:-translate-y-0.5"
             >
-              <ArrowLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={nextSlide}
-              aria-label="Next"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/15 text-white backdrop-blur-md"
+              Explore properties
+              <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+            </Button>
+
+            <a
+              href="https://wa.me/923314972426?text=Hello%20AYTO%20Properties,%20I%20would%20like%20to%20book%20a%20free%20site%20visit%20or%20construction%20consultation%20in%20Lahore."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-13 items-center justify-center gap-2.5 rounded-full border border-gold/50 bg-forest-deep/70 px-7 text-sm font-semibold text-gold-soft backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:bg-gold/15"
             >
-              <ArrowRight className="h-4 w-4" />
-            </button>
+              <MessageCircle className="h-4 w-4 text-gold" />
+              Book free site visit
+            </a>
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-forest-foreground/80">
+            <span className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-gold" /> LDA & DHA Verified
+            </span>
+            <span className="flex items-center gap-2">
+              <Star className="h-4 w-4 fill-gold text-gold" /> 1,200+ Happy Families
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="font-display text-xl font-bold text-gold-soft">12+</span> Years of Excellence
+            </span>
           </div>
         </div>
+      </div>
 
-        <div className="mt-10 flex items-center justify-center gap-2.5">
-          {slides.map((s, idx) => (
-            <button
-              key={`${s.title}-${idx}`}
-              type="button"
-              onClick={() => setCurrent(idx)}
-              aria-label={`Slide ${idx + 1}`}
-              className={`h-2 rounded-full transition-all duration-500 ${
-                idx === current ? "w-9 bg-[#f4d06f]" : "w-2 bg-white/45 hover:bg-white/75"
-              }`}
-            />
-          ))}
+      {/* Bottom Floating Architectural Glass Strip */}
+      <div className="mx-auto mt-16 w-full max-w-7xl px-5 md:px-8">
+        <div className="grid gap-4 sm:grid-cols-3">
+          {highlights.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.title}
+                onClick={() => scrollToId("services")}
+                className="group cursor-pointer rounded-2xl border border-gold/25 bg-forest-deep/75 p-5 backdrop-blur-md transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/70 hover:bg-forest-deep/90 hover:shadow-[0_14px_35px_-10px_rgba(212,175,55,0.25)]"
+              >
+                <div className="flex items-center gap-3.5">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/30 bg-gold/10 text-gold-soft transition-transform duration-500 group-hover:scale-110">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-semibold text-forest-foreground">{item.title}</h3>
+                    <p className="mt-0.5 text-xs leading-relaxed text-forest-muted">{item.desc}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
