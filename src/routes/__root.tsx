@@ -76,17 +76,22 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
-    // Replace these placeholders with the app's name and description when first building the app.
-    // Each content route, / included, must still set its own head(). Never add og:image or
-    // twitter:image here: every page without its own would inherit the root's preview image.
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AYTO Properties – Smart Property Solution" },
-      { name: "description", content: "Buy, sell and rent property in Pakistan with AYTO Properties." },
-      { name: "author", content: "AYTO Properties" },
-      { property: "og:title", content: "AYTO Properties – Smart Property Solution" },
-      { property: "og:description", content: "Buy, sell and rent property in Pakistan with AYTO Properties." },
+      { title: "AYTO Properties – Luxury Real Estate & Builders in Lahore" },
+      {
+        name: "description",
+        content:
+          "Buy, sell, rent and build luxury homes, plots and commercial properties in Lahore with AYTO Properties.",
+      },
+      { name: "author", content: "AYTO Properties Lahore" },
+      { property: "og:title", content: "AYTO Properties – Luxury Real Estate & Builders in Lahore" },
+      {
+        property: "og:description",
+        content:
+          "Buy, sell, rent and build luxury homes, plots and commercial properties in Lahore with AYTO Properties.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -129,7 +134,6 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster position="bottom-center" />
     </QueryClientProvider>
