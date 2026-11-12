@@ -69,7 +69,7 @@
   --card: oklch(0.995 0.004 88);
   --card-foreground: oklch(0.24 0.04 162);
   --popover: oklch(0.995 0.004 88);
-  --popover-foreground: oklch(0.24 0.04 162);
+  --popover-foreground: var(--popover-foreground);
   --primary: oklch(0.33 0.07 160);
   --primary-foreground: oklch(0.975 0.015 88);
   --secondary: oklch(0.945 0.018 88);
@@ -156,6 +156,7 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   h1,
   h2,
@@ -169,44 +170,71 @@
 }
 
 @keyframes ken-burns {
-  from {
-    transform: scale(1);
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
   }
-  to {
-    transform: scale(1.08);
+  100% {
+    transform: scale(1.12) translate3d(-1.5%, -1%, 0);
   }
 }
+
 @keyframes rise {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(36px) scale(0.98);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: none;
+    transform: translateY(0) scale(1);
   }
 }
-@utility animate-ken-burns {
-  animation: ken-burns 24s ease-in-out infinite alternate;
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
+
+@keyframes gold-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 24px 4px rgba(212, 175, 55, 0.55);
+  }
+}
+
+@utility animate-ken-burns {
+  animation: ken-burns 14s ease-in-out infinite alternate !important;
+}
+
 @utility animate-rise {
-  animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: rise 0.95s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+@utility animate-float {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+@utility animate-gold-pulse {
+  animation: gold-pulse 3s ease-in-out infinite;
 }
 
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(32px) scale(0.98);
   transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
+    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
 }
+
 .reveal.is-in {
   opacity: 1;
-  transform: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    opacity: 1;
-    transform: none;
-  }
+  transform: translateY(0) scale(1);
 }
