@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Building2 } from "lucide-react";
 import heroVilla from "@/assets/hero-villa.jpg";
-import spotlightHouse from "@/assets/spotlight-house.jpg";
-import adPlots from "@/assets/ad-plots.jpg";
-import adInterior from "@/assets/ad-interior.jpg";
 import { scrollToId } from "./utils";
 
 interface HeroSlide {
@@ -24,28 +21,28 @@ const slides: HeroSlide[] = [
   },
   {
     isBrandSlide: false,
-    image: heroVilla,
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1920&q=85",
     subtitle: "DHA • BAHRIA TOWN • LAKE CITY",
     title: "Luxury Villas & Homes",
     cta: "Request A Visit",
   },
   {
     isBrandSlide: false,
-    image: spotlightHouse,
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=85",
     subtitle: "A-CLASS GREY STRUCTURE & FINISHING",
     title: "Turnkey Construction",
     cta: "Request A Visit",
   },
   {
     isBrandSlide: false,
-    image: adPlots,
+    image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=85",
     subtitle: "VERIFIED HIGH-ROI INVESTMENTS",
     title: "Residential & Commercial Plots",
     cta: "Request A Visit",
   },
   {
     isBrandSlide: false,
-    image: adInterior,
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1920&q=85",
     subtitle: "MODERN ARCHITECTURE & INTERIORS",
     title: "Designer Living Spaces",
     cta: "Request A Visit",
