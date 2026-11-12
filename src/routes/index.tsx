@@ -48,7 +48,6 @@ const partnerLogos = [
   "LDA APPROVED",
 ];
 
-// Direct photo path (loads from GitHub raw or local assets automatically)
 const DIRECTOR_PHOTO =
   "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpg";
 
@@ -107,9 +106,10 @@ export function Index() {
       if (!btn) return;
       const label = (btn.textContent || "").trim().toLowerCase();
 
-      // "Contact Us" -> Opens dedicated Director Message + Vision & Mission + Why Choose Us page
-      if (label === "contact us") {
+      // Both "Contact Us" and "About Us" open the Director Message + Vision & Mission + Why Choose Us page
+      if (label === "contact us" || label === "about us") {
         e.preventDefault();
+        e.stopPropagation();
         navigatePage("contact-us");
         return;
       }
@@ -117,6 +117,7 @@ export function Index() {
       // "Request A Visit" or "Get a Quote" -> Opens Query Form page
       if (label.includes("request a visit") || label.includes("get a quote")) {
         e.preventDefault();
+        e.stopPropagation();
         navigatePage("query");
         return;
       }
@@ -124,7 +125,6 @@ export function Index() {
       // Navigation back to Home sections
       if (
         label === "home" ||
-        label === "about us" ||
         label === "our offices" ||
         label === "projects" ||
         label === "services" ||
@@ -133,7 +133,6 @@ export function Index() {
       ) {
         const map: Record<string, string> = {
           home: "top",
-          "about us": "about",
           "our offices": "offices",
           projects: "spotlight",
           services: "about",
@@ -175,7 +174,7 @@ export function Index() {
       />
 
       {activePage === "query" ? (
-        /* QUERY FORM PAGE (On Request A Visit / Get a Quote) */
+        /* QUERY FORM PAGE */
         <main className="pt-20">
           <div className="mx-auto max-w-2xl px-4 pt-3 md:px-6">
             <button
@@ -189,7 +188,7 @@ export function Index() {
           <Contact prefill={prefill} />
         </main>
       ) : activePage === "contact-us" ? (
-        /* CONTACT US PAGE: DIRECTOR MESSAGE (AYESHA IQBAL), VISION & MISSION & WHY CHOOSE US */
+        /* DIRECTOR MESSAGE (AYESHA IQBAL), VISION & MISSION & WHY CHOOSE US PAGE */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-24 text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
