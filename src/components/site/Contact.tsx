@@ -6,7 +6,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [propertyType, setPropertyType] = useState("Residential Plot");
-  const [locationPref, setLocationPref] = useState("DHA Lahore (Phase 5, 6, 7, 8, 9)");
+  const [locationPref, setLocationPref] = useState("DHA Phase 12 (EME) Multan Road, Lahore");
   const [plotSize, setPlotSize] = useState("5 Marla");
   const [purpose, setPurpose] = useState("Investment");
   const [budgetFrom, setBudgetFrom] = useState("");
@@ -130,12 +130,12 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
                 onChange={(e) => setLocationPref(e.target.value)}
                 className={inputClass}
               >
+                <option>DHA Phase 12 (EME) Multan Road, Lahore</option>
                 <option>DHA Lahore (Phase 5, 6, 7, 8, 9)</option>
                 <option>Bahria Town & Bahria Orchard</option>
                 <option>Lake City Lahore</option>
                 <option>Lahore Smart City</option>
                 <option>Etihad Town</option>
-                <option>Gulberg / Canal Road</option>
               </select>
             </div>
           </div>
@@ -230,7 +230,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
             className="mt-6 flex flex-wrap items-center justify-center gap-4 border-t border-white/10 pt-4 text-[11px] text-white/65 sm:text-xs"
           >
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-[#f4d06f]" /> AYTO Properties, Lahore
+              <MapPin className="h-3.5 w-3.5 text-[#f4d06f]" /> E65 DHA Phase 12, Multan Road, Lahore
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Phone className="h-3.5 w-3.5 text-[#f4d06f]" /> 0331-4972426
