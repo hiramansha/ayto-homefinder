@@ -41,7 +41,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
 
   const info = [
     { i: MapPin, t: "Office", d: "AYTO Properties, Pakistan" },
-    { i: Mail, t: "Email", d: "info@aytoproperties.com" },
+    { i: Mail, t: "Email", d: "info2aytoproperties@gmail.com" },
     { i: Clock, t: "Hours", d: "Mon–Sat, 10am to 7pm" },
   ];
 
