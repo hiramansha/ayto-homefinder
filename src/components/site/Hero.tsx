@@ -70,7 +70,7 @@ export function Hero() {
   const active = slides[current] ?? slides[0]!;
 
   return (
-    <section className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-forest-deep pt-20">
+    <section className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-forest-deep pb-36 pt-28 md:pb-44 md:pt-32">
       {slides.map((slide, index) => (
         <div
           key={`${slide.title}-${index}`}
@@ -95,11 +95,12 @@ export function Hero() {
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-deep/95 via-transparent to-forest-deep/75" />
 
+      {/* Left Circular Rotating Text Button (positioned clear above filter card) */}
       <button
         type="button"
         onClick={prevSlide}
         aria-label="Previous slide"
-        className="group absolute bottom-10 left-5 z-20 hidden h-28 w-28 items-center justify-center md:bottom-16 md:left-12 md:flex lg:h-32 lg:w-32"
+        className="group absolute bottom-32 left-5 z-20 hidden h-28 w-28 items-center justify-center md:bottom-40 md:left-12 md:flex lg:h-32 lg:w-32"
       >
         <svg
           viewBox="0 0 120 120"
@@ -122,11 +123,12 @@ export function Hero() {
         </span>
       </button>
 
+      {/* Right Circular Rotating Text Button (positioned clear above filter card) */}
       <button
         type="button"
         onClick={nextSlide}
         aria-label="Next slide"
-        className="group absolute bottom-10 right-5 z-20 hidden h-28 w-28 items-center justify-center md:bottom-16 md:right-12 md:flex lg:h-32 lg:w-32"
+        className="group absolute bottom-32 right-5 z-20 hidden h-28 w-28 items-center justify-center md:bottom-40 md:right-12 md:flex lg:h-32 lg:w-32"
       >
         <svg
           viewBox="0 0 120 120"
@@ -153,10 +155,10 @@ export function Hero() {
         {active.isBrandSlide && (
           <div
             key={`brand-${current}`}
-            className="mx-auto mb-6 flex h-28 w-28 animate-rise flex-col items-center justify-center rounded-full border-2 border-gold/70 bg-forest-deep/90 shadow-[0_0_50px_rgba(212,175,55,0.45)] sm:h-32 sm:w-32"
+            className="mx-auto mb-5 flex h-24 w-24 animate-rise flex-col items-center justify-center rounded-full border-2 border-gold/70 bg-forest-deep/90 shadow-[0_0_50px_rgba(212,175,55,0.45)] sm:h-28 sm:w-28"
           >
-            <Building2 className="h-9 w-9 text-gold-soft sm:h-10 sm:w-10" />
-            <span className="mt-1 font-display text-xl font-bold tracking-[0.2em] text-gold-soft">
+            <Building2 className="h-8 w-8 text-gold-soft sm:h-9 sm:w-9" />
+            <span className="mt-1 font-display text-lg font-bold tracking-[0.2em] text-gold-soft">
               AYTO
             </span>
           </div>
@@ -206,7 +208,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="mt-10 flex items-center justify-center gap-2.5">
+        <div className="mt-9 flex items-center justify-center gap-2.5">
           {slides.map((s, idx) => (
             <button
               key={`${s.title}-${idx}`}
