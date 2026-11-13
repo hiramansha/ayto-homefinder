@@ -4,8 +4,10 @@ import {
   ArrowLeft,
   ArrowRight,
   BadgeDollarSign,
+  BedDouble,
   Building,
   Building2,
+  Calculator,
   CheckCircle2,
   Clock,
   Compass,
@@ -15,9 +17,12 @@ import {
   Lightbulb,
   Mail,
   MapPin,
+  Maximize2,
   MessageCircle,
   MessageSquare,
   Phone,
+  PlusCircle,
+  Search,
   ShieldCheck,
   Sparkles,
   User,
@@ -118,6 +123,7 @@ const servicesList = [
 
 const projectsList = [
   {
+    id: "ayto-residency",
     tag: "FLAGSHIP PROJECT",
     title: "AYTO Residency, DHA Phase 6",
     location: "DHA Phase 6, Lahore • 10 Marla • 5 Bedrooms",
@@ -127,6 +133,7 @@ const projectsList = [
     desc: "Contemporary designer residence featuring glass-railing balconies, double car garage, lit entrance staircase, landscaped lawn, and imported fittings.",
   },
   {
+    id: "ayto-heights",
     tag: "COMMERCIAL TOWER",
     title: "AYTO Heights Commercial Plaza",
     location: "Main Boulevard, DHA Phase 12 (EME Sector), Lahore",
@@ -136,6 +143,7 @@ const projectsList = [
     desc: "Modern G+6 commercial & corporate complex with high-speed elevators, basement parking, retail showrooms, and executive office floors.",
   },
   {
+    id: "ayto-signature",
     tag: "LUXURY VILLAS",
     title: "AYTO Signature Villas - DHA Phase 8",
     location: "Broadway Commercial Vicinity, DHA Phase 8, Lahore",
@@ -145,6 +153,7 @@ const projectsList = [
     desc: "1 Kanal ultra-luxury smart villas with double-height lobby, Spanish tiles, automated security, and designer master suites.",
   },
   {
+    id: "ayto-smarthomes",
     tag: "RESIDENTIAL COMMUNITY",
     title: "AYTO Smart Homes - Bahria Town",
     location: "Sector C, Bahria Town Lahore",
@@ -209,7 +218,6 @@ const galleryItems = [
 function RoyalArchitecturalBackdrop() {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-gradient-to-b from-[#070b14] via-[#0b1322] to-[#070c16]">
-      {/* Architectural Diamond Lattice Pattern (Inspired by reference image) */}
       <svg
         className="ayto-lattice-pulse absolute inset-0 h-full w-full opacity-35"
         xmlns="http://www.w3.org/2000/svg"
@@ -238,18 +246,14 @@ function RoyalArchitecturalBackdrop() {
         <rect width="100%" height="100%" fill="url(#ayto-diamond-grid)" />
       </svg>
 
-      {/* Smooth Royal Sapphire & Champagne Aurora Glows */}
       <div className="ayto-aurora-1 absolute -left-32 -top-24 h-[520px] w-[520px] rounded-full bg-[#1a3c78]/35 blur-[135px]" />
       <div className="ayto-aurora-2 absolute -right-24 top-1/4 h-[500px] w-[500px] rounded-full bg-[#d4af37]/16 blur-[145px]" />
       <div className="ayto-aurora-3 absolute bottom-[-10%] left-1/4 h-[480px] w-[480px] rounded-full bg-[#124563]/35 blur-[135px]" />
 
-      {/* Intersecting V-Shaped Glowing Golden Light Beams on Right Side */}
       <div className="absolute right-[-60px] top-[-10%] h-[125%] w-[680px] overflow-hidden opacity-90">
-        {/* Left leg of V-beam */}
         <div className="ayto-beam-left absolute right-[290px] top-[-10%] h-[135%] w-[2px] -rotate-[22deg] bg-gradient-to-b from-transparent via-[#f4d06f]/85 to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.55)]" />
         <div className="ayto-beam-left-soft absolute right-[318px] top-[-10%] h-[135%] w-[1px] -rotate-[22deg] bg-gradient-to-b from-transparent via-[#93c5fd]/45 to-transparent shadow-[0_0_16px_2px_rgba(147,197,253,0.3)]" />
 
-        {/* Right leg of V-beam */}
         <div className="ayto-beam-right absolute right-[130px] top-[-10%] h-[135%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f]/90 to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.65)]" />
         <div className="ayto-beam-right-soft absolute right-[162px] top-[-10%] h-[135%] w-[1.5px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#fde68a]/65 to-transparent shadow-[0_0_20px_3px_rgba(253,230,138,0.4)]" />
       </div>
@@ -263,6 +267,25 @@ export function Index() {
   const [open, setOpen] = useState<Property | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>("home");
   const [prefill, setPrefill] = useState({ text: "", nonce: 0 });
+
+  // Improvement 1: Projects Dropdown State
+  const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
+
+  // Improvement 2: Property Search & Category Filter
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All");
+
+  // Improvement 3: Post Property Modal State
+  const [postModalOpen, setPostModalOpen] = useState(false);
+  const [sellerName, setSellerName] = useState("");
+  const [sellerPhone, setSellerPhone] = useState("");
+  const [sellerLocation, setSellerLocation] = useState("DHA Phase 6, Lahore");
+  const [sellerSize, setSellerSize] = useState("10 Marla House");
+  const [sellerDemand, setSellerDemand] = useState("");
+
+  // Improvement 5: Turnkey Construction Cost Estimator State
+  const [plotMarla, setPlotMarla] = useState<5 | 10 | 20>(10);
+  const [buildQuality, setBuildQuality] = useState<"grey" | "luxury">("luxury");
 
   const [galleryFilter, setGalleryFilter] = useState("All");
   const [lightboxImg, setLightboxImg] = useState<{ title: string; image: string } | null>(null);
@@ -305,6 +328,7 @@ export function Index() {
   }, [activePage]);
 
   const navigatePage = (page: ActivePage, sectionId?: string, text = "") => {
+    setProjectsMenuOpen(false);
     if (text) {
       setPrefill({ text, nonce: Date.now() });
       setFormMessage(text);
@@ -318,6 +342,8 @@ export function Index() {
     }
     if (page === "home" && sectionId && sectionId !== "top") {
       window.setTimeout(() => scrollToId(sectionId), 100);
+    } else if (sectionId) {
+      window.setTimeout(() => scrollToId(sectionId), 120);
     } else {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
@@ -326,9 +352,14 @@ export function Index() {
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
+      if (!target?.closest("[data-projects-dropdown]")) {
+        setProjectsMenuOpen(false);
+      }
+
       const btn = target?.closest("button, a");
       if (!btn) return;
       if (btn.getAttribute("target") === "_blank") return;
+      if (btn.closest("[data-projects-dropdown]")) return;
 
       const raw = (btn.textContent || "").trim().toLowerCase();
       const label = raw.replace(/[^\w\s]/g, "").trim();
@@ -340,6 +371,14 @@ export function Index() {
         navigatePage(page, sectionId);
       };
 
+      if (label.includes("post property")) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        setPostModalOpen(true);
+        return;
+      }
+
       if (label === "about us" || label.includes("more about ayto")) {
         stopAndGo("about-us");
         return;
@@ -350,7 +389,15 @@ export function Index() {
         return;
       }
 
-      if (label === "projects" || label === "view project") {
+      if (label === "projects") {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        setProjectsMenuOpen((prev) => !prev);
+        return;
+      }
+
+      if (label === "view project") {
         stopAndGo("projects");
         return;
       }
@@ -401,6 +448,19 @@ export function Index() {
     setFormMessage("");
   };
 
+  const handleSellerSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!sellerName.trim() || !sellerPhone.trim() || !sellerDemand.trim()) {
+      toast.error("Please enter your Name, Phone Number, and Demand.");
+      return;
+    }
+    toast.success("Property submitted! AYTO Properties team will verify and contact you shortly.");
+    setSellerName("");
+    setSellerPhone("");
+    setSellerDemand("");
+    setPostModalOpen(false);
+  };
+
   const openWhatsAppChat = () => {
     const phone = "923314972426";
     const msg = encodeURIComponent(
@@ -409,7 +469,26 @@ export function Index() {
     window.open(`https://wa.me/${phone}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
-  const list = showSaved ? properties.filter((p) => saved.includes(p.id)) : properties;
+  // Filtered Properties for Smart Search Bar
+  const baseList = showSaved ? properties.filter((p) => saved.includes(p.id)) : properties;
+  const list = baseList.filter((p) => {
+    const matchesSearch =
+      !searchQuery.trim() ||
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.city.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType =
+      typeFilter === "All" ||
+      String((p as { type?: string; category?: string }).type || (p as { category?: string }).category || p.title)
+        .toLowerCase()
+        .includes(typeFilter.toLowerCase());
+    return matchesSearch && matchesType;
+  });
+
+  // Construction Cost Estimator Calculation (Lahore Market Rates)
+  const coveredAreaSqFt = plotMarla === 5 ? 1950 : plotMarla === 10 ? 3600 : 6200;
+  const ratePerSqFt = buildQuality === "grey" ? 2750 : 5400;
+  const estimatedCrore = ((coveredAreaSqFt * ratePerSqFt) / 10000000).toFixed(2);
 
   const inquire = (p: Property) => {
     setOpen(null);
@@ -489,6 +568,41 @@ export function Index() {
             navigatePage("home", "listings");
           }}
         />
+
+        {/* Floating Projects Dropdown Menu (Opens when clicking "Projects ▾" in Navbar) */}
+        {projectsMenuOpen && (
+          <div
+            data-projects-dropdown
+            className="fixed left-1/2 top-[72px] z-50 w-[310px] -translate-x-1/2 rounded-2xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl"
+          >
+            <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#f4d06f]">
+              AYTO Signature Projects
+            </div>
+            {projectsList.map((proj) => (
+              <button
+                key={proj.id}
+                type="button"
+                onClick={() => navigatePage("projects", proj.id)}
+                className="flex w-full items-start justify-between gap-2 rounded-xl px-3 py-2.5 text-left transition hover:bg-[#f4c414]/15"
+              >
+                <div>
+                  <p className="text-xs font-bold text-white">{proj.title}</p>
+                  <p className="text-[11px] text-slate-400">{proj.status}</p>
+                </div>
+                <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#f4c414]" />
+              </button>
+            ))}
+            <div className="mt-1 border-t border-sky-300/15 pt-1">
+              <button
+                type="button"
+                onClick={() => navigatePage("projects")}
+                className="w-full rounded-xl bg-[#f4c414] py-2 text-center text-xs font-extrabold text-[#070b14] transition hover:brightness-105"
+              >
+                View All Projects
+              </button>
+            </div>
+          </div>
+        )}
 
         {activePage === "query-form" ? (
           <main key="query-form" className="ayto-page-enter pt-20">
@@ -768,8 +882,9 @@ export function Index() {
               <div className="grid gap-10 md:grid-cols-2">
                 {projectsList.map((proj) => (
                   <div
+                    id={proj.id}
                     key={proj.title}
-                    className="group overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
+                    className="group scroll-mt-28 overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
                   >
                     <div className="relative aspect-[16/10] w-full overflow-hidden">
                       <img
@@ -838,7 +953,84 @@ export function Index() {
               </div>
             </section>
 
-            <div className="mx-auto max-w-6xl px-5 py-20 md:px-8">
+            <div className="mx-auto max-w-6xl px-5 py-16 md:px-8">
+              {/* Improvement 5: Turnkey House Construction Cost Estimator */}
+              <div className="mb-16 rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 p-7 shadow-2xl backdrop-blur-md sm:p-9">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f]">
+                      <Calculator className="h-3.5 w-3.5" /> Instant Lahore Cost Estimator
+                    </span>
+                    <h2 className="mt-2 font-sans text-2xl font-extrabold text-white sm:text-3xl">
+                      Turnkey House Construction Calculator
+                    </h2>
+                  </div>
+
+                  <div className="rounded-2xl border border-[#f4c414]/40 bg-[#080f1d] px-6 py-4 text-right">
+                    <p className="text-[11px] uppercase tracking-wider text-slate-400">
+                      Estimated Construction Cost ({coveredAreaSqFt.toLocaleString()} sq.ft)
+                    </p>
+                    <p className="mt-0.5 font-sans text-2xl font-extrabold text-[#f4c414] sm:text-3xl">
+                      PKR {estimatedCrore} Crore
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-7 grid gap-6 md:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                      1. Select Plot Size
+                    </p>
+                    <div className="mt-3 grid grid-cols-3 gap-3">
+                      {([5, 10, 20] as const).map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setPlotMarla(m)}
+                          className={`rounded-xl py-3 text-xs font-extrabold transition ${
+                            plotMarla === m
+                              ? "bg-[#f4c414] text-[#070b14] shadow-lg"
+                              : "border border-sky-300/20 bg-[#080f1d] text-white/85 hover:border-[#f4c414]"
+                          }`}
+                        >
+                          {m === 20 ? "1 Kanal" : `${m} Marla`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                      2. Construction Package
+                    </p>
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setBuildQuality("grey")}
+                        className={`rounded-xl py-3 text-xs font-extrabold transition ${
+                          buildQuality === "grey"
+                            ? "bg-[#f4c414] text-[#070b14] shadow-lg"
+                            : "border border-sky-300/20 bg-[#080f1d] text-white/85 hover:border-[#f4c414]"
+                        }`}
+                      >
+                        A+ Grey Structure
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBuildQuality("luxury")}
+                        className={`rounded-xl py-3 text-xs font-extrabold transition ${
+                          buildQuality === "luxury"
+                            ? "bg-[#f4c414] text-[#070b14] shadow-lg"
+                            : "border border-sky-300/20 bg-[#080f1d] text-white/85 hover:border-[#f4c414]"
+                        }`}
+                      >
+                        Luxury Turnkey Finish
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {servicesList.map((srv) => {
                   const Icon = srv.icon;
@@ -985,7 +1177,6 @@ export function Index() {
         ) : activePage === "contact-us" ? (
           <main key="contact-us" className="ayto-page-enter relative isolate overflow-hidden pt-32 text-white">
             <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
-              {/* Top Heading with Accent Line (Matching Reference Layout) */}
               <div className="text-center">
                 <div className="mx-auto mb-3 h-[2px] w-10 rounded-full bg-[#f4c414]" />
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300">
@@ -996,7 +1187,6 @@ export function Index() {
                 </h1>
               </div>
 
-              {/* 3 Equal-Height Signature Gold Contact Cards */}
               <div className="mt-14 grid gap-6 md:grid-cols-3">
                 <div className="flex min-h-[156px] items-center gap-5 rounded-2xl bg-[#f4c414] px-7 py-7 text-[#070b14] shadow-[0_18px_45px_-12px_rgba(244,196,20,0.45)] transition duration-300 hover:-translate-y-1.5">
                   <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14] bg-[#070b14]/5">
@@ -1041,7 +1231,6 @@ export function Index() {
                 </a>
               </div>
 
-              {/* Schedule a Visit Form + Live Interactive Lahore Location Map */}
               <div className="mt-16 grid items-stretch gap-8 lg:grid-cols-[1.15fr_0.85fr]">
                 <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 p-7 shadow-2xl backdrop-blur-md sm:p-9">
                   <h2 className="font-sans text-3xl font-extrabold text-white sm:text-4xl">
@@ -1110,7 +1299,6 @@ export function Index() {
                   </form>
                 </div>
 
-                {/* Right Card: Embedded Map + Head Office Timings */}
                 <div className="flex flex-col justify-between overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md">
                   <div className="h-[250px] w-full bg-[#09101f]">
                     <iframe
@@ -1175,45 +1363,118 @@ export function Index() {
                   </p>
                 </div>
 
-                <div className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                  {list.slice(0, 8).map((p) => (
-                    <div
-                      key={p.id}
-                      onClick={() => setOpen(p)}
-                      className="group cursor-pointer rounded-2xl border border-sky-300/15 bg-[#0e172a]/80 p-2.5 shadow-lg backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
-                    >
-                      <div className="aspect-square overflow-hidden rounded-xl bg-[#131f36] shadow-lg">
-                        <img
-                          src={p.image}
-                          alt={p.title}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      </div>
+                {/* Improvement 2: Smart Search & Filter Bar */}
+                <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-4 backdrop-blur-md md:flex-row">
+                  <div className="relative w-full md:max-w-xs">
+                    <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search DHA, Bahria, Gulberg..."
+                      className="w-full rounded-full border border-sky-300/20 bg-[#080f1d] py-2 pl-10 pr-4 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                    />
+                  </div>
 
-                      <div className="mt-3.5 flex items-center justify-between gap-2 px-1 pb-1.5">
-                        <div className="min-w-0">
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {["All", "House", "Villa", "Apartment", "Plot", "Commercial"].map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setTypeFilter(cat)}
+                        className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
+                          typeFilter === cat
+                            ? "bg-[#f4c414] text-[#070b14]"
+                            : "border border-sky-300/20 bg-[#080f1d]/80 text-slate-200 hover:border-[#f4c414]"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Improvement 4: Rich Property Cards with Price, Beds & Marla Badges */}
+                <div className="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+                  {list.slice(0, 8).map((p) => {
+                    const beds = (p as { beds?: number }).beds;
+                    const area = (p as { area?: string; size?: string }).area || (p as { size?: string }).size;
+                    return (
+                      <div
+                        key={p.id}
+                        onClick={() => setOpen(p)}
+                        className="group cursor-pointer rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-2.5 shadow-lg backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
+                      >
+                        <div className="relative aspect-square overflow-hidden rounded-xl bg-[#131f36] shadow-lg">
+                          <img
+                            src={p.image}
+                            alt={p.title}
+                            loading="lazy"
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                          <span className="absolute left-2.5 top-2.5 rounded-full bg-[#070b14]/85 px-3 py-1 text-[11px] font-extrabold text-[#f4c414] backdrop-blur-md">
+                            {priceLabel(p)}
+                          </span>
+                        </div>
+
+                        <div className="mt-3 px-1 pb-1.5">
                           <h3 className="truncate text-xs font-bold text-white transition group-hover:text-[#f4d06f] sm:text-sm">
                             {p.location}
                           </h3>
-                          <p className="truncate text-[11px] text-slate-300/70">{p.title}</p>
-                        </div>
+                          <p className="truncate text-[11px] text-slate-300/75">{p.title}</p>
 
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpen(p);
-                          }}
-                          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-sky-200/40 px-3.5 py-1 text-[11px] font-medium text-white transition-all duration-300 group-hover:border-[#f4d06f] group-hover:bg-[#f4d06f] group-hover:text-[#070b14]"
-                        >
-                          Details
-                          <ArrowRight className="h-3 w-3" />
-                        </button>
+                          {(beds || area) && (
+                            <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-300/80">
+                              {beds && (
+                                <span className="inline-flex items-center gap-1">
+                                  <BedDouble className="h-3.5 w-3.5 text-[#f4c414]" /> {beds} Beds
+                                </span>
+                              )}
+                              {area && (
+                                <span className="inline-flex items-center gap-1">
+                                  <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {area}
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="mt-3 flex items-center justify-between border-t border-sky-300/10 pt-2.5">
+                            <span className="text-[11px] font-semibold text-[#f4d06f]">
+                              Verified Listing
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setOpen(p);
+                              }}
+                              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sky-200/40 px-3 py-1 text-[11px] font-medium text-white transition-all duration-300 group-hover:border-[#f4d06f] group-hover:bg-[#f4d06f] group-hover:text-[#070b14]"
+                            >
+                              Details
+                              <ArrowRight className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
+
+                {list.length === 0 && (
+                  <div className="mt-10 rounded-2xl border border-sky-300/15 bg-[#0e172a]/70 py-10 text-center">
+                    <p className="text-sm text-slate-300">No properties matched your filter.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setTypeFilter("All");
+                      }}
+                      className="mt-3 rounded-full bg-[#f4c414] px-5 py-2 text-xs font-bold text-[#070b14]"
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                )}
               </div>
             </section>
 
@@ -1226,7 +1487,7 @@ export function Index() {
           onOpenQuery={() => navigatePage("query-form")}
         />
 
-        {/* Colored Brand Social Icons Bar (Facebook, Instagram, Twitter, WhatsApp) */}
+        {/* Colored Brand Social Icons Bar (Facebook, Proper Instagram Camera Icon, X, WhatsApp) */}
         <div className="border-t border-sky-300/10 bg-[#050912]/90 py-5 backdrop-blur-md">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 md:px-8">
             <p className="text-xs text-slate-300/70">
@@ -1258,7 +1519,9 @@ export function Index() {
                 }}
                 className="grid h-10 w-10 place-items-center rounded-full text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
-                <Sparkles className="h-4 w-4" />
+                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
               </a>
 
               <a
@@ -1285,6 +1548,89 @@ export function Index() {
           </div>
         </div>
       </div>
+
+      {/* Improvement 3: Post Property Seller Modal */}
+      {postModalOpen && (
+        <div
+          onClick={() => setPostModalOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md rounded-3xl border border-[#f4c414]/40 bg-[#0b1322] p-7 text-white shadow-2xl"
+          >
+            <button
+              type="button"
+              onClick={() => setPostModalOpen(false)}
+              aria-label="Close Post Property Modal"
+              className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white hover:bg-[#f4c414] hover:text-[#070b14]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3 py-1 text-[11px] font-bold text-[#f4d06f]">
+              <PlusCircle className="h-3.5 w-3.5" /> List With AYTO Properties
+            </span>
+            <h2 className="mt-2 font-sans text-2xl font-extrabold text-white">
+              Post Your Property
+            </h2>
+            <p className="mt-1 text-xs text-slate-300/75">
+              Submit your plot, house, or commercial file for direct verified buyers in Lahore.
+            </p>
+
+            <form onSubmit={handleSellerSubmit} className="mt-5 space-y-4">
+              <input
+                type="text"
+                required
+                placeholder="Owner Full Name*"
+                value={sellerName}
+                onChange={(e) => setSellerName(e.target.value)}
+                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+              />
+              <input
+                type="tel"
+                required
+                placeholder="WhatsApp / Phone Number*"
+                value={sellerPhone}
+                onChange={(e) => setSellerPhone(e.target.value)}
+                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+              />
+              <input
+                type="text"
+                required
+                placeholder="Society / Phase (e.g., DHA Phase 6, Lahore)"
+                value={sellerLocation}
+                onChange={(e) => setSellerLocation(e.target.value)}
+                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  placeholder="Size & Type (e.g., 10 Marla Plot)"
+                  value={sellerSize}
+                  onChange={(e) => setSellerSize(e.target.value)}
+                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                />
+                <input
+                  type="text"
+                  required
+                  placeholder="Demand (e.g., 4.2 Crore)*"
+                  value={sellerDemand}
+                  onChange={(e) => setSellerDemand(e.target.value)}
+                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+              >
+                Submit Property For Listing
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Standard Round WhatsApp Logo Icon (Bottom-Right) */}
       <button
