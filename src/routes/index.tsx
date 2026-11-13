@@ -3,8 +3,13 @@ import { useEffect, useState } from "react";
 import {
   ArrowRight,
   BadgeDollarSign,
+  Building,
   Building2,
+  CheckCircle2,
   Clock,
+  Compass,
+  FileCheck2,
+  Hammer,
   Home,
   Lightbulb,
   Mail,
@@ -12,7 +17,9 @@ import {
   MessageSquare,
   Phone,
   ShieldCheck,
+  Sparkles,
   User,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { properties, type Property } from "@/data/properties";
@@ -41,7 +48,14 @@ export const Route = createFileRoute("/")({
 });
 
 const FAV_KEY = "ayto-fav";
-type ActivePage = "home" | "about-us" | "our-offices" | "contact-us";
+type ActivePage =
+  | "home"
+  | "about-us"
+  | "our-offices"
+  | "projects"
+  | "services"
+  | "gallery"
+  | "contact-us";
 
 const partnerLogos = [
   "DHA LAHORE",
@@ -50,6 +64,135 @@ const partnerLogos = [
   "LAHORE SMART CITY",
   "ETIHAD TOWN",
   "LDA APPROVED",
+];
+
+const servicesList = [
+  {
+    icon: Home,
+    title: "Residential & Commercial Sales",
+    desc: "Verified houses, luxury villas, commercial plazas, and prime plots in DHA Lahore, Bahria Town, and LDA-approved societies with transparent pricing.",
+    points: ["100% Verified Files & Plots", "Direct Owner Deals", "Fast Transfer Assistance"],
+  },
+  {
+    icon: Hammer,
+    title: "Turnkey House Construction",
+    desc: "End-to-end grey structure and luxury finishing construction in Lahore with A+ grade materials, dedicated site engineers, and on-time handover.",
+    points: ["5 Marla, 10 Marla & 1 Kanal Villas", "Fixed-Cost Transparent BOQs", "Modern Elevation & Interiors"],
+  },
+  {
+    icon: Building,
+    title: "High-Rise & Vertical Consultancy",
+    desc: "Strategic investment advisory for commercial towers, luxury apartments, and mixed-use vertical developments offering high rental yields.",
+    points: ["LDA & NOC Approved Projects", "Installment & ROI Planning", "Developer Due Diligence"],
+  },
+  {
+    icon: Compass,
+    title: "Architectural & Interior Design",
+    desc: "Contemporary architectural layouts, 3D elevation renders, smart lighting, and bespoke interior styling tailored to modern family living.",
+    points: ["3D Walkthroughs & Floor Plans", "Luxury Kitchens & Wardrobes", "Landscape & Lighting Design"],
+  },
+  {
+    icon: BadgeDollarSign,
+    title: "Investment & Portfolio Advisory",
+    desc: "Data-backed market insights for local and overseas Pakistanis looking to build secure, high-appreciation real estate portfolios in Lahore.",
+    points: ["Overseas Client Desk", "Market Trend Reports", "Safe Capital Growth"],
+  },
+  {
+    icon: FileCheck2,
+    title: "Property Management & Valuation",
+    desc: "Complete rental management, tenant screening, legal documentation, and accurate market valuation to maximize your asset's worth.",
+    points: ["Corporate & Family Rentals", "Documentation & Registry", "Upkeep & Maintenance"],
+  },
+];
+
+const projectsList = [
+  {
+    tag: "FLAGSHIP PROJECT",
+    title: "AYTO Residency, DHA Phase 6",
+    location: "DHA Phase 6, Lahore • 10 Marla • 5 Bedrooms",
+    status: "Ready / Booking Open",
+    image:
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    desc: "Contemporary designer residence featuring glass-railing balconies, double car garage, lit entrance staircase, landscaped lawn, and imported fittings.",
+  },
+  {
+    tag: "COMMERCIAL TOWER",
+    title: "AYTO Heights Commercial Plaza",
+    location: "Main Boulevard, DHA Phase 12 (EME Sector), Lahore",
+    status: "Under Construction",
+    image:
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+    desc: "Modern G+6 commercial & corporate complex with high-speed elevators, basement parking, retail showrooms, and executive office floors.",
+  },
+  {
+    tag: "LUXURY VILLAS",
+    title: "AYTO Signature Villas – DHA Phase 8",
+    location: "Broadway Commercial Vicinity, DHA Phase 8, Lahore",
+    status: "Limited Units Left",
+    image:
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80",
+    desc: "1 Kanal ultra-luxury smart villas with double-height lobby, Spanish tiles, automated security, and designer master suites.",
+  },
+  {
+    tag: "RESIDENTIAL COMMUNITY",
+    title: "AYTO Smart Homes – Bahria Town",
+    location: "Sector C, Bahria Town Lahore",
+    status: "Delivered & Active",
+    image:
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    desc: "Thoughtfully planned 5 & 10 Marla family homes combining energy-efficient architecture with peaceful gated community living.",
+  },
+];
+
+const galleryItems = [
+  {
+    title: "Modern Villa Exterior – DHA Phase 6",
+    category: "Luxury Villas",
+    image:
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "Double-Height Designer Living Lounge",
+    category: "Interiors",
+    image:
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "AYTO Corporate Commercial Tower",
+    category: "Commercial & High-Rise",
+    image:
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "1 Kanal Contemporary Elevation – DHA Phase 8",
+    category: "Luxury Villas",
+    image:
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "Executive Master Bedroom Suite",
+    category: "Interiors",
+    image:
+      "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "Bespoke Modular Kitchen & Dining",
+    category: "Interiors",
+    image:
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "Glass Facade Corporate Plaza",
+    category: "Commercial & High-Rise",
+    image:
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    title: "Evening Architectural Lighting & Lawn",
+    category: "Luxury Villas",
+    image:
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80",
+  },
 ];
 
 // Automatically picks up Ma'am's photo from src/assets/
@@ -70,6 +213,10 @@ export function Index() {
   const [activePage, setActivePage] = useState<ActivePage>("home");
   const [imgSrc, setImgSrc] = useState(LOCAL_DIRECTOR_IMG || fallbackAvatar);
 
+  // Gallery filter & lightbox state
+  const [galleryFilter, setGalleryFilter] = useState("All");
+  const [lightboxImg, setLightboxImg] = useState<{ title: string; image: string } | null>(null);
+
   // Contact Us form state
   const [formName, setFormName] = useState("");
   const [formEmail, setFormEmail] = useState("");
@@ -86,6 +233,9 @@ export function Index() {
       const s = window.location.search;
       if (s.includes("page=about-us")) setActivePage("about-us");
       else if (s.includes("page=our-offices")) setActivePage("our-offices");
+      else if (s.includes("page=projects")) setActivePage("projects");
+      else if (s.includes("page=services")) setActivePage("services");
+      else if (s.includes("page=gallery")) setActivePage("gallery");
       else if (s.includes("page=contact-us") || s.includes("page=query-form"))
         setActivePage("contact-us");
       else setActivePage("home");
@@ -101,14 +251,7 @@ export function Index() {
     }
     setActivePage(page);
     try {
-      const nextUrl =
-        page === "about-us"
-          ? "?page=about-us"
-          : page === "our-offices"
-            ? "?page=our-offices"
-            : page === "contact-us"
-              ? "?page=contact-us"
-              : window.location.pathname;
+      const nextUrl = page === "home" ? window.location.pathname : `?page=${page}`;
       window.history.pushState({}, "", nextUrl);
     } catch {
       /* ignore */
@@ -125,7 +268,9 @@ export function Index() {
       const target = e.target as HTMLElement | null;
       const btn = target?.closest("button, a");
       if (!btn) return;
-      const label = (btn.textContent || "").trim().toLowerCase();
+      const raw = (btn.textContent || "").trim().toLowerCase();
+      // Normalize dropdown arrow characters if present
+      const label = raw.replace(/[^\w\s]/g, "").trim();
 
       if (label === "about us" || label.includes("more about ayto")) {
         e.preventDefault();
@@ -138,6 +283,27 @@ export function Index() {
         e.preventDefault();
         e.stopPropagation();
         navigatePage("our-offices");
+        return;
+      }
+
+      if (label === "projects" || label === "view project") {
+        e.preventDefault();
+        e.stopPropagation();
+        navigatePage("projects");
+        return;
+      }
+
+      if (label === "services") {
+        e.preventDefault();
+        e.stopPropagation();
+        navigatePage("services");
+        return;
+      }
+
+      if (label === "gallery") {
+        e.preventDefault();
+        e.stopPropagation();
+        navigatePage("gallery");
         return;
       }
 
@@ -159,21 +325,10 @@ export function Index() {
         return;
       }
 
-      if (
-        label === "projects" ||
-        label === "services" ||
-        label === "gallery" ||
-        label === "properties"
-      ) {
+      if (label === "properties") {
         e.preventDefault();
         e.stopPropagation();
-        const map: Record<string, string> = {
-          projects: "spotlight",
-          services: "about",
-          gallery: "listings",
-          properties: "listings",
-        };
-        navigatePage("home", map[label] || "top");
+        navigatePage("home", "listings");
       }
     };
     document.addEventListener("click", onDocClick, true);
@@ -205,10 +360,13 @@ export function Index() {
   };
 
   const featured = properties[0]!;
+  const filteredGallery =
+    galleryFilter === "All"
+      ? galleryItems
+      : galleryItems.filter((item) => item.category === galleryFilter);
 
   return (
     <div id="top" className="min-h-screen bg-[#141414] text-white">
-      {/* Hide old monochrome footer social icons so our colored FB, Insta, Twitter & WhatsApp bar replaces them */}
       <style>{`
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
@@ -228,7 +386,7 @@ export function Index() {
       />
 
       {activePage === "about-us" ? (
-        /* ABOUT US PAGE ONLY */
+        /* 1. ABOUT US PAGE ONLY */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
@@ -251,7 +409,7 @@ export function Index() {
                   Director Message
                 </h1>
                 <p className="mt-5 text-xs leading-[1.95] text-white/80 sm:text-sm">
-                  At AYTO Properties & Builders, our vision is simple: to offer transparent
+                  At AYTO Properties &amp; Builders, our vision is simple: to offer transparent
                   guidance, innovative solutions, and real estate opportunities that create lasting
                   value. With a strong presence in DHA Lahore (including our head office at E65 DHA
                   Phase 12, Multan Road), private housing societies, and high-rise developments, we
@@ -283,10 +441,10 @@ export function Index() {
 
             <section className="mt-24 text-center">
               <h2 className="font-sans text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">
-                VISION & MISSION
+                VISION &amp; MISSION
               </h2>
               <p className="mx-auto mt-4 max-w-3xl text-xs leading-[1.9] text-white/80 sm:text-sm">
-                AYTO Properties & Builders aims to create sustainable, high-quality living and
+                AYTO Properties &amp; Builders aims to create sustainable, high-quality living and
                 business spaces that improve how people live and work. With a focus on
                 transparency, reliability, and customer satisfaction, the company delivers projects on
                 time and to the highest standards. Guided by innovation and excellence, AYTO
@@ -306,14 +464,14 @@ export function Index() {
                     provide transparent, reliable, and market-driven property services in DHA,
                     private societies, and premium communities.{" "}
                     <strong className="text-white">
-                      Expertise in High-Rise & Vertical Projects:
+                      Expertise in High-Rise &amp; Vertical Projects:
                     </strong>{" "}
                     Our team offers specialized consultancy for apartment investments, commercial
                     towers, and modern vertical developments.{" "}
                     <strong className="text-white">Accurate Market Insights:</strong> We guide
                     clients with updated data, genuine market trends, and expert advice to help
                     them make profitable decisions.{" "}
-                    <strong className="text-white">Safe & Hassle-Free Transactions:</strong> From
+                    <strong className="text-white">Safe &amp; Hassle-Free Transactions:</strong> From
                     documentation to transfer, we manage everything professionally to ensure secure
                     and smooth deal closing.{" "}
                     <strong className="text-white">Personalized Client Support:</strong> We focus on
@@ -330,7 +488,7 @@ export function Index() {
                     Smart Real Estate Solutions
                   </p>
                   <p className="mt-1.5 text-xs text-white/65">
-                    Transparent deals, verified files & strategic growth in Lahore
+                    Transparent deals, verified files &amp; strategic growth in Lahore
                   </p>
                 </div>
               </div>
@@ -394,7 +552,7 @@ export function Index() {
           </div>
         </main>
       ) : activePage === "our-offices" ? (
-        /* OUR OFFICES PAGE ONLY */
+        /* 2. OUR OFFICES PAGE ONLY */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
@@ -531,8 +689,296 @@ export function Index() {
             </section>
           </div>
         </main>
+      ) : activePage === "projects" ? (
+        /* 3. PROJECTS PAGE ONLY */
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          {/* Full-Width Projects Hero Banner */}
+          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <img
+              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80"
+              alt="AYTO Properties Signature Projects"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/60" />
+            <div className="relative z-10 px-4 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+                Developments &amp; Developments
+              </p>
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+                Our Signature &amp; Ongoing Projects
+              </h1>
+            </div>
+          </section>
+
+          <div className="mx-auto max-w-6xl px-5 py-20 md:px-8">
+            <div className="grid gap-10 md:grid-cols-2">
+              {projectsList.map((proj) => (
+                <div
+                  key={proj.title}
+                  className="group overflow-hidden rounded-3xl border border-white/15 bg-[#191919] shadow-2xl transition hover:border-[#f4d06f]/50"
+                >
+                  <div className="relative aspect-[16/10] w-full overflow-hidden">
+                    <img
+                      src={proj.image}
+                      alt={proj.title}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <span className="absolute left-4 top-4 rounded-full bg-[#141414]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f] backdrop-blur-sm">
+                      {proj.tag}
+                    </span>
+                    <span className="absolute bottom-4 right-4 rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#141414]">
+                      {proj.status}
+                    </span>
+                  </div>
+
+                  <div className="p-6 sm:p-8">
+                    <h2 className="font-sans text-xl font-bold text-white sm:text-2xl">
+                      {proj.title}
+                    </h2>
+                    <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-[#f4d06f]">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      <span>{proj.location}</span>
+                    </p>
+                    <p className="mt-4 text-xs leading-relaxed text-white/75 sm:text-sm">
+                      {proj.desc}
+                    </p>
+
+                    <div className="mt-6 flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          navigatePage(
+                            "contact-us",
+                            undefined,
+                            `Hello AYTO Properties, I would like to book a site visit and get payment plan details for "${proj.title}".`,
+                          )
+                        }
+                        className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-bold text-[#141414] transition hover:brightness-105"
+                      >
+                        Request Project Details
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+      ) : activePage === "services" ? (
+        /* 4. SERVICES PAGE ONLY */
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          {/* Full-Width Services Hero Banner */}
+          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <img
+              src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1800&q=80"
+              alt="AYTO Properties Real Estate & Construction Services"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/60" />
+            <div className="relative z-10 px-4 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+                What We Offer
+              </p>
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+                Our Real Estate &amp; Construction Services
+              </h1>
+            </div>
+          </section>
+
+          <div className="mx-auto max-w-6xl px-5 py-20 md:px-8">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {servicesList.map((srv) => {
+                const Icon = srv.icon;
+                return (
+                  <div
+                    key={srv.title}
+                    className="flex flex-col justify-between rounded-3xl border border-white/15 bg-[#191919] p-7 shadow-xl transition hover:border-[#f4d06f]/50"
+                  >
+                    <div>
+                      <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[#f4d06f]/40 bg-[#f4d06f]/10">
+                        <Icon className="h-7 w-7 text-[#f4d06f]" />
+                      </div>
+                      <h2 className="mt-5 font-sans text-lg font-bold text-white sm:text-xl">
+                        {srv.title}
+                      </h2>
+                      <p className="mt-3 text-xs leading-relaxed text-white/75 sm:text-sm">
+                        {srv.desc}
+                      </p>
+
+                      <ul className="mt-5 space-y-2 border-t border-white/10 pt-4">
+                        {srv.points.map((pt) => (
+                          <li key={pt} className="flex items-center gap-2 text-xs text-white/85">
+                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#f4d06f]" />
+                            <span>{pt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigatePage(
+                          "contact-us",
+                          undefined,
+                          `Hello AYTO Properties, I need consultation regarding "${srv.title}".`,
+                        )
+                      }
+                      className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#f4c414] bg-transparent px-5 py-2.5 text-xs font-bold text-[#f4c414] transition hover:bg-[#f4c414] hover:text-[#141414]"
+                    >
+                      Inquire Now
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </main>
+      ) : activePage === "gallery" ? (
+        /* 5. GALLERY PAGE ONLY */
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          {/* Full-Width Gallery Hero Banner */}
+          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <img
+              src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=80"
+              alt="AYTO Properties Architecture & Interior Gallery"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/60" />
+            <div className="relative z-10 px-4 text-center">
+              <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+                <Sparkles className="h-3.5 w-3.5" /> Visual Portfolio
+              </p>
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+                Project &amp; Interior Gallery
+              </h1>
+            </div>
+          </section>
+
+          <div className="mx-auto max-w-6xl px-5 py-16 md:px-8">
+            {/* Category Filter Tabs */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {["All", "Luxury Villas", "Interiors", "Commercial & High-Rise"].map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setGalleryFilter(cat)}
+                  className={`rounded-full px-5 py-2 text-xs font-bold transition ${
+                    galleryFilter === cat
+                      ? "bg-[#f4c414] text-[#141414]"
+                      : "border border-white/20 bg-white/[0.03] text-white/80 hover:border-[#f4c414]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Gallery Grid */}
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {filteredGallery.map((item) => (
+                <div
+                  key={item.title}
+                  onClick={() => setLightboxImg(item)}
+                  className="group cursor-pointer overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-xl"
+                >
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#f4d06f]">
+                      {item.category}
+                    </span>
+                    <h2 className="mt-1 text-xs font-bold text-white sm:text-sm">
+                      {item.title}
+                    </h2>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Fullscreen Image Lightbox */}
+          {lightboxImg && (
+            <div
+              onClick={() => setLightboxImg(null)}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl border border-white/20 bg-[#141414]"
+              >
+                <button
+                  type="button"
+                  onClick={() => setLightboxImg(null)}
+                  aria-label="Close preview"
+                  className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/75 text-white hover:bg-[#f4c414] hover:text-[#141414]"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+                <img
+                  src={lightboxImg.image}
+                  alt={lightboxImg.title}
+                  className="max-h-[78vh] w-full object-contain"
+                />
+                <div className="px-5 py-3 text-center text-sm font-bold text-white">
+                  {lightboxImg.title}
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
       ) : activePage === "contact-us" ? (
-        /* CONTACT US PAGE ONLY */
+        /* 6. CONTACT US PAGE ONLY */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
@@ -679,12 +1125,12 @@ export function Index() {
           </div>
         </main>
       ) : (
-        /* MAIN HOME PAGE */
+        /* 7. MAIN HOME PAGE ONLY */
         <main>
           <Hero />
 
           <Spotlight
-            onView={() => setOpen(featured)}
+            onView={() => navigatePage("projects")}
             onInquire={() => inquire(featured)}
           />
 
@@ -713,7 +1159,7 @@ export function Index() {
                 </h2>
                 <p className="mt-3 text-xs leading-relaxed text-white/70 sm:text-sm">
                   Discover the most recommended properties handpicked for their quality, value, and
-                  location. From luxury villas to prime residential & commercial plots across Lahore,
+                  location. From luxury villas to prime residential &amp; commercial plots across Lahore,
                   each listing is verified to ensure smart returns and long-term comfort.
                 </p>
               </div>
@@ -769,15 +1215,15 @@ export function Index() {
         onOpenQuery={() => navigatePage("contact-us")}
       />
 
-      {/* Colored Brand Social Icons Bar (Facebook, Instagram, Twitter/X, WhatsApp) */}
+      {/* Colored Brand Social Icons Bar (Facebook, Instagram, Twitter, WhatsApp) */}
       <div className="border-t border-white/10 bg-[#0d0d0d] py-5">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 md:px-8">
           <p className="text-xs text-white/60">
-            Connect with <span className="font-semibold text-white">AYTO Properties &amp; Builders</span>
+            Connect with{" "}
+            <span className="font-semibold text-white">AYTO Properties &amp; Builders</span>
           </p>
 
           <div className="flex items-center gap-3.5">
-            {/* Facebook - Official Blue (#1877F2) */}
             <a
               href="https://www.facebook.com"
               target="_blank"
@@ -791,7 +1237,6 @@ export function Index() {
               </svg>
             </a>
 
-            {/* Instagram - Official Gradient */}
             <a
               href="https://www.instagram.com"
               target="_blank"
@@ -809,7 +1254,6 @@ export function Index() {
               </svg>
             </a>
 
-            {/* Twitter - Official Sky Blue (#1DA1F2) */}
             <a
               href="https://twitter.com"
               target="_blank"
@@ -823,7 +1267,6 @@ export function Index() {
               </svg>
             </a>
 
-            {/* WhatsApp - Official Green (#25D366) */}
             <a
               href="https://wa.me/923314972426"
               target="_blank"
