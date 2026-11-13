@@ -38,11 +38,11 @@ import fallbackAvatar from "@/assets/ayto-logo.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AYTO Properties – Luxury Real Estate & Builders in Lahore" },
+      { title: "AYTO Properties - Luxury Real Estate & Builders in Lahore" },
       {
         name: "description",
         content:
-          "Verified luxury houses, apartments, plots, commercial spaces and turnkey construction in Lahore. Clear prices and honest advice from AYTO Properties.",
+          "Verified luxury houses, apartments, plots, commercial spaces and turnkey construction in Lahore.",
       },
     ],
   }),
@@ -59,13 +59,6 @@ type ActivePage =
   | "gallery"
   | "contact-us"
   | "query-form";
-
-const DIRECTOR_PHOTOS = [
-  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpg",
-  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpg.jpeg",
-  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpeg",
-  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.png",
-];
 
 const partnerLogos = [
   "DHA LAHORE",
@@ -136,7 +129,7 @@ const projectsList = [
   },
   {
     tag: "LUXURY VILLAS",
-    title: "AYTO Signature Villas – DHA Phase 8",
+    title: "AYTO Signature Villas - DHA Phase 8",
     location: "Broadway Commercial Vicinity, DHA Phase 8, Lahore",
     status: "Limited Units Left",
     image:
@@ -145,7 +138,7 @@ const projectsList = [
   },
   {
     tag: "RESIDENTIAL COMMUNITY",
-    title: "AYTO Smart Homes – Bahria Town",
+    title: "AYTO Smart Homes - Bahria Town",
     location: "Sector C, Bahria Town Lahore",
     status: "Delivered & Active",
     image:
@@ -156,7 +149,7 @@ const projectsList = [
 
 const galleryItems = [
   {
-    title: "Modern Villa Exterior – DHA Phase 6",
+    title: "Modern Villa Exterior - DHA Phase 6",
     category: "Luxury Villas",
     image:
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80",
@@ -174,7 +167,7 @@ const galleryItems = [
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
   },
   {
-    title: "1 Kanal Contemporary Elevation – DHA Phase 8",
+    title: "1 Kanal Contemporary Elevation - DHA Phase 8",
     category: "Luxury Villas",
     image:
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=80",
@@ -210,7 +203,6 @@ export function Index() {
   const [showSaved, setShowSaved] = useState(false);
   const [open, setOpen] = useState<Property | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>("home");
-  const [photoIdx, setPhotoIdx] = useState(0);
   const [prefill, setPrefill] = useState({ text: "", nonce: 0 });
 
   const [galleryFilter, setGalleryFilter] = useState("All");
@@ -220,9 +212,6 @@ export function Index() {
   const [formEmail, setFormEmail] = useState("");
   const [formPhone, setFormPhone] = useState("");
   const [formMessage, setFormMessage] = useState("");
-
-  const currentDirectorImg =
-    photoIdx < DIRECTOR_PHOTOS.length ? DIRECTOR_PHOTOS[photoIdx] : fallbackAvatar;
 
   useEffect(() => {
     try {
@@ -406,20 +395,6 @@ export function Index() {
         </main>
       ) : activePage === "about-us" ? (
         <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
           <div className="mx-auto max-w-5xl px-5 pb-20 pt-4 md:px-8">
             <section className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
               <div>
@@ -431,17 +406,15 @@ export function Index() {
                   guidance, innovative solutions, and real estate opportunities that create lasting
                   value. With a strong presence in DHA Lahore (including our head office at E65 DHA
                   Phase 12, Multan Road), private housing societies, and high-rise developments, we
-                  focus on secure investments and modern growth. We continue to enhance our services
-                  through technology, customer care, and market insight. Thank you for trusting us.
-                  Together, we aim to build a better and more progressive future.
+                  focus on secure investments and modern growth. Thank you for trusting us. Together,
+                  we aim to build a better and more progressive future.
                 </p>
               </div>
 
-              <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-white/20 bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)]">
+              <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-white/20 bg-white shadow-2xl">
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1e1e1e]">
                   <img
-                    src={currentDirectorImg}
-                    onError={() => setPhotoIdx((i) => i + 1)}
+                    src={fallbackAvatar}
                     alt="Ayesha Iqbal - Managing Director, AYTO Properties"
                     className="h-full w-full object-cover object-top"
                   />
@@ -465,9 +438,7 @@ export function Index() {
                 AYTO Properties &amp; Builders aims to create sustainable, high-quality living and
                 business spaces that improve how people live and work. With a focus on
                 transparency, reliability, and customer satisfaction, the company delivers projects on
-                time and to the highest standards. Guided by innovation and excellence, AYTO
-                strives to make well-designed, high-value real estate accessible to all, building
-                lasting trust and turning clients&apos; dreams into reality.
+                time and to the highest standards.
               </p>
             </section>
 
@@ -486,20 +457,13 @@ export function Index() {
                     </strong>{" "}
                     Our team offers specialized consultancy for apartment investments, commercial
                     towers, and modern vertical developments.{" "}
-                    <strong className="text-white">Accurate Market Insights:</strong> We guide
-                    clients with updated data, genuine market trends, and expert advice to help
-                    them make profitable decisions.{" "}
                     <strong className="text-white">Safe &amp; Hassle-Free Transactions:</strong> From
-                    documentation to transfer, we manage everything professionally to ensure secure
-                    and smooth deal closing.{" "}
-                    <strong className="text-white">Personalized Client Support:</strong> We focus on
-                    long-term relationships with exceptional guidance, after-sales support, and
-                    client-first service.
+                    documentation to transfer, we manage everything professionally.
                   </p>
                 </div>
 
                 <div className="mx-auto flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-white/15 bg-gradient-to-br from-[#232323] via-[#191919] to-[#121212] p-8 text-center shadow-2xl">
-                  <div className="grid h-20 w-20 place-items-center rounded-full border border-[#f4d06f]/50 bg-[#f4d06f]/15 shadow-[0_0_40px_rgba(244,208,111,0.45)]">
+                  <div className="grid h-20 w-20 place-items-center rounded-full border border-[#f4d06f]/50 bg-[#f4d06f]/15">
                     <Lightbulb className="h-10 w-10 text-[#f4d06f]" />
                   </div>
                   <p className="mt-5 font-sans text-base font-bold text-white">
@@ -520,8 +484,7 @@ export function Index() {
                     Invest Opportunities
                   </h3>
                   <p className="mt-2 text-xs leading-relaxed text-white/70">
-                    Real estate services that simplify buying, selling, and managing
-                    properties—helping you secure assets that grow in value over time.
+                    Real estate services that simplify buying, selling, and managing properties.
                   </p>
                 </div>
 
@@ -533,8 +496,7 @@ export function Index() {
                     Property Management
                   </h3>
                   <p className="mt-2 text-xs leading-relaxed text-white/70">
-                    Expert consulting services designed to elevate real estate performance,
-                    strengthen operations, and drive meaningful results.
+                    Expert consulting services designed to elevate real estate performance.
                   </p>
                 </div>
 
@@ -546,9 +508,7 @@ export function Index() {
                     Property Valuation
                   </h3>
                   <p className="mt-2 text-xs leading-relaxed text-white/70">
-                    AYTO Properties provides complete real estate services to make property
-                    transactions effortless and confident, with a strong emphasis on maximizing your
-                    property&apos;s value.
+                    Complete real estate services focused on maximizing your property&apos;s value.
                   </p>
                 </div>
               </div>
@@ -560,7 +520,7 @@ export function Index() {
               {partnerLogos.map((partner) => (
                 <div
                   key={partner}
-                  className="flex items-center justify-center gap-2 text-center text-xs font-bold tracking-[0.18em] text-white/65 transition-colors hover:text-[#f4d06f]"
+                  className="flex items-center justify-center gap-2 text-center text-xs font-bold tracking-[0.18em] text-white/65"
                 >
                   <Building2 className="h-4 w-4 shrink-0 text-[#f4d06f]" />
                   <span>{partner}</span>
@@ -571,20 +531,6 @@ export function Index() {
         </main>
       ) : activePage === "our-offices" ? (
         <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
           <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
             <img
               src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=80"
@@ -592,136 +538,87 @@ export function Index() {
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-black/55" />
-            <h1 className="relative z-10 px-4 text-center font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+            <h1 className="relative z-10 px-4 text-center font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
               Our Head Office &amp; Branches
             </h1>
           </section>
 
           <div className="mx-auto max-w-5xl px-5 py-20 md:px-8">
-            <section>
-              <h2 className="text-center font-sans text-xl font-bold text-white sm:text-3xl">
-                AYTO Properties &amp; Builders – Head Office
-              </h2>
-
-              <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
-                <div className="space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:pl-8">
-                  <p className="font-semibold text-white">
-                    E65 DHA Phase 12, Multan Road, Lahore, Pakistan
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Phone: +92 331-4972426</span>
-                  </p>
-                  <p className="flex items-center gap-2 font-semibold text-white">
-                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Office Hours:</span>
-                  </p>
-                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
-                </div>
-
-                <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl">
-                  <iframe
-                    title="AYTO Properties Head Office - E65 DHA Phase 12, Multan Road, Lahore"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.1950%2C31.4250%2C74.2450%2C31.4600&layer=mapnik&marker=31.4425%2C74.2200"
-                    className="h-[240px] w-full border-0"
-                    loading="lazy"
-                  />
-                </div>
+            <div className="grid gap-8 md:grid-cols-3">
+              <div className="rounded-3xl border border-white/15 bg-[#191919] p-7 shadow-xl">
+                <span className="rounded-full bg-[#f4c414] px-3 py-1 text-[11px] font-bold text-[#141414]">
+                  HEAD OFFICE
+                </span>
+                <h2 className="mt-4 font-sans text-lg font-bold text-white">
+                  DHA Phase 12 (EME Sector)
+                </h2>
+                <p className="mt-2 text-xs leading-relaxed text-white/80">
+                  E65 DHA Phase 12, Multan Road, Lahore, Pakistan
+                </p>
+                <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
+                  <Phone className="h-3.5 w-3.5" />
+                  <span>+92 331-4972426</span>
+                </p>
+                <p className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                  <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
+                  <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
+                </p>
               </div>
-            </section>
 
-            <section className="mt-24">
-              <h2 className="text-center font-sans text-xl font-bold text-white sm:text-3xl">
-                AYTO Properties &amp; Builders – DHA Phase 6 Branch
-              </h2>
-
-              <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
-                <div className="order-2 overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl md:order-1">
-                  <iframe
-                    title="AYTO Properties DHA Phase 6 Branch"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.4300%2C31.4600%2C74.4750%2C31.4950&layer=mapnik&marker=31.4775%2C74.4525"
-                    className="h-[240px] w-full border-0"
-                    loading="lazy"
-                  />
-                </div>
-
-                <div className="order-1 space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:order-2 md:pl-8">
-                  <p className="font-semibold text-white">
-                    Main Boulevard, DHA Phase 6, Lahore, Pakistan
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Phone: +92 331-4972426</span>
-                  </p>
-                  <p className="flex items-center gap-2 font-semibold text-white">
-                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Office Hours:</span>
-                  </p>
-                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
-                </div>
+              <div className="rounded-3xl border border-white/15 bg-[#191919] p-7 shadow-xl">
+                <span className="rounded-full border border-[#f4c414] px-3 py-1 text-[11px] font-bold text-[#f4c414]">
+                  BRANCH OFFICE
+                </span>
+                <h2 className="mt-4 font-sans text-lg font-bold text-white">
+                  DHA Phase 6 Branch
+                </h2>
+                <p className="mt-2 text-xs leading-relaxed text-white/80">
+                  Main Boulevard, DHA Phase 6, Lahore, Pakistan
+                </p>
+                <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
+                  <Phone className="h-3.5 w-3.5" />
+                  <span>+92 331-4972426</span>
+                </p>
+                <p className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                  <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
+                  <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
+                </p>
               </div>
-            </section>
 
-            <section className="mt-24">
-              <h2 className="text-center font-sans text-xl font-bold text-white sm:text-3xl">
-                AYTO Properties &amp; Builders – Bahria Town Branch
-              </h2>
-
-              <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
-                <div className="space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:pl-8">
-                  <p className="font-semibold text-white">
-                    Sector C Commercial, Bahria Town, Lahore, Pakistan
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Phone: +92 331-4972426</span>
-                  </p>
-                  <p className="flex items-center gap-2 font-semibold text-white">
-                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Office Hours:</span>
-                  </p>
-                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
-                </div>
-
-                <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl">
-                  <iframe
-                    title="AYTO Properties Bahria Town Branch"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.1600%2C31.3550%2C74.2050%2C31.3850&layer=mapnik&marker=31.3700%2C74.1825"
-                    className="h-[240px] w-full border-0"
-                    loading="lazy"
-                  />
-                </div>
+              <div className="rounded-3xl border border-white/15 bg-[#191919] p-7 shadow-xl">
+                <span className="rounded-full border border-[#f4c414] px-3 py-1 text-[11px] font-bold text-[#f4c414]">
+                  BRANCH OFFICE
+                </span>
+                <h2 className="mt-4 font-sans text-lg font-bold text-white">
+                  Bahria Town Branch
+                </h2>
+                <p className="mt-2 text-xs leading-relaxed text-white/80">
+                  Sector C Commercial, Bahria Town, Lahore, Pakistan
+                </p>
+                <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
+                  <Phone className="h-3.5 w-3.5" />
+                  <span>+92 331-4972426</span>
+                </p>
+                <p className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                  <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
+                  <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
+                </p>
               </div>
-            </section>
+            </div>
 
-            <section className="mt-28 text-center">
+            <section className="mt-20 text-center">
               <h2 className="font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                 Let&apos;s Build Your Future Together
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-white/75 sm:text-sm">
                 AYTO Properties &amp; Builders is committed to delivering trusted real estate
-                solutions across Lahore. Visit our nearest office today and start your investment
-                journey with confidence.
+                solutions across Lahore. Visit our nearest office today.
               </p>
             </section>
           </div>
         </main>
       ) : activePage === "projects" ? (
         <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
           <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
             <img
               src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80"
@@ -733,7 +630,7 @@ export function Index() {
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                 Developments &amp; Ventures
               </p>
-              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                 Our Signature &amp; Ongoing Projects
               </h1>
             </div>
@@ -752,7 +649,7 @@ export function Index() {
                       alt={proj.title}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <span className="absolute left-4 top-4 rounded-full bg-[#141414]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f] backdrop-blur-sm">
+                    <span className="absolute left-4 top-4 rounded-full bg-[#141414]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f]">
                       {proj.tag}
                     </span>
                     <span className="absolute bottom-4 right-4 rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#141414]">
@@ -772,14 +669,14 @@ export function Index() {
                       {proj.desc}
                     </p>
 
-                    <div className="mt-6 flex flex-wrap items-center gap-3">
+                    <div className="mt-6">
                       <button
                         type="button"
                         onClick={() =>
                           navigatePage(
                             "contact-us",
                             undefined,
-                            `Hello AYTO Properties, I would like to book a site visit and get payment plan details for "${proj.title}".`,
+                            `Hello AYTO Properties, I would like details for "${proj.title}".`,
                           )
                         }
                         className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-bold text-[#141414] transition hover:brightness-105"
@@ -796,20 +693,6 @@ export function Index() {
         </main>
       ) : activePage === "services" ? (
         <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
           <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
             <img
               src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1800&q=80"
@@ -821,7 +704,7 @@ export function Index() {
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                 What We Offer
               </p>
-              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                 Our Real Estate &amp; Construction Services
               </h1>
             </div>
@@ -879,20 +762,6 @@ export function Index() {
         </main>
       ) : activePage === "gallery" ? (
         <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
           <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
             <img
               src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=80"
@@ -904,7 +773,7 @@ export function Index() {
               <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                 <Sparkles className="h-3.5 w-3.5" /> Visual Portfolio
               </p>
-              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                 Project &amp; Interior Gallery
               </h1>
             </div>
@@ -987,20 +856,6 @@ export function Index() {
         </main>
       ) : activePage === "contact-us" ? (
         <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
           <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
             <div className="text-center">
               <p className="text-xs font-medium tracking-wider text-white/80 sm:text-sm">
@@ -1039,10 +894,7 @@ export function Index() {
                 </div>
               </a>
 
-              <a
-                href="mailto:info2aytoproperties@gmail.com"
-                className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition hover:brightness-105"
-              >
+              <div className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl">
                 <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
                   <Mail className="h-6 w-6 text-[#141414]" />
                 </div>
@@ -1052,7 +904,7 @@ export function Index() {
                     info2aytoproperties@gmail.com
                   </p>
                 </div>
-              </a>
+              </div>
             </div>
 
             <div className="mt-16 grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
@@ -1120,13 +972,31 @@ export function Index() {
                 </form>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-2xl">
-                <iframe
-                  title="AYTO Properties Head Office Map - E65 DHA Phase 12, Multan Road, Lahore"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=74.1950%2C31.4250%2C74.2450%2C31.4600&layer=mapnik&marker=31.4425%2C74.2200"
-                  className="h-[360px] w-full border-0"
-                  loading="lazy"
-                />
+              <div className="flex flex-col justify-between rounded-3xl border border-white/15 bg-[#191919] p-8 shadow-2xl">
+                <div>
+                  <span className="rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#141414]">
+                    LAHORE HEAD OFFICE
+                  </span>
+                  <h3 className="mt-4 font-sans text-2xl font-bold text-white">
+                    E65 DHA Phase 12, Multan Road
+                  </h3>
+                  <p className="mt-3 text-xs leading-relaxed text-white/75 sm:text-sm">
+                    Visit our main sales &amp; consultancy office in DHA Phase 12 (EME Sector),
+                    Multan Road, Lahore for verified residential plots, luxury villas, and
+                    construction consultations.
+                  </p>
+                </div>
+
+                <div className="mt-8 space-y-3 border-t border-white/10 pt-5 text-xs text-white/85">
+                  <p className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-[#f4c414]" />
+                    <span>Monday - Saturday: 10:00 AM - 7:00 PM</span>
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-[#f4c414]" />
+                    <span>Direct Helpline: +92 331-4972426</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -1144,19 +1014,128 @@ export function Index() {
             id="listings"
             className="relative isolate overflow-hidden border-t border-white/10 bg-[#141414] py-20 text-white md:py-28"
           >
-            <div
-              className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-                backgroundSize: "36px 36px",
-              }}
-            />
-
-            <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[520px] overflow-hidden opacity-85">
-              <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-              <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-            </div>
-
             <div className="mx-auto max-w-6xl px-5 md:px-8">
-              <div className="
+              <div className="mx-auto max-w-2xl text-center">
+                <h2 className="font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                  {showSaved ? "Your Saved Properties" : "Discover the Most Recommended Properties"}
+                </h2>
+                <p className="mt-3 text-xs leading-relaxed text-white/70 sm:text-sm">
+                  Discover the most recommended properties handpicked for their quality, value, and
+                  location across Lahore.
+                </p>
+              </div>
+
+              <div className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+                {list.slice(0, 8).map((p) => (
+                  <div
+                    key={p.id}
+                    onClick={() => setOpen(p)}
+                    className="group cursor-pointer"
+                  >
+                    <div className="aspect-square overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-lg">
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    </div>
+
+                    <div className="mt-3.5 flex items-center justify-between gap-2 border-b border-white/15 pb-3">
+                      <div className="min-w-0">
+                        <h3 className="truncate text-xs font-bold text-white transition group-hover:text-[#f4d06f] sm:text-sm">
+                          {p.location}
+                        </h3>
+                        <p className="truncate text-[11px] text-white/55">{p.title}</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpen(p);
+                        }}
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/45 px-3.5 py-1 text-[11px] font-medium text-white transition-all duration-300 group-hover:border-[#f4d06f] group-hover:bg-[#f4d06f] group-hover:text-[#141414]"
+                      >
+                        Details
+                        <ArrowRight className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <Testimonials />
+        </main>
+      )}
+
+      <SiteFooter
+        onType={() => navigatePage("home", "listings")}
+        onOpenQuery={() => navigatePage("query-form")}
+      />
+
+      {/* Colored Brand Social Icons Bar (Facebook, Instagram, Twitter, WhatsApp) */}
+      <div className="border-t border-white/10 bg-[#0d0d0d] py-5">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 md:px-8">
+          <p className="text-xs text-white/60">
+            Connect with{" "}
+            <span className="font-semibold text-white">AYTO Properties &amp; Builders</span>
+          </p>
+
+          <div className="flex items-center gap-3.5">
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              title="Facebook"
+              className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
+            >
+              <span className="font-sans text-lg font-extrabold leading-none">f</span>
+            </a>
+
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              title="Instagram"
+              style={{
+                background:
+                  "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)",
+              }}
+              className="grid h-10 w-10 place-items-center rounded-full text-white shadow-md transition-transform duration-200 hover:scale-110"
+            >
+              <Sparkles className="h-4 w-4" />
+            </a>
+
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter"
+              title="Twitter"
+              className="grid h-10 w-10 place-items-center rounded-full bg-[#1DA1F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
+            >
+              <span className="font-sans text-base font-extrabold leading-none">X</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={() => navigatePage("query-form")}
+              aria-label="WhatsApp"
+              title="WhatsApp (+92 331-4972426)"
+              className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-200 hover:scale-110"
+            >
+              <Phone className="h-4 w-4 fill-current" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <PropertyDialog p={open} onClose={() => setOpen(null)} onInquire={inquire} />
+    </div>
+  );
+}
