@@ -271,6 +271,16 @@ export function Index() {
     return () => window.removeEventListener("popstate", syncFromUrl);
   }, []);
 
+useEffect(() => {
+    if (activePage !== "home") {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      const t = window.setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      }, 40);
+      return () => window.clearTimeout(t);
+    }
+  }, [activePage]);
+
   const navigatePage = (page: ActivePage, sectionId?: string, text = "") => {
     if (text) {
       setPrefill({ text, nonce: Date.now() });
@@ -284,9 +294,9 @@ export function Index() {
       /* ignore */
     }
     if (page === "home" && sectionId && sectionId !== "top") {
-      window.setTimeout(() => scrollToId(sectionId), 80);
+      window.setTimeout(() => scrollToId(sectionId), 100);
     } else {
-      window.scrollTo({ top: 0, behavior: "auto" });
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
   };
 
@@ -300,66 +310,55 @@ export function Index() {
       const raw = (btn.textContent || "").trim().toLowerCase();
       const label = raw.replace(/[^\w\s]/g, "").trim();
 
-      if (label === "about us" || label.includes("more about ayto")) {
+      const stopAndGo = (page: ActivePage, sectionId?: string) => {
         e.preventDefault();
         e.stopPropagation();
-        navigatePage("about-us");
+        e.stopImmediatePropagation();
+        navigatePage(page, sectionId);
+      };
+
+      if (label === "about us" || label.includes("more about ayto")) {
+        stopAndGo("about-us");
         return;
       }
 
       if (label === "our offices") {
-        e.preventDefault();
-        e.stopPropagation();
-        navigatePage("our-offices");
+        stopAndGo("our-offices");
         return;
       }
 
       if (label === "projects" || label === "view project") {
-        e.preventDefault();
-        e.stopPropagation();
-        navigatePage("projects");
+        stopAndGo("projects");
         return;
       }
 
       if (label === "services") {
-        e.preventDefault();
-        e.stopPropagation();
-        navigatePage("services");
+        stopAndGo("services");
         return;
       }
 
       if (label === "gallery") {
-        e.preventDefault();
-        e.stopPropagation();
-        navigatePage("gallery");
+        stopAndGo("gallery");
         return;
       }
 
       if (label.includes("request a visit") || label.includes("get a quote")) {
-        e.preventDefault();
-        e.stopPropagation();
-        navigatePage("query-form");
+        stopAndGo("query-form");
         return;
       }
 
       if (label === "contact us") {
-        e.preventDefault();
-        e.stopPropagation();
-        navigatePage("contact-us");
+        stopAndGo("contact-us");
         return;
       }
 
       if (label === "home" || label.startsWith("ayto properties")) {
-        e.preventDefault();
-        e.stopPropagation();
-        navigatePage("home", "top");
+        stopAndGo("home", "top");
         return;
       }
 
       if (label === "properties") {
-        e.preventDefault();
-        e.stopPropagation();
-        navigatePage("home", "listings");
+        stopAndGo("home", "listings");
       }
     };
     document.addEventListener("click", onDocClick, true);
