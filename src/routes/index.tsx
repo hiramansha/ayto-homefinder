@@ -1,14 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  ArrowLeft,
   ArrowRight,
-  Award,
   BadgeDollarSign,
   Building2,
   Home,
   Lightbulb,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Phone,
   ShieldCheck,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 import { properties, type Property } from "@/data/properties";
@@ -18,7 +21,6 @@ import { Hero } from "@/components/site/Hero";
 import { PropertyDialog } from "@/components/site/PropertyDialog";
 import { Spotlight } from "@/components/site/Spotlight";
 import { Testimonials } from "@/components/site/Testimonials";
-import { Contact } from "@/components/site/Contact";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { scrollToId } from "@/components/site/utils";
 import fallbackAvatar from "@/assets/ayto-logo.jpg";
@@ -38,7 +40,7 @@ export const Route = createFileRoute("/")({
 });
 
 const FAV_KEY = "ayto-fav";
-type ActivePage = "home" | "query" | "contact-us";
+type ActivePage = "home" | "about-us" | "contact-us";
 
 const partnerLogos = [
   "DHA LAHORE",
@@ -49,7 +51,7 @@ const partnerLogos = [
   "LDA APPROVED",
 ];
 
-// Automatically picks up whatever filename you uploaded in src/assets/
+// Automatically picks up Ma'am's photo from src/assets/
 const assetModules = import.meta.glob("../assets/*.{jpg,jpeg,png,webp}", {
   eager: true,
   import: "default",
@@ -65,8 +67,13 @@ export function Index() {
   const [showSaved, setShowSaved] = useState(false);
   const [open, setOpen] = useState<Property | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>("home");
-  const [prefill, setPrefill] = useState({ text: "", nonce: 0 });
   const [imgSrc, setImgSrc] = useState(LOCAL_DIRECTOR_IMG || fallbackAvatar);
+
+  // Contact Us form state
+  const [formName, setFormName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formPhone, setFormPhone] = useState("");
+  const [formMessage, setFormMessage] = useState("");
 
   useEffect(() => {
     try {
@@ -76,8 +83,9 @@ export function Index() {
     }
     const syncFromUrl = () => {
       const s = window.location.search;
-      if (s.includes("page=query-form")) setActivePage("query");
-      else if (s.includes("page=contact-us")) setActivePage("contact-us");
+      if (s.includes("page=about-us")) setActivePage("about-us");
+      else if (s.includes("page=contact-us") || s.includes("page=query-form"))
+        setActivePage("contact-us");
       else setActivePage("home");
     };
     syncFromUrl();
@@ -87,13 +95,13 @@ export function Index() {
 
   const navigatePage = (page: ActivePage, sectionId?: string, text = "") => {
     if (text) {
-      setPrefill({ text, nonce: Date.now() });
+      setFormMessage(text);
     }
     setActivePage(page);
     try {
       const nextUrl =
-        page === "query"
-          ? "?page=query-form"
+        page === "about-us"
+          ? "?page=about-us"
           : page === "contact-us"
             ? "?page=contact-us"
             : window.location.pathname;
@@ -104,7 +112,7 @@ export function Index() {
     if (page === "home" && sectionId && sectionId !== "top") {
       window.setTimeout(() => scrollToId(sectionId), 80);
     } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
   };
 
@@ -115,35 +123,45 @@ export function Index() {
       if (!btn) return;
       const label = (btn.textContent || "").trim().toLowerCase();
 
-      // "Contact Us" -> Opens dedicated Director Message + Vision & Mission + Why Choose Us page
-      if (label === "contact us") {
+      // 1. "About Us" or "More About AYTO" -> Opens ONLY the About Us page (Director Message + Vision & Mission + Why Choose Us)
+      if (label === "about us" || label.includes("more about ayto")) {
+        e.preventDefault();
+        e.stopPropagation();
+        navigatePage("about-us");
+        return;
+      }
+
+      // 2. "Contact Us", "Request A Visit", or "Get a Quote" -> Opens ONLY the Contact Us page
+      if (
+        label === "contact us" ||
+        label.includes("request a visit") ||
+        label.includes("get a quote")
+      ) {
         e.preventDefault();
         e.stopPropagation();
         navigatePage("contact-us");
         return;
       }
 
-      // "Request A Visit" or "Get a Quote" -> Opens Query Form page
-      if (label.includes("request a visit") || label.includes("get a quote")) {
+      // 3. "Home" -> Opens ONLY the Home page
+      if (label === "home") {
         e.preventDefault();
         e.stopPropagation();
-        navigatePage("query");
+        navigatePage("home", "top");
         return;
       }
 
-      // Navigation back to Home sections
+      // Other header links
       if (
-        label === "home" ||
-        label === "about us" ||
         label === "our offices" ||
         label === "projects" ||
         label === "services" ||
         label === "gallery" ||
         label === "properties"
       ) {
+        e.preventDefault();
+        e.stopPropagation();
         const map: Record<string, string> = {
-          home: "top",
-          "about us": "about",
           "our offices": "offices",
           projects: "spotlight",
           services: "about",
@@ -157,12 +175,25 @@ export function Index() {
     return () => document.removeEventListener("click", onDocClick, true);
   }, []);
 
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formName.trim() || !formEmail.trim() || !formMessage.trim()) {
+      toast.error("Please fill in Your Name, Email, and Message.");
+      return;
+    }
+    toast.success("Thank you! Your visit request has been sent to AYTO Properties.");
+    setFormName("");
+    setFormEmail("");
+    setFormPhone("");
+    setFormMessage("");
+  };
+
   const list = showSaved ? properties.filter((p) => saved.includes(p.id)) : properties;
 
   const inquire = (p: Property) => {
     setOpen(null);
     navigatePage(
-      "query",
+      "contact-us",
       undefined,
       `Hello, I am interested in "${p.title}" in ${p.location}, ${p.city} (${priceLabel(p)}). Please share more details.`,
     );
@@ -184,23 +215,10 @@ export function Index() {
         }}
       />
 
-      {activePage === "query" ? (
-        /* QUERY FORM PAGE (On Request A Visit / Get a Quote) */
-        <main className="pt-20">
-          <div className="mx-auto max-w-2xl px-4 pt-3 md:px-6">
-            <button
-              type="button"
-              onClick={() => navigatePage("home", "top")}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-white/85 transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" /> Back to Home
-            </button>
-          </div>
-          <Contact prefill={prefill} />
-        </main>
-      ) : activePage === "contact-us" ? (
-        /* CONTACT US PAGE: DIRECTOR MESSAGE (AYESHA IQBAL), VISION & MISSION & WHY CHOOSE US */
-        <main className="relative isolate overflow-hidden bg-[#141414] pt-24 text-white">
+      {activePage === "about-us" ? (
+        /* ABOUT US PAGE ONLY (EXACTLY MATCHING YOUR SCREENSHOTS) */
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
+          {/* Geometric Diamond Pattern Background */}
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
             style={{
@@ -216,52 +234,38 @@ export function Index() {
             <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
           </div>
 
-          <div className="mx-auto max-w-5xl px-5 pb-20 pt-2 md:px-8">
-            <button
-              type="button"
-              onClick={() => navigatePage("home", "top")}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-white/85 transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" /> Back to Home
-            </button>
-
+          <div className="mx-auto max-w-5xl px-5 pb-20 pt-4 md:px-8">
             {/* 1. Director Message + Ayesha Iqbal Portrait Card */}
-            <section className="mt-10 grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+            <section className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
               <div>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f4d06f]/35 bg-[#f4d06f]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f4d06f]">
-                  <Award className="h-3.5 w-3.5" /> Leadership & Vision
-                </span>
-                <h1 className="mt-4 font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                <h1 className="font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
                   Director Message
                 </h1>
                 <p className="mt-5 text-xs leading-[1.95] text-white/80 sm:text-sm">
                   At AYTO Properties & Builders, our vision is simple: to offer transparent
                   guidance, innovative solutions, and real estate opportunities that create lasting
-                  value. With a strong presence in DHA Lahore (including our head office at{" "}
-                  <span className="font-semibold text-[#f4d06f]">
-                    E65 DHA Phase 12, Multan Road
-                  </span>
-                  ), private housing societies, and high-rise developments, we focus on secure
-                  investments and modern growth. We continue to enhance our services through
-                  technology, customer care, and market insight. Thank you for trusting us.
+                  value. With a strong presence in DHA Lahore (including our head office at E65 DHA
+                  Phase 12, Multan Road), private housing societies, and high-rise developments, we
+                  focus on secure investments and modern growth. We continue to enhance our services
+                  through technology, customer care, and market insight. Thank you for trusting us.
                   Together, we aim to build a better and more progressive future.
                 </p>
               </div>
 
-              <div className="mx-auto w-full max-w-[300px] overflow-hidden rounded-3xl border border-[#f4d06f]/40 bg-white shadow-[0_25px_80px_-15px_rgba(244,208,111,0.22)]">
+              <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-white/20 bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)]">
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1e1e1e]">
                   <img
                     src={imgSrc}
                     onError={() => setImgSrc(fallbackAvatar)}
                     alt="Ayesha Iqbal - Managing Director, AYTO Properties"
-                    className="h-full w-full object-cover object-top brightness-[1.03] contrast-[1.05]"
+                    className="h-full w-full object-cover object-top"
                   />
                 </div>
-                <div className="bg-white px-5 py-4 text-center">
-                  <p className="font-sans text-lg font-bold tracking-tight text-[#141414]">
+                <div className="bg-white px-5 py-3.5 text-center">
+                  <p className="font-sans text-base font-bold text-[#141414]">
                     Ayesha Iqbal
                   </p>
-                  <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-amber-700">
+                  <p className="text-xs font-medium text-neutral-500">
                     Managing Director
                   </p>
                 </div>
@@ -269,11 +273,8 @@ export function Index() {
             </section>
 
             {/* 2. VISION & MISSION */}
-            <section className="mt-20 rounded-3xl border border-white/12 bg-white/[0.03] px-6 py-10 text-center backdrop-blur-sm sm:px-12">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
-                Our Core Purpose
-              </span>
-              <h2 className="mt-2 font-sans text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">
+            <section className="mt-24 text-center">
+              <h2 className="font-sans text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">
                 VISION & MISSION
               </h2>
               <p className="mx-auto mt-4 max-w-3xl text-xs leading-[1.9] text-white/80 sm:text-sm">
@@ -287,7 +288,7 @@ export function Index() {
             </section>
 
             {/* 3. Why Choose Us? */}
-            <section className="mt-20">
+            <section className="mt-28">
               <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
                 <div>
                   <h2 className="font-sans text-2xl font-bold text-white sm:text-3xl">
@@ -315,7 +316,7 @@ export function Index() {
                 </div>
 
                 {/* Glowing Innovation Card */}
-                <div className="mx-auto flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-[#f4d06f]/25 bg-gradient-to-br from-[#232323] via-[#191919] to-[#121212] p-8 text-center shadow-2xl">
+                <div className="mx-auto flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-white/15 bg-gradient-to-br from-[#232323] via-[#191919] to-[#121212] p-8 text-center shadow-2xl">
                   <div className="grid h-20 w-20 place-items-center rounded-full border border-[#f4d06f]/50 bg-[#f4d06f]/15 shadow-[0_0_40px_rgba(244,208,111,0.45)]">
                     <Lightbulb className="h-10 w-10 text-[#f4d06f]" />
                   </div>
@@ -329,9 +330,9 @@ export function Index() {
               </div>
 
               {/* 3 Icon Pillars */}
-              <div className="mt-14 grid gap-6 sm:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-[#f4d06f]/40">
-                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.04] text-white">
+              <div className="mt-14 grid gap-8 sm:grid-cols-3">
+                <div>
+                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.03] text-white">
                     <BadgeDollarSign className="h-5 w-5 text-[#f4d06f]" />
                   </div>
                   <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
@@ -343,8 +344,8 @@ export function Index() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-[#f4d06f]/40">
-                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.04] text-white">
+                <div>
+                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.03] text-white">
                     <Home className="h-5 w-5 text-[#f4d06f]" />
                   </div>
                   <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
@@ -356,8 +357,8 @@ export function Index() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-[#f4d06f]/40">
-                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.04] text-white">
+                <div>
+                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.03] text-white">
                     <ShieldCheck className="h-5 w-5 text-[#f4d06f]" />
                   </div>
                   <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
@@ -385,6 +386,153 @@ export function Index() {
                   <span>{partner}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        </main>
+      ) : activePage === "contact-us" ? (
+        /* CONTACT US PAGE ONLY (3 GOLD CARDS + SCHEDULE A VISIT + MAP) */
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
+            <div className="text-center">
+              <p className="text-xs font-medium tracking-wider text-white/80 sm:text-sm">
+                Get In Touch
+              </p>
+              <h1 className="mt-2 font-sans text-3xl font-bold tracking-tight text-white sm:text-5xl">
+                Our Contact Information
+              </h1>
+            </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              <div className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl">
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
+                  <MapPin className="h-6 w-6 text-[#141414]" />
+                </div>
+                <div>
+                  <h2 className="font-sans text-lg font-bold">Our Address</h2>
+                  <p className="mt-1 text-xs font-medium leading-relaxed text-[#141414]/90 sm:text-sm">
+                    E65 DHA Phase 12, Multan Road, Lahore
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href="tel:+923314972426"
+                className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition hover:brightness-105"
+              >
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
+                  <Phone className="h-6 w-6 text-[#141414]" />
+                </div>
+                <div>
+                  <h2 className="font-sans text-lg font-bold">Phone Number</h2>
+                  <p className="mt-1 text-xs font-semibold text-[#141414]/90 sm:text-sm">
+                    +92 331-4972426
+                  </p>
+                </div>
+              </a>
+
+              <a
+                href="mailto:info2aytoproperties@gmail.com"
+                className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition hover:brightness-105"
+              >
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
+                  <Mail className="h-6 w-6 text-[#141414]" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-sans text-lg font-bold">Email Address</h2>
+                  <p className="mt-1 truncate text-xs font-semibold text-[#141414]/90 sm:text-sm">
+                    info2aytoproperties@gmail.com
+                  </p>
+                </div>
+              </a>
+            </div>
+
+            <div className="mt-16 grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+              <div>
+                <h2 className="font-sans text-3xl font-bold text-white sm:text-4xl">
+                  Schedule a visit
+                </h2>
+
+                <form onSubmit={handleContactSubmit} className="mt-7 space-y-5">
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Your Name*"
+                        value={formName}
+                        onChange={(e) => setFormName(e.target.value)}
+                        className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                      />
+                      <User className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="email"
+                        required
+                        placeholder="Your Email*"
+                        value={formEmail}
+                        onChange={(e) => setFormEmail(e.target.value)}
+                        className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                      />
+                      <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      placeholder="Your Phone"
+                      value={formPhone}
+                      onChange={(e) => setFormPhone(e.target.value)}
+                      className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                    />
+                    <Phone className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                  </div>
+
+                  <div className="relative">
+                    <textarea
+                      rows={4}
+                      required
+                      placeholder="Type Your Message*"
+                      value={formMessage}
+                      onChange={(e) => setFormMessage(e.target.value)}
+                      className="w-full rounded-3xl border border-white/25 bg-[#191919]/90 px-5 py-4 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                    />
+                    <MessageSquare className="pointer-events-none absolute right-4 top-5 h-4 w-4 text-white/60" />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="rounded-full bg-[#f4c414] px-8 py-3.5 text-sm font-bold text-[#141414] shadow-lg transition hover:brightness-105"
+                  >
+                    Submit Message
+                  </button>
+                </form>
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-2xl">
+                <iframe
+                  title="AYTO Properties Head Office Map - E65 DHA Phase 12, Multan Road, Lahore"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=74.1650%2C31.3850%2C74.2150%2C31.4250&layer=mapnik&marker=31.4050%2C74.1900"
+                  className="h-[360px] w-full border-0"
+                  loading="lazy"
+                />
+              </div>
             </div>
           </div>
         </main>
@@ -476,7 +624,7 @@ export function Index() {
 
       <SiteFooter
         onType={() => navigatePage("home", "listings")}
-        onOpenQuery={() => navigatePage("query")}
+        onOpenQuery={() => navigatePage("contact-us")}
       />
 
       <PropertyDialog p={open} onClose={() => setOpen(null)} onInquire={inquire} />
