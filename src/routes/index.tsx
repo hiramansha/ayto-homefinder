@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  Award,
   BadgeDollarSign,
   Building2,
   Home,
@@ -48,8 +49,16 @@ const partnerLogos = [
   "LDA APPROVED",
 ];
 
-const DIRECTOR_PHOTO =
-  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpg";
+// Automatically picks up whatever filename you uploaded in src/assets/
+const assetModules = import.meta.glob("../assets/*.{jpg,jpeg,png,webp}", {
+  eager: true,
+  import: "default",
+}) as Record<string, string>;
+
+const directorEntry = Object.entries(assetModules).find(([path]) =>
+  path.toLowerCase().includes("ayesha"),
+);
+const LOCAL_DIRECTOR_IMG = directorEntry ? directorEntry[1] : "";
 
 export function Index() {
   const [saved, setSaved] = useState<number[]>([]);
@@ -57,7 +66,7 @@ export function Index() {
   const [open, setOpen] = useState<Property | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>("home");
   const [prefill, setPrefill] = useState({ text: "", nonce: 0 });
-  const [imgSrc, setImgSrc] = useState(DIRECTOR_PHOTO);
+  const [imgSrc, setImgSrc] = useState(LOCAL_DIRECTOR_IMG || fallbackAvatar);
 
   useEffect(() => {
     try {
@@ -106,8 +115,8 @@ export function Index() {
       if (!btn) return;
       const label = (btn.textContent || "").trim().toLowerCase();
 
-      // Both "Contact Us" and "About Us" open the Director Message + Vision & Mission + Why Choose Us page
-      if (label === "contact us" || label === "about us") {
+      // "Contact Us" -> Opens dedicated Director Message + Vision & Mission + Why Choose Us page
+      if (label === "contact us") {
         e.preventDefault();
         e.stopPropagation();
         navigatePage("contact-us");
@@ -125,6 +134,7 @@ export function Index() {
       // Navigation back to Home sections
       if (
         label === "home" ||
+        label === "about us" ||
         label === "our offices" ||
         label === "projects" ||
         label === "services" ||
@@ -133,6 +143,7 @@ export function Index() {
       ) {
         const map: Record<string, string> = {
           home: "top",
+          "about us": "about",
           "our offices": "offices",
           projects: "spotlight",
           services: "about",
@@ -174,7 +185,7 @@ export function Index() {
       />
 
       {activePage === "query" ? (
-        /* QUERY FORM PAGE */
+        /* QUERY FORM PAGE (On Request A Visit / Get a Quote) */
         <main className="pt-20">
           <div className="mx-auto max-w-2xl px-4 pt-3 md:px-6">
             <button
@@ -188,7 +199,7 @@ export function Index() {
           <Contact prefill={prefill} />
         </main>
       ) : activePage === "contact-us" ? (
-        /* DIRECTOR MESSAGE (AYESHA IQBAL), VISION & MISSION & WHY CHOOSE US PAGE */
+        /* CONTACT US PAGE: DIRECTOR MESSAGE (AYESHA IQBAL), VISION & MISSION & WHY CHOOSE US */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-24 text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
@@ -199,6 +210,7 @@ export function Index() {
             }}
           />
 
+          {/* Diagonal Glowing Gold Beams */}
           <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[540px] overflow-hidden opacity-85">
             <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
             <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
@@ -216,34 +228,40 @@ export function Index() {
             {/* 1. Director Message + Ayesha Iqbal Portrait Card */}
             <section className="mt-10 grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
               <div>
-                <h1 className="font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f4d06f]/35 bg-[#f4d06f]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f4d06f]">
+                  <Award className="h-3.5 w-3.5" /> Leadership & Vision
+                </span>
+                <h1 className="mt-4 font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
                   Director Message
                 </h1>
-                <p className="mt-5 text-xs leading-[1.9] text-white/80 sm:text-sm">
+                <p className="mt-5 text-xs leading-[1.95] text-white/80 sm:text-sm">
                   At AYTO Properties & Builders, our vision is simple: to offer transparent
                   guidance, innovative solutions, and real estate opportunities that create lasting
-                  value. With a strong presence in DHA Lahore (including our head office at E65 DHA
-                  Phase 12, Multan Road), private housing societies, and high-rise developments, we
-                  focus on secure investments and modern growth. We continue to enhance our services
-                  through technology, customer care, and market insight. Thank you for trusting us.
+                  value. With a strong presence in DHA Lahore (including our head office at{" "}
+                  <span className="font-semibold text-[#f4d06f]">
+                    E65 DHA Phase 12, Multan Road
+                  </span>
+                  ), private housing societies, and high-rise developments, we focus on secure
+                  investments and modern growth. We continue to enhance our services through
+                  technology, customer care, and market insight. Thank you for trusting us.
                   Together, we aim to build a better and more progressive future.
                 </p>
               </div>
 
-              <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-white/20 bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)]">
+              <div className="mx-auto w-full max-w-[300px] overflow-hidden rounded-3xl border border-[#f4d06f]/40 bg-white shadow-[0_25px_80px_-15px_rgba(244,208,111,0.22)]">
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1e1e1e]">
                   <img
                     src={imgSrc}
                     onError={() => setImgSrc(fallbackAvatar)}
                     alt="Ayesha Iqbal - Managing Director, AYTO Properties"
-                    className="h-full w-full object-cover object-top"
+                    className="h-full w-full object-cover object-top brightness-[1.03] contrast-[1.05]"
                   />
                 </div>
-                <div className="bg-white px-4 py-3.5 text-center">
-                  <p className="font-sans text-base font-bold text-[#141414]">
+                <div className="bg-white px-5 py-4 text-center">
+                  <p className="font-sans text-lg font-bold tracking-tight text-[#141414]">
                     Ayesha Iqbal
                   </p>
-                  <p className="text-xs font-medium text-neutral-500">
+                  <p className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-amber-700">
                     Managing Director
                   </p>
                 </div>
@@ -251,11 +269,14 @@ export function Index() {
             </section>
 
             {/* 2. VISION & MISSION */}
-            <section className="mt-20 text-center">
-              <h2 className="font-sans text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">
+            <section className="mt-20 rounded-3xl border border-white/12 bg-white/[0.03] px-6 py-10 text-center backdrop-blur-sm sm:px-12">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+                Our Core Purpose
+              </span>
+              <h2 className="mt-2 font-sans text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">
                 VISION & MISSION
               </h2>
-              <p className="mx-auto mt-4 max-w-3xl text-xs leading-[1.85] text-white/80 sm:text-sm">
+              <p className="mx-auto mt-4 max-w-3xl text-xs leading-[1.9] text-white/80 sm:text-sm">
                 AYTO Properties & Builders aims to create sustainable, high-quality living and
                 business spaces that improve how people live and work. With a focus on
                 transparency, reliability, and customer satisfaction, the company delivers projects on
@@ -266,13 +287,13 @@ export function Index() {
             </section>
 
             {/* 3. Why Choose Us? */}
-            <section className="mt-24">
+            <section className="mt-20">
               <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
                 <div>
                   <h2 className="font-sans text-2xl font-bold text-white sm:text-3xl">
                     Why Choose Us?
                   </h2>
-                  <p className="mt-4 text-xs leading-[1.85] text-white/80 sm:text-sm">
+                  <p className="mt-4 text-xs leading-[1.9] text-white/80 sm:text-sm">
                     <strong className="text-white">Trusted Real Estate Professionals:</strong> We
                     provide transparent, reliable, and market-driven property services in DHA,
                     private societies, and premium communities.{" "}
@@ -294,7 +315,7 @@ export function Index() {
                 </div>
 
                 {/* Glowing Innovation Card */}
-                <div className="mx-auto flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-white/15 bg-gradient-to-br from-[#232323] via-[#191919] to-[#121212] p-8 text-center shadow-2xl">
+                <div className="mx-auto flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-[#f4d06f]/25 bg-gradient-to-br from-[#232323] via-[#191919] to-[#121212] p-8 text-center shadow-2xl">
                   <div className="grid h-20 w-20 place-items-center rounded-full border border-[#f4d06f]/50 bg-[#f4d06f]/15 shadow-[0_0_40px_rgba(244,208,111,0.45)]">
                     <Lightbulb className="h-10 w-10 text-[#f4d06f]" />
                   </div>
@@ -308,9 +329,9 @@ export function Index() {
               </div>
 
               {/* 3 Icon Pillars */}
-              <div className="mt-14 grid gap-8 sm:grid-cols-3">
-                <div>
-                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.03] text-white">
+              <div className="mt-14 grid gap-6 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-[#f4d06f]/40">
+                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.04] text-white">
                     <BadgeDollarSign className="h-5 w-5 text-[#f4d06f]" />
                   </div>
                   <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
@@ -322,8 +343,8 @@ export function Index() {
                   </p>
                 </div>
 
-                <div>
-                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.03] text-white">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-[#f4d06f]/40">
+                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.04] text-white">
                     <Home className="h-5 w-5 text-[#f4d06f]" />
                   </div>
                   <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
@@ -335,8 +356,8 @@ export function Index() {
                   </p>
                 </div>
 
-                <div>
-                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.03] text-white">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition hover:border-[#f4d06f]/40">
+                  <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.04] text-white">
                     <ShieldCheck className="h-5 w-5 text-[#f4d06f]" />
                   </div>
                   <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
