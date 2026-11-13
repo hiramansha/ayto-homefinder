@@ -251,18 +251,10 @@ export function Index() {
       setPrefill({ text, nonce: Date.now() });
       setFormMessage(text);
     }
-    setActivePage((prev) => {
-      if (prev === "home" && page === "home" && (!sectionId || sectionId === "top")) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        return "home";
-      }
-      return page;
-    });
+    setActivePage(page);
     try {
       const nextUrl = page === "home" ? window.location.pathname : `?page=${page}`;
-      if (window.location.search !== (page === "home" ? "" : `?page=${page}`)) {
-        window.history.pushState({}, "", nextUrl);
-      }
+      window.history.pushState({}, "", nextUrl);
     } catch {
       /* ignore */
     }
@@ -630,7 +622,7 @@ export function Index() {
                 <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl">
                   <iframe
                     title="AYTO Properties Head Office - E65 DHA Phase 12, Multan Road, Lahore"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.1650%2C31.3850%2C74.2150%2C31.4250&layer=mapnik&marker=31.4050%2C74.1900"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.1950%2C31.4250%2C74.2450%2C31.4600&layer=mapnik&marker=31.4425%2C74.2200"
                     className="h-[240px] w-full border-0"
                     loading="lazy"
                   />
@@ -644,4 +636,527 @@ export function Index() {
               </h2>
 
               <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
-                <div className="order-2 overflow-hidden rounded-xl border border-white/1
+                <div className="order-2 overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl md:order-1">
+                  <iframe
+                    title="AYTO Properties DHA Phase 6 Branch"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.4300%2C31.4600%2C74.4750%2C31.4950&layer=mapnik&marker=31.4775%2C74.4525"
+                    className="h-[240px] w-full border-0"
+                    loading="lazy"
+                  />
+                </div>
+
+                <div className="order-1 space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:order-2 md:pl-8">
+                  <p className="font-semibold text-white">
+                    Main Boulevard, DHA Phase 6, Lahore, Pakistan
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Phone: +92 331-4972426</span>
+                  </p>
+                  <p className="flex items-center gap-2 font-semibold text-white">
+                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Office Hours:</span>
+                  </p>
+                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="mt-24">
+              <h2 className="text-center font-sans text-xl font-bold text-white sm:text-3xl">
+                AYTO Properties &amp; Builders – Bahria Town Branch
+              </h2>
+
+              <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
+                <div className="space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:pl-8">
+                  <p className="font-semibold text-white">
+                    Sector C Commercial, Bahria Town, Lahore, Pakistan
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Phone: +92 331-4972426</span>
+                  </p>
+                  <p className="flex items-center gap-2 font-semibold text-white">
+                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Office Hours:</span>
+                  </p>
+                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
+                </div>
+
+                <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl">
+                  <iframe
+                    title="AYTO Properties Bahria Town Branch"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.1600%2C31.3550%2C74.2050%2C31.3850&layer=mapnik&marker=31.3700%2C74.1825"
+                    className="h-[240px] w-full border-0"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="mt-28 text-center">
+              <h2 className="font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                Let&apos;s Build Your Future Together
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-white/75 sm:text-sm">
+                AYTO Properties &amp; Builders is committed to delivering trusted real estate
+                solutions across Lahore. Visit our nearest office today and start your investment
+                journey with confidence.
+              </p>
+            </section>
+          </div>
+        </main>
+      ) : activePage === "projects" ? (
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <img
+              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80"
+              alt="AYTO Properties Signature Projects"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/60" />
+            <div className="relative z-10 px-4 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+                Developments &amp; Ventures
+              </p>
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+                Our Signature &amp; Ongoing Projects
+              </h1>
+            </div>
+          </section>
+
+          <div className="mx-auto max-w-6xl px-5 py-20 md:px-8">
+            <div className="grid gap-10 md:grid-cols-2">
+              {projectsList.map((proj) => (
+                <div
+                  key={proj.title}
+                  className="group overflow-hidden rounded-3xl border border-white/15 bg-[#191919] shadow-2xl transition hover:border-[#f4d06f]/50"
+                >
+                  <div className="relative aspect-[16/10] w-full overflow-hidden">
+                    <img
+                      src={proj.image}
+                      alt={proj.title}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <span className="absolute left-4 top-4 rounded-full bg-[#141414]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f] backdrop-blur-sm">
+                      {proj.tag}
+                    </span>
+                    <span className="absolute bottom-4 right-4 rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#141414]">
+                      {proj.status}
+                    </span>
+                  </div>
+
+                  <div className="p-6 sm:p-8">
+                    <h2 className="font-sans text-xl font-bold text-white sm:text-2xl">
+                      {proj.title}
+                    </h2>
+                    <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-[#f4d06f]">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      <span>{proj.location}</span>
+                    </p>
+                    <p className="mt-4 text-xs leading-relaxed text-white/75 sm:text-sm">
+                      {proj.desc}
+                    </p>
+
+                    <div className="mt-6 flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          navigatePage(
+                            "contact-us",
+                            undefined,
+                            `Hello AYTO Properties, I would like to book a site visit and get payment plan details for "${proj.title}".`,
+                          )
+                        }
+                        className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-bold text-[#141414] transition hover:brightness-105"
+                      >
+                        Request Project Details
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+      ) : activePage === "services" ? (
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <img
+              src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1800&q=80"
+              alt="AYTO Properties Real Estate & Construction Services"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/60" />
+            <div className="relative z-10 px-4 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+                What We Offer
+              </p>
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+                Our Real Estate &amp; Construction Services
+              </h1>
+            </div>
+          </section>
+
+          <div className="mx-auto max-w-6xl px-5 py-20 md:px-8">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {servicesList.map((srv) => {
+                const Icon = srv.icon;
+                return (
+                  <div
+                    key={srv.title}
+                    className="flex flex-col justify-between rounded-3xl border border-white/15 bg-[#191919] p-7 shadow-xl transition hover:border-[#f4d06f]/50"
+                  >
+                    <div>
+                      <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[#f4d06f]/40 bg-[#f4d06f]/10">
+                        <Icon className="h-7 w-7 text-[#f4d06f]" />
+                      </div>
+                      <h2 className="mt-5 font-sans text-lg font-bold text-white sm:text-xl">
+                        {srv.title}
+                      </h2>
+                      <p className="mt-3 text-xs leading-relaxed text-white/75 sm:text-sm">
+                        {srv.desc}
+                      </p>
+
+                      <ul className="mt-5 space-y-2 border-t border-white/10 pt-4">
+                        {srv.points.map((pt) => (
+                          <li key={pt} className="flex items-center gap-2 text-xs text-white/85">
+                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#f4d06f]" />
+                            <span>{pt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigatePage(
+                          "contact-us",
+                          undefined,
+                          `Hello AYTO Properties, I need consultation regarding "${srv.title}".`,
+                        )
+                      }
+                      className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#f4c414] bg-transparent px-5 py-2.5 text-xs font-bold text-[#f4c414] transition hover:bg-[#f4c414] hover:text-[#141414]"
+                    >
+                      Inquire Now
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </main>
+      ) : activePage === "gallery" ? (
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <img
+              src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=80"
+              alt="AYTO Properties Architecture & Interior Gallery"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/60" />
+            <div className="relative z-10 px-4 text-center">
+              <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+                <Sparkles className="h-3.5 w-3.5" /> Visual Portfolio
+              </p>
+              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+                Project &amp; Interior Gallery
+              </h1>
+            </div>
+          </section>
+
+          <div className="mx-auto max-w-6xl px-5 py-16 md:px-8">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {["All", "Luxury Villas", "Interiors", "Commercial & High-Rise"].map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setGalleryFilter(cat)}
+                  className={`rounded-full px-5 py-2 text-xs font-bold transition ${
+                    galleryFilter === cat
+                      ? "bg-[#f4c414] text-[#141414]"
+                      : "border border-white/20 bg-white/[0.03] text-white/80 hover:border-[#f4c414]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {filteredGallery.map((item) => (
+                <div
+                  key={item.title}
+                  onClick={() => setLightboxImg(item)}
+                  className="group cursor-pointer overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-xl"
+                >
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#f4d06f]">
+                      {item.category}
+                    </span>
+                    <h2 className="mt-1 text-xs font-bold text-white sm:text-sm">
+                      {item.title}
+                    </h2>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {lightboxImg && (
+            <div
+              onClick={() => setLightboxImg(null)}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl border border-white/20 bg-[#141414]"
+              >
+                <button
+                  type="button"
+                  onClick={() => setLightboxImg(null)}
+                  aria-label="Close preview"
+                  className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/75 text-white hover:bg-[#f4c414] hover:text-[#141414]"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+                <img
+                  src={lightboxImg.image}
+                  alt={lightboxImg.title}
+                  className="max-h-[78vh] w-full object-contain"
+                />
+                <div className="px-5 py-3 text-center text-sm font-bold text-white">
+                  {lightboxImg.title}
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      ) : activePage === "contact-us" ? (
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
+            <div className="text-center">
+              <p className="text-xs font-medium tracking-wider text-white/80 sm:text-sm">
+                Get In Touch
+              </p>
+              <h1 className="mt-2 font-sans text-3xl font-bold tracking-tight text-white sm:text-5xl">
+                Our Contact Information
+              </h1>
+            </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              <div className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl">
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
+                  <MapPin className="h-6 w-6 text-[#141414]" />
+                </div>
+                <div>
+                  <h2 className="font-sans text-lg font-bold">Our Address</h2>
+                  <p className="mt-1 text-xs font-medium leading-relaxed text-[#141414]/90 sm:text-sm">
+                    E65 DHA Phase 12, Multan Road, Lahore
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href="tel:+923314972426"
+                className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition hover:brightness-105"
+              >
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
+                  <Phone className="h-6 w-6 text-[#141414]" />
+                </div>
+                <div>
+                  <h2 className="font-sans text-lg font-bold">Phone Number</h2>
+                  <p className="mt-1 text-xs font-semibold text-[#141414]/90 sm:text-sm">
+                    +92 331-4972426
+                  </p>
+                </div>
+              </a>
+
+              <a
+                href="mailto:info2aytoproperties@gmail.com"
+                className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition hover:brightness-105"
+              >
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
+                  <Mail className="h-6 w-6 text-[#141414]" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-sans text-lg font-bold">Email Address</h2>
+                  <p className="mt-1 truncate text-xs font-semibold text-[#141414]/90 sm:text-sm">
+                    info2aytoproperties@gmail.com
+                  </p>
+                </div>
+              </a>
+            </div>
+
+            <div className="mt-16 grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+              <div>
+                <h2 className="font-sans text-3xl font-bold text-white sm:text-4xl">
+                  Schedule a visit
+                </h2>
+
+                <form onSubmit={handleContactSubmit} className="mt-7 space-y-5">
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Your Name*"
+                        value={formName}
+                        onChange={(e) => setFormName(e.target.value)}
+                        className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                      />
+                      <User className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="email"
+                        required
+                        placeholder="Your Email*"
+                        value={formEmail}
+                        onChange={(e) => setFormEmail(e.target.value)}
+                        className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                      />
+                      <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      placeholder="Your Phone"
+                      value={formPhone}
+                      onChange={(e) => setFormPhone(e.target.value)}
+                      className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                    />
+                    <Phone className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                  </div>
+
+                  <div className="relative">
+                    <textarea
+                      rows={4}
+                      required
+                      placeholder="Type Your Message*"
+                      value={formMessage}
+                      onChange={(e) => setFormMessage(e.target.value)}
+                      className="w-full rounded-3xl border border-white/25 bg-[#191919]/90 px-5 py-4 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                    />
+                    <MessageSquare className="pointer-events-none absolute right-4 top-5 h-4 w-4 text-white/60" />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="rounded-full bg-[#f4c414] px-8 py-3.5 text-sm font-bold text-[#141414] shadow-lg transition hover:brightness-105"
+                  >
+                    Submit Message
+                  </button>
+                </form>
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-2xl">
+                <iframe
+                  title="AYTO Properties Head Office Map - E65 DHA Phase 12, Multan Road, Lahore"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=74.1950%2C31.4250%2C74.2450%2C31.4600&layer=mapnik&marker=31.4425%2C74.2200"
+                  className="h-[360px] w-full border-0"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </main>
+      ) : (
+        <main>
+          <Hero />
+
+          <Spotlight
+            onView={() => navigatePage("projects")}
+            onInquire={() => inquire(featured)}
+          />
+
+          <section
+            id="listings"
+            className="relative isolate overflow-hidden border-t border-white/10 bg-[#141414] py-20 text-white md:py-28"
+          >
+            <div
+              className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+                backgroundSize: "36px 36px",
+              }}
+            />
+
+            <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[520px] overflow-hidden opacity-85">
+              <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+              <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+            </div>
+
+            <div className="mx-auto max-w-6xl px-5 md:px-8">
+              <div className="
