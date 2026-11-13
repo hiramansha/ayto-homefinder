@@ -206,29 +206,30 @@ const galleryItems = [
   },
 ];
 
-function LuxuryAmbientBackdrop() {
+function RoyalMidnightBackdrop() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      {/* Subtle architectural dot pattern */}
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-gradient-to-b from-[#070b14] via-[#0b1322] to-[#070c16]">
+      {/* Animated Architectural Blueprint Grid */}
       <div
-        className="absolute inset-0 opacity-20"
+        className="ayto-grid-pulse absolute inset-0"
         style={{
           backgroundImage:
-            "radial-gradient(circle at 2px 2px, rgba(244, 208, 111, 0.22) 1px, transparent 0)",
-          backgroundSize: "40px 40px",
+            "linear-gradient(to right, rgba(148, 185, 255, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(148, 185, 255, 0.05) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
         }}
       />
 
-      {/* Rich luxury emerald & warm gold radial glows */}
-      <div className="ayto-orb-slow absolute -left-32 top-24 h-[460px] w-[460px] rounded-full bg-[#133b2e]/35 blur-[130px]" />
-      <div className="ayto-orb-fast absolute -right-24 top-1/3 h-[500px] w-[500px] rounded-full bg-[#d4af37]/15 blur-[140px]" />
-      <div className="ayto-orb-slow absolute bottom-10 left-1/3 h-[420px] w-[420px] rounded-full bg-[#184436]/30 blur-[130px]" />
+      {/* Smooth Royal Sapphire & Champagne Aurora Orbs */}
+      <div className="ayto-aurora-1 absolute -left-32 -top-24 h-[540px] w-[540px] rounded-full bg-[#1a3c78]/35 blur-[135px]" />
+      <div className="ayto-aurora-2 absolute -right-28 top-1/4 h-[520px] w-[520px] rounded-full bg-[#d4af37]/16 blur-[145px]" />
+      <div className="ayto-aurora-3 absolute bottom-[-10%] left-1/4 h-[500px] w-[500px] rounded-full bg-[#124563]/35 blur-[135px]" />
 
-      {/* Animated diagonal golden light beams */}
-      <div className="absolute -right-20 top-0 h-full w-[560px] opacity-80">
-        <div className="ayto-beam absolute right-24 top-[-15%] h-[140%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f]/80 to-transparent shadow-[0_0_26px_4px_rgba(244,208,111,0.55)]" />
-        <div className="ayto-beam-delay absolute right-56 top-[-15%] h-[140%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37]/75 to-transparent shadow-[0_0_34px_6px_rgba(212,175,55,0.6)]" />
-      </div>
+      {/* Gentle Floating Champagne-Gold Light Particles */}
+      <span className="ayto-sparkle-1 absolute left-[14%] top-[78%] h-1.5 w-1.5 rounded-full bg-[#f4d06f]/70 shadow-[0_0_12px_#f4d06f]" />
+      <span className="ayto-sparkle-2 absolute left-[34%] top-[85%] h-2 w-2 rounded-full bg-[#93c5fd]/60 shadow-[0_0_14px_#93c5fd]" />
+      <span className="ayto-sparkle-3 absolute left-[62%] top-[80%] h-1.5 w-1.5 rounded-full bg-[#f4d06f]/75 shadow-[0_0_12px_#f4d06f]" />
+      <span className="ayto-sparkle-4 absolute left-[82%] top-[75%] h-2 w-2 rounded-full bg-[#fde68a]/65 shadow-[0_0_14px_#fde68a]" />
+      <span className="ayto-sparkle-2 absolute left-[48%] top-[68%] h-1 w-1 rounded-full bg-white/60 shadow-[0_0_10px_#ffffff]" />
     </div>
   );
 }
@@ -404,41 +405,54 @@ export function Index() {
       : galleryItems.filter((item) => item.category === galleryFilter);
 
   return (
-    <div id="top" className="relative min-h-screen bg-[#0c0f0e] text-white selection:bg-[#f4c414] selection:text-[#0c0f0e]">
+    <div id="top" className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]">
       <style>{`
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
         }
-        @keyframes aytoFloatSlow {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          50% { transform: translate3d(28px, -22px, 0) scale(1.08); }
+        /* Override inner dark section backgrounds so Royal Midnight Sapphire theme shines everywhere */
+        main section, footer {
+          background-color: transparent !important;
         }
-        @keyframes aytoFloatFast {
+        @keyframes aytoAuroraDrift1 {
           0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          50% { transform: translate3d(-24px, 26px, 0) scale(1.06); }
+          50% { transform: translate3d(45px, 30px, 0) scale(1.1); }
         }
-        @keyframes aytoBeamPulse {
+        @keyframes aytoAuroraDrift2 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(-40px, -25px, 0) scale(1.08); }
+        }
+        @keyframes aytoAuroraDrift3 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(30px, -35px, 0) scale(1.07); }
+        }
+        @keyframes aytoGridShimmer {
           0%, 100% { opacity: 0.45; }
-          50% { opacity: 0.95; }
+          50% { opacity: 0.9; }
         }
-        @keyframes aytoPageReveal {
-          from { opacity: 0; transform: translateY(14px); }
+        @keyframes aytoParticleRise {
+          0% { transform: translateY(0) scale(0.8); opacity: 0; }
+          25% { opacity: 0.95; }
+          85% { opacity: 0.6; }
+          100% { transform: translateY(-320px) scale(1.2); opacity: 0; }
+        }
+        @keyframes aytoPageFade {
+          from { opacity: 0; transform: translateY(16px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes aytoWhatsappRing {
-          0% { transform: scale(1); opacity: 0.75; }
-          100% { transform: scale(1.55); opacity: 0; }
-        }
-        .ayto-orb-slow { animation: aytoFloatSlow 12s ease-in-out infinite; }
-        .ayto-orb-fast { animation: aytoFloatFast 9s ease-in-out infinite; }
-        .ayto-beam { animation: aytoBeamPulse 5s ease-in-out infinite; }
-        .ayto-beam-delay { animation: aytoBeamPulse 6.5s ease-in-out 2s infinite; }
-        .ayto-page-enter { animation: aytoPageReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .ayto-wa-ring { animation: aytoWhatsappRing 2.1s cubic-bezier(0.24, 0, 0.38, 1) infinite; }
+        .ayto-aurora-1 { animation: aytoAuroraDrift1 14s ease-in-out infinite; }
+        .ayto-aurora-2 { animation: aytoAuroraDrift2 16s ease-in-out infinite; }
+        .ayto-aurora-3 { animation: aytoAuroraDrift3 18s ease-in-out infinite; }
+        .ayto-grid-pulse { animation: aytoGridShimmer 7s ease-in-out infinite; }
+        .ayto-sparkle-1 { animation: aytoParticleRise 9s ease-in-out infinite; }
+        .ayto-sparkle-2 { animation: aytoParticleRise 11s ease-in-out 2s infinite; }
+        .ayto-sparkle-3 { animation: aytoParticleRise 10s ease-in-out 4s infinite; }
+        .ayto-sparkle-4 { animation: aytoParticleRise 12s ease-in-out 1.5s infinite; }
+        .ayto-page-enter { animation: aytoPageFade 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
       `}</style>
 
-      {/* Global Luxury Animated Background across ALL pages */}
-      <LuxuryAmbientBackdrop />
+      {/* Brand-New Royal Midnight Sapphire & Champagne-Gold Animated Background */}
+      <RoyalMidnightBackdrop />
 
       <div className="relative z-10">
         <SiteHeader
@@ -459,7 +473,7 @@ export function Index() {
               <button
                 type="button"
                 onClick={() => navigatePage("home", "top")}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-white/85 backdrop-blur-md transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/25 bg-[#0f192d]/80 px-3.5 py-1.5 text-xs font-medium text-white/85 backdrop-blur-md transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
               >
                 <ArrowLeft className="h-3.5 w-3.5" /> Back to Home
               </button>
@@ -470,14 +484,14 @@ export function Index() {
           <main key="about-us" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-5xl px-5 pb-20 pt-4 md:px-8">
               <section className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-                <div className="rounded-3xl border border-white/10 bg-[#141816]/80 p-7 backdrop-blur-md sm:p-9">
+                <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/80 p-7 shadow-2xl backdrop-blur-md sm:p-9">
                   <span className="inline-block rounded-full border border-[#f4d06f]/40 bg-[#f4d06f]/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[#f4d06f]">
                     Leadership &amp; Vision
                   </span>
                   <h1 className="mt-3 font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
                     Director Message
                   </h1>
-                  <p className="mt-5 text-xs leading-[1.95] text-white/80 sm:text-sm">
+                  <p className="mt-5 text-xs leading-[1.95] text-slate-200/85 sm:text-sm">
                     At AYTO Properties &amp; Builders, our vision is simple: to offer transparent
                     guidance, innovative solutions, and real estate opportunities that create lasting
                     value. With a strong presence in DHA Lahore (including our head office at E65 DHA
@@ -487,8 +501,8 @@ export function Index() {
                   </p>
                 </div>
 
-                <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-[#f4d06f]/35 bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.9)] transition duration-500 hover:-translate-y-1.5">
-                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1e1e1e]">
+                <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-[#f4d06f]/40 bg-white shadow-[0_25px_70px_-15px_rgba(3,8,20,0.95)] transition duration-500 hover:-translate-y-1.5">
+                  <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#131d33]">
                     <img
                       src={directorPhotos[0]}
                       onError={(e) => {
@@ -506,21 +520,21 @@ export function Index() {
                     />
                   </div>
                   <div className="bg-white px-5 py-3.5 text-center">
-                    <p className="font-sans text-base font-bold text-[#141414]">
+                    <p className="font-sans text-base font-bold text-[#0b1322]">
                       Ayesha Iqbal
                     </p>
-                    <p className="text-xs font-medium text-neutral-500">
+                    <p className="text-xs font-medium text-slate-500">
                       Managing Director
                     </p>
                   </div>
                 </div>
               </section>
 
-              <section className="mt-20 rounded-3xl border border-white/10 bg-[#141816]/75 px-6 py-12 text-center backdrop-blur-md sm:px-12">
+              <section className="mt-20 rounded-3xl border border-sky-300/15 bg-[#0e172a]/75 px-6 py-12 text-center shadow-xl backdrop-blur-md sm:px-12">
                 <h2 className="font-sans text-2xl font-bold uppercase tracking-wider text-[#f4d06f] sm:text-3xl">
                   VISION &amp; MISSION
                 </h2>
-                <p className="mx-auto mt-4 max-w-3xl text-xs leading-[1.9] text-white/80 sm:text-sm">
+                <p className="mx-auto mt-4 max-w-3xl text-xs leading-[1.9] text-slate-200/85 sm:text-sm">
                   AYTO Properties &amp; Builders aims to create sustainable, high-quality living and
                   business spaces that improve how people live and work. With a focus on
                   transparency, reliability, and customer satisfaction, the company delivers projects on
@@ -530,11 +544,11 @@ export function Index() {
 
               <section className="mt-20">
                 <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
-                  <div className="rounded-3xl border border-white/10 bg-[#141816]/80 p-7 backdrop-blur-md sm:p-9">
+                  <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/80 p-7 shadow-xl backdrop-blur-md sm:p-9">
                     <h2 className="font-sans text-2xl font-bold text-white sm:text-3xl">
                       Why Choose Us?
                     </h2>
-                    <p className="mt-4 text-xs leading-[1.9] text-white/80 sm:text-sm">
+                    <p className="mt-4 text-xs leading-[1.9] text-slate-200/85 sm:text-sm">
                       <strong className="text-[#f4d06f]">Trusted Real Estate Professionals:</strong> We
                       provide transparent, reliable, and market-driven property services in DHA,
                       private societies, and premium communities.{" "}
@@ -548,52 +562,52 @@ export function Index() {
                     </p>
                   </div>
 
-                  <div className="mx-auto flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-[#f4d06f]/25 bg-gradient-to-br from-[#19231f] via-[#131816] to-[#0d100f] p-8 text-center shadow-2xl transition duration-500 hover:-translate-y-1">
+                  <div className="mx-auto flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-[#f4d06f]/30 bg-gradient-to-br from-[#122240] via-[#0d172a] to-[#080e1a] p-8 text-center shadow-2xl transition duration-500 hover:-translate-y-1">
                     <div className="grid h-20 w-20 place-items-center rounded-full border border-[#f4d06f]/50 bg-[#f4d06f]/15 shadow-[0_0_30px_rgba(244,208,111,0.25)]">
                       <Lightbulb className="h-10 w-10 text-[#f4d06f]" />
                     </div>
                     <p className="mt-5 font-sans text-base font-bold text-white">
                       Smart Real Estate Solutions
                     </p>
-                    <p className="mt-1.5 text-xs text-white/65">
+                    <p className="mt-1.5 text-xs text-slate-300/75">
                       Transparent deals, verified files &amp; strategic growth in Lahore
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-12 grid gap-6 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-white/10 bg-[#141816]/80 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-[#f4d06f]/45">
+                  <div className="rounded-2xl border border-sky-300/15 bg-[#0e172a]/80 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-[#f4d06f]/45">
                     <div className="grid h-12 w-12 place-items-center rounded-xl border border-[#f4d06f]/35 bg-[#f4d06f]/10 text-white">
                       <BadgeDollarSign className="h-5 w-5 text-[#f4d06f]" />
                     </div>
                     <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
                       Invest Opportunities
                     </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-white/70">
+                    <p className="mt-2 text-xs leading-relaxed text-slate-300/75">
                       Real estate services that simplify buying, selling, and managing properties.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/10 bg-[#141816]/80 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-[#f4d06f]/45">
+                  <div className="rounded-2xl border border-sky-300/15 bg-[#0e172a]/80 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-[#f4d06f]/45">
                     <div className="grid h-12 w-12 place-items-center rounded-xl border border-[#f4d06f]/35 bg-[#f4d06f]/10 text-white">
                       <Home className="h-5 w-5 text-[#f4d06f]" />
                     </div>
                     <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
                       Property Management
                     </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-white/70">
+                    <p className="mt-2 text-xs leading-relaxed text-slate-300/75">
                       Expert consulting services designed to elevate real estate performance.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/10 bg-[#141816]/80 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-[#f4d06f]/45">
+                  <div className="rounded-2xl border border-sky-300/15 bg-[#0e172a]/80 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-[#f4d06f]/45">
                     <div className="grid h-12 w-12 place-items-center rounded-xl border border-[#f4d06f]/35 bg-[#f4d06f]/10 text-white">
                       <ShieldCheck className="h-5 w-5 text-[#f4d06f]" />
                     </div>
                     <h3 className="mt-4 text-sm font-bold text-white sm:text-base">
                       Property Valuation
                     </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-white/70">
+                    <p className="mt-2 text-xs leading-relaxed text-slate-300/75">
                       Complete real estate services focused on maximizing your property&apos;s value.
                     </p>
                   </div>
@@ -601,12 +615,12 @@ export function Index() {
               </section>
             </div>
 
-            <div className="border-t border-white/10 bg-[#0f1312]/80 py-12 backdrop-blur-md">
+            <div className="border-t border-sky-300/10 bg-[#080f1d]/80 py-12 backdrop-blur-md">
               <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 sm:grid-cols-3 lg:grid-cols-6 md:px-8">
                 {partnerLogos.map((partner) => (
                   <div
                     key={partner}
-                    className="flex items-center justify-center gap-2 text-center text-xs font-bold tracking-[0.18em] text-white/70 transition hover:text-[#f4d06f]"
+                    className="flex items-center justify-center gap-2 text-center text-xs font-bold tracking-[0.18em] text-slate-300/75 transition hover:text-[#f4d06f]"
                   >
                     <Building2 className="h-4 w-4 shrink-0 text-[#f4d06f]" />
                     <span>{partner}</span>
@@ -623,7 +637,7 @@ export function Index() {
                 alt="AYTO Properties Head Office & Branches"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/55 to-[#0c0f0e]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
               <div className="relative z-10 px-4 text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   Visit Us In Lahore
@@ -636,72 +650,72 @@ export function Index() {
 
             <div className="mx-auto max-w-5xl px-5 py-20 md:px-8">
               <div className="grid gap-8 md:grid-cols-3">
-                <div className="rounded-3xl border border-white/15 bg-[#141917]/85 p-7 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50">
-                  <span className="rounded-full bg-[#f4c414] px-3 py-1 text-[11px] font-bold text-[#141414]">
+                <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 p-7 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50">
+                  <span className="rounded-full bg-[#f4c414] px-3 py-1 text-[11px] font-bold text-[#070b14]">
                     HEAD OFFICE
                   </span>
                   <h2 className="mt-4 font-sans text-lg font-bold text-white">
                     DHA Phase 12 (EME Sector)
                   </h2>
-                  <p className="mt-2 text-xs leading-relaxed text-white/80">
+                  <p className="mt-2 text-xs leading-relaxed text-slate-200/85">
                     E65 DHA Phase 12, Multan Road, Lahore, Pakistan
                   </p>
                   <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
                     <Phone className="h-3.5 w-3.5" />
                     <span>+92 331-4972426</span>
                   </p>
-                  <p className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                  <p className="mt-2 flex items-center gap-2 text-xs text-slate-300/75">
                     <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
                     <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
                   </p>
                 </div>
 
-                <div className="rounded-3xl border border-white/15 bg-[#141917]/85 p-7 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50">
+                <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 p-7 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50">
                   <span className="rounded-full border border-[#f4c414] px-3 py-1 text-[11px] font-bold text-[#f4c414]">
                     BRANCH OFFICE
                   </span>
                   <h2 className="mt-4 font-sans text-lg font-bold text-white">
                     DHA Phase 6 Branch
                   </h2>
-                  <p className="mt-2 text-xs leading-relaxed text-white/80">
+                  <p className="mt-2 text-xs leading-relaxed text-slate-200/85">
                     Main Boulevard, DHA Phase 6, Lahore, Pakistan
                   </p>
                   <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
                     <Phone className="h-3.5 w-3.5" />
                     <span>+92 331-4972426</span>
                   </p>
-                  <p className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                  <p className="mt-2 flex items-center gap-2 text-xs text-slate-300/75">
                     <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
                     <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
                   </p>
                 </div>
 
-                <div className="rounded-3xl border border-white/15 bg-[#141917]/85 p-7 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50">
+                <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 p-7 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50">
                   <span className="rounded-full border border-[#f4c414] px-3 py-1 text-[11px] font-bold text-[#f4c414]">
                     BRANCH OFFICE
                   </span>
                   <h2 className="mt-4 font-sans text-lg font-bold text-white">
                     Bahria Town Branch
                   </h2>
-                  <p className="mt-2 text-xs leading-relaxed text-white/80">
+                  <p className="mt-2 text-xs leading-relaxed text-slate-200/85">
                     Sector C Commercial, Bahria Town, Lahore, Pakistan
                   </p>
                   <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
                     <Phone className="h-3.5 w-3.5" />
                     <span>+92 331-4972426</span>
                   </p>
-                  <p className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                  <p className="mt-2 flex items-center gap-2 text-xs text-slate-300/75">
                     <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
                     <span>Mon - Sat: 10:00 AM - 7:00 PM</span>
                   </p>
                 </div>
               </div>
 
-              <section className="mt-20 rounded-3xl border border-white/10 bg-[#141816]/75 px-6 py-12 text-center backdrop-blur-md">
+              <section className="mt-20 rounded-3xl border border-sky-300/15 bg-[#0e172a]/75 px-6 py-12 text-center shadow-xl backdrop-blur-md">
                 <h2 className="font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                   Let&apos;s Build Your Future Together
                 </h2>
-                <p className="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-white/75 sm:text-sm">
+                <p className="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-slate-200/80 sm:text-sm">
                   AYTO Properties &amp; Builders is committed to delivering trusted real estate
                   solutions across Lahore. Visit our nearest office today.
                 </p>
@@ -716,7 +730,7 @@ export function Index() {
                 alt="AYTO Properties Signature Projects"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/55 to-[#0c0f0e]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
               <div className="relative z-10 px-4 text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   Developments &amp; Ventures
@@ -732,7 +746,7 @@ export function Index() {
                 {projectsList.map((proj) => (
                   <div
                     key={proj.title}
-                    className="group overflow-hidden rounded-3xl border border-white/15 bg-[#141917]/85 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
+                    className="group overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
                   >
                     <div className="relative aspect-[16/10] w-full overflow-hidden">
                       <img
@@ -740,10 +754,10 @@ export function Index() {
                         alt={proj.title}
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
-                      <span className="absolute left-4 top-4 rounded-full bg-[#141414]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f]">
+                      <span className="absolute left-4 top-4 rounded-full bg-[#070b14]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f]">
                         {proj.tag}
                       </span>
-                      <span className="absolute bottom-4 right-4 rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#141414]">
+                      <span className="absolute bottom-4 right-4 rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#070b14]">
                         {proj.status}
                       </span>
                     </div>
@@ -756,7 +770,7 @@ export function Index() {
                         <MapPin className="h-3.5 w-3.5 shrink-0" />
                         <span>{proj.location}</span>
                       </p>
-                      <p className="mt-4 text-xs leading-relaxed text-white/75 sm:text-sm">
+                      <p className="mt-4 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
                         {proj.desc}
                       </p>
 
@@ -770,7 +784,7 @@ export function Index() {
                               `Hello AYTO Properties, I would like details for "${proj.title}".`,
                             )
                           }
-                          className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-bold text-[#141414] transition hover:brightness-105"
+                          className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-bold text-[#070b14] transition hover:brightness-105"
                         >
                           Request Project Details
                           <ArrowRight className="h-3.5 w-3.5" />
@@ -790,7 +804,7 @@ export function Index() {
                 alt="AYTO Properties Real Estate & Construction Services"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/55 to-[#0c0f0e]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
               <div className="relative z-10 px-4 text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   What We Offer
@@ -808,7 +822,7 @@ export function Index() {
                   return (
                     <div
                       key={srv.title}
-                      className="flex flex-col justify-between rounded-3xl border border-white/15 bg-[#141917]/85 p-7 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
+                      className="flex flex-col justify-between rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 p-7 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
                     >
                       <div>
                         <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[#f4d06f]/40 bg-[#f4d06f]/10">
@@ -817,13 +831,13 @@ export function Index() {
                         <h2 className="mt-5 font-sans text-lg font-bold text-white sm:text-xl">
                           {srv.title}
                         </h2>
-                        <p className="mt-3 text-xs leading-relaxed text-white/75 sm:text-sm">
+                        <p className="mt-3 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
                           {srv.desc}
                         </p>
 
-                        <ul className="mt-5 space-y-2 border-t border-white/10 pt-4">
+                        <ul className="mt-5 space-y-2 border-t border-sky-300/10 pt-4">
                           {srv.points.map((pt) => (
-                            <li key={pt} className="flex items-center gap-2 text-xs text-white/85">
+                            <li key={pt} className="flex items-center gap-2 text-xs text-slate-100/90">
                               <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#f4d06f]" />
                               <span>{pt}</span>
                             </li>
@@ -840,7 +854,7 @@ export function Index() {
                             `Hello AYTO Properties, I need consultation regarding "${srv.title}".`,
                           )
                         }
-                        className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#f4c414] bg-transparent px-5 py-2.5 text-xs font-bold text-[#f4c414] transition hover:bg-[#f4c414] hover:text-[#141414]"
+                        className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#f4c414] bg-transparent px-5 py-2.5 text-xs font-bold text-[#f4c414] transition hover:bg-[#f4c414] hover:text-[#070b14]"
                       >
                         Inquire Now
                         <ArrowRight className="h-3.5 w-3.5" />
@@ -859,7 +873,7 @@ export function Index() {
                 alt="AYTO Properties Architecture & Interior Gallery"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/55 to-[#0c0f0e]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
               <div className="relative z-10 px-4 text-center">
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   <Sparkles className="h-3.5 w-3.5" /> Visual Portfolio
@@ -879,8 +893,8 @@ export function Index() {
                     onClick={() => setGalleryFilter(cat)}
                     className={`rounded-full px-5 py-2 text-xs font-bold transition ${
                       galleryFilter === cat
-                        ? "bg-[#f4c414] text-[#141414] shadow-lg"
-                        : "border border-white/20 bg-[#141917]/80 text-white/80 hover:border-[#f4c414]"
+                        ? "bg-[#f4c414] text-[#070b14] shadow-lg"
+                        : "border border-sky-300/20 bg-[#0e172a]/85 text-white/85 hover:border-[#f4c414]"
                     }`}
                   >
                     {cat}
@@ -893,7 +907,7 @@ export function Index() {
                   <div
                     key={item.title}
                     onClick={() => setLightboxImg(item)}
-                    className="group cursor-pointer overflow-hidden rounded-2xl border border-white/15 bg-[#141917]/85 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
+                    className="group cursor-pointer overflow-hidden rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
                   >
                     <div className="aspect-[4/3] overflow-hidden">
                       <img
@@ -923,13 +937,13 @@ export function Index() {
               >
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl border border-white/20 bg-[#141414]"
+                  className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl border border-sky-300/25 bg-[#0b1322]"
                 >
                   <button
                     type="button"
                     onClick={() => setLightboxImg(null)}
                     aria-label="Close preview"
-                    className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/75 text-white hover:bg-[#f4c414] hover:text-[#141414]"
+                    className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/75 text-white hover:bg-[#f4c414] hover:text-[#070b14]"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -958,13 +972,13 @@ export function Index() {
               </div>
 
               <div className="mt-12 grid gap-6 md:grid-cols-3">
-                <div className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition duration-300 hover:-translate-y-1">
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
-                    <MapPin className="h-6 w-6 text-[#141414]" />
+                <div className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#070b14] shadow-xl transition duration-300 hover:-translate-y-1">
+                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14]">
+                    <MapPin className="h-6 w-6 text-[#070b14]" />
                   </div>
                   <div>
                     <h2 className="font-sans text-lg font-bold">Our Address</h2>
-                    <p className="mt-1 text-xs font-medium leading-relaxed text-[#141414]/90 sm:text-sm">
+                    <p className="mt-1 text-xs font-medium leading-relaxed text-[#070b14]/90 sm:text-sm">
                       E65 DHA Phase 12, Multan Road, Lahore
                     </p>
                   </div>
@@ -972,26 +986,26 @@ export function Index() {
 
                 <a
                   href="tel:+923314972426"
-                  className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition duration-300 hover:-translate-y-1 hover:brightness-105"
+                  className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#070b14] shadow-xl transition duration-300 hover:-translate-y-1 hover:brightness-105"
                 >
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
-                    <Phone className="h-6 w-6 text-[#141414]" />
+                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14]">
+                    <Phone className="h-6 w-6 text-[#070b14]" />
                   </div>
                   <div>
                     <h2 className="font-sans text-lg font-bold">Phone Number</h2>
-                    <p className="mt-1 text-xs font-semibold text-[#141414]/90 sm:text-sm">
+                    <p className="mt-1 text-xs font-semibold text-[#070b14]/90 sm:text-sm">
                       +92 331-4972426
                     </p>
                   </div>
                 </a>
 
-                <div className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition duration-300 hover:-translate-y-1">
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
-                    <Mail className="h-6 w-6 text-[#141414]" />
+                <div className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#070b14] shadow-xl transition duration-300 hover:-translate-y-1">
+                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14]">
+                    <Mail className="h-6 w-6 text-[#070b14]" />
                   </div>
                   <div className="min-w-0">
                     <h2 className="font-sans text-lg font-bold">Email Address</h2>
-                    <p className="mt-1 truncate text-xs font-semibold text-[#141414]/90 sm:text-sm">
+                    <p className="mt-1 truncate text-xs font-semibold text-[#070b14]/90 sm:text-sm">
                       info2aytoproperties@gmail.com
                     </p>
                   </div>
@@ -999,7 +1013,7 @@ export function Index() {
               </div>
 
               <div className="mt-16 grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
-                <div className="rounded-3xl border border-white/10 bg-[#141816]/80 p-7 backdrop-blur-md sm:p-9">
+                <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/80 p-7 backdrop-blur-md sm:p-9">
                   <h2 className="font-sans text-3xl font-bold text-white sm:text-4xl">
                     Schedule a visit
                   </h2>
@@ -1013,9 +1027,9 @@ export function Index() {
                           placeholder="Your Name*"
                           value={formName}
                           onChange={(e) => setFormName(e.target.value)}
-                          className="w-full rounded-full border border-white/25 bg-[#101413]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                          className="w-full rounded-full border border-sky-300/20 bg-[#09101f]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
                         />
-                        <User className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                        <User className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       </div>
 
                       <div className="relative">
@@ -1025,9 +1039,9 @@ export function Index() {
                           placeholder="Your Email*"
                           value={formEmail}
                           onChange={(e) => setFormEmail(e.target.value)}
-                          className="w-full rounded-full border border-white/25 bg-[#101413]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                          className="w-full rounded-full border border-sky-300/20 bg-[#09101f]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
                         />
-                        <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                        <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       </div>
                     </div>
 
@@ -1037,9 +1051,9 @@ export function Index() {
                         placeholder="Your Phone"
                         value={formPhone}
                         onChange={(e) => setFormPhone(e.target.value)}
-                        className="w-full rounded-full border border-white/25 bg-[#101413]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                        className="w-full rounded-full border border-sky-300/20 bg-[#09101f]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
                       />
-                      <Phone className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+                      <Phone className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     </div>
 
                     <div className="relative">
@@ -1049,36 +1063,36 @@ export function Index() {
                         placeholder="Type Your Message*"
                         value={formMessage}
                         onChange={(e) => setFormMessage(e.target.value)}
-                        className="w-full rounded-3xl border border-white/25 bg-[#101413]/90 px-5 py-4 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
+                        className="w-full rounded-3xl border border-sky-300/20 bg-[#09101f]/90 px-5 py-4 pr-11 text-sm text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
                       />
-                      <MessageSquare className="pointer-events-none absolute right-4 top-5 h-4 w-4 text-white/60" />
+                      <MessageSquare className="pointer-events-none absolute right-4 top-5 h-4 w-4 text-slate-400" />
                     </div>
 
                     <button
                       type="submit"
-                      className="rounded-full bg-[#f4c414] px-8 py-3.5 text-sm font-bold text-[#141414] shadow-lg transition hover:brightness-105"
+                      className="rounded-full bg-[#f4c414] px-8 py-3.5 text-sm font-bold text-[#070b14] shadow-lg transition hover:brightness-105"
                     >
                       Submit Message
                     </button>
                   </form>
                 </div>
 
-                <div className="flex flex-col justify-between rounded-3xl border border-white/15 bg-[#141917]/85 p-8 shadow-2xl backdrop-blur-md">
+                <div className="flex flex-col justify-between rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 p-8 shadow-2xl backdrop-blur-md">
                   <div>
-                    <span className="rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#141414]">
+                    <span className="rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#070b14]">
                       LAHORE HEAD OFFICE
                     </span>
                     <h3 className="mt-4 font-sans text-2xl font-bold text-white">
                       E65 DHA Phase 12, Multan Road
                     </h3>
-                    <p className="mt-3 text-xs leading-relaxed text-white/75 sm:text-sm">
+                    <p className="mt-3 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
                       Visit our main sales &amp; consultancy office in DHA Phase 12 (EME Sector),
                       Multan Road, Lahore for verified residential plots, luxury villas, and
                       construction consultations.
                     </p>
                   </div>
 
-                  <div className="mt-8 space-y-3 border-t border-white/10 pt-5 text-xs text-white/85">
+                  <div className="mt-8 space-y-3 border-t border-sky-300/15 pt-5 text-xs text-slate-100/90">
                     <p className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-[#f4c414]" />
                       <span>Monday - Saturday: 10:00 AM - 7:00 PM</span>
@@ -1103,7 +1117,7 @@ export function Index() {
 
             <section
               id="listings"
-              className="relative isolate overflow-hidden border-t border-white/10 py-20 text-white md:py-28"
+              className="relative isolate overflow-hidden border-t border-sky-300/10 py-20 text-white md:py-28"
             >
               <div className="mx-auto max-w-6xl px-5 md:px-8">
                 <div className="mx-auto max-w-2xl text-center">
@@ -1113,7 +1127,7 @@ export function Index() {
                   <h2 className="mt-3 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                     {showSaved ? "Your Saved Properties" : "Discover the Most Recommended Properties"}
                   </h2>
-                  <p className="mt-3 text-xs leading-relaxed text-white/70 sm:text-sm">
+                  <p className="mt-3 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
                     Discover the most recommended properties handpicked for their quality, value, and
                     location across Lahore.
                   </p>
@@ -1124,9 +1138,9 @@ export function Index() {
                     <div
                       key={p.id}
                       onClick={() => setOpen(p)}
-                      className="group cursor-pointer rounded-2xl border border-white/10 bg-[#141917]/75 p-2.5 backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/45"
+                      className="group cursor-pointer rounded-2xl border border-sky-300/15 bg-[#0e172a]/80 p-2.5 shadow-lg backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
                     >
-                      <div className="aspect-square overflow-hidden rounded-xl bg-[#1c1c1c] shadow-lg">
+                      <div className="aspect-square overflow-hidden rounded-xl bg-[#131f36] shadow-lg">
                         <img
                           src={p.image}
                           alt={p.title}
@@ -1140,7 +1154,7 @@ export function Index() {
                           <h3 className="truncate text-xs font-bold text-white transition group-hover:text-[#f4d06f] sm:text-sm">
                             {p.location}
                           </h3>
-                          <p className="truncate text-[11px] text-white/55">{p.title}</p>
+                          <p className="truncate text-[11px] text-slate-300/70">{p.title}</p>
                         </div>
 
                         <button
@@ -1149,7 +1163,7 @@ export function Index() {
                             e.stopPropagation();
                             setOpen(p);
                           }}
-                          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/45 px-3.5 py-1 text-[11px] font-medium text-white transition-all duration-300 group-hover:border-[#f4d06f] group-hover:bg-[#f4d06f] group-hover:text-[#141414]"
+                          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-sky-200/40 px-3.5 py-1 text-[11px] font-medium text-white transition-all duration-300 group-hover:border-[#f4d06f] group-hover:bg-[#f4d06f] group-hover:text-[#070b14]"
                         >
                           Details
                           <ArrowRight className="h-3 w-3" />
@@ -1171,9 +1185,9 @@ export function Index() {
         />
 
         {/* Colored Brand Social Icons Bar (Facebook, Instagram, Twitter, WhatsApp) */}
-        <div className="border-t border-white/10 bg-[#090c0b]/90 py-5 backdrop-blur-md">
+        <div className="border-t border-sky-300/10 bg-[#050912]/90 py-5 backdrop-blur-md">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 md:px-8">
-            <p className="text-xs text-white/60">
+            <p className="text-xs text-slate-300/70">
               Connect with{" "}
               <span className="font-semibold text-white">AYTO Properties &amp; Builders</span>
             </p>
@@ -1230,8 +1244,8 @@ export function Index() {
         </div>
       </div>
 
-    {/* Standard Round WhatsApp Logo Icon (Bottom-Right) */}
-<button
+      {/* Standard Round WhatsApp Logo Icon (Bottom-Right) */}
+      <button
         type="button"
         onClick={openWhatsAppChat}
         aria-label="WhatsApp"
@@ -1242,6 +1256,7 @@ export function Index() {
           <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z" />
         </svg>
       </button>
+
       <PropertyDialog p={open} onClose={() => setOpen(null)} onInquire={inquire} />
     </div>
   );
