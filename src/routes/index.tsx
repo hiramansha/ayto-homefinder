@@ -60,6 +60,13 @@ type ActivePage =
   | "contact-us"
   | "query-form";
 
+const DIRECTOR_PHOTOS = [
+  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpg",
+  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpg.jpeg",
+  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpeg",
+  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.png",
+];
+
 const partnerLogos = [
   "DHA LAHORE",
   "BAHRIA TOWN",
@@ -198,34 +205,24 @@ const galleryItems = [
   },
 ];
 
-// Automatically picks up Ma'am's photo from src/assets/
-const assetModules = import.meta.glob("../assets/*.{jpg,jpeg,png,webp}", {
-  eager: true,
-  import: "default",
-}) as Record<string, string>;
-
-const directorEntry = Object.entries(assetModules).find(([path]) =>
-  path.toLowerCase().includes("ayesha"),
-);
-const LOCAL_DIRECTOR_IMG = directorEntry ? directorEntry[1] : "";
-
 export function Index() {
   const [saved, setSaved] = useState<number[]>([]);
   const [showSaved, setShowSaved] = useState(false);
   const [open, setOpen] = useState<Property | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>("home");
-  const [imgSrc, setImgSrc] = useState(LOCAL_DIRECTOR_IMG || fallbackAvatar);
+  const [photoIdx, setPhotoIdx] = useState(0);
   const [prefill, setPrefill] = useState({ text: "", nonce: 0 });
 
-  // Gallery filter & lightbox state
   const [galleryFilter, setGalleryFilter] = useState("All");
   const [lightboxImg, setLightboxImg] = useState<{ title: string; image: string } | null>(null);
 
-  // Contact Us form state
   const [formName, setFormName] = useState("");
   const [formEmail, setFormEmail] = useState("");
   const [formPhone, setFormPhone] = useState("");
   const [formMessage, setFormMessage] = useState("");
+
+  const currentDirectorImg =
+    photoIdx < DIRECTOR_PHOTOS.length ? DIRECTOR_PHOTOS[photoIdx] : fallbackAvatar;
 
   useEffect(() => {
     try {
@@ -255,7 +252,6 @@ export function Index() {
       setFormMessage(text);
     }
     setActivePage((prev) => {
-      // Prevent unnecessary re-render/jump if already at top of Home
       if (prev === "home" && page === "home" && (!sectionId || sectionId === "top")) {
         window.scrollTo({ top: 0, behavior: "smooth" });
         return "home";
@@ -282,7 +278,6 @@ export function Index() {
       const target = e.target as HTMLElement | null;
       const btn = target?.closest("button, a");
       if (!btn) return;
-      // Do not intercept floating WhatsApp or external links
       if (btn.getAttribute("target") === "_blank") return;
 
       const raw = (btn.textContent || "").trim().toLowerCase();
@@ -323,7 +318,6 @@ export function Index() {
         return;
       }
 
-      // "Request A Visit" or "Get a Quote" -> Opens Query / Visit Request Form ONLY
       if (label.includes("request a visit") || label.includes("get a quote")) {
         e.preventDefault();
         e.stopPropagation();
@@ -331,7 +325,6 @@ export function Index() {
         return;
       }
 
-      // "Contact Us" -> Opens Our Contact Information page ONLY
       if (label === "contact us") {
         e.preventDefault();
         e.stopPropagation();
@@ -339,7 +332,6 @@ export function Index() {
         return;
       }
 
-      // "Home" or Logo -> Stays cleanly on Home page without rotating/jumping
       if (label === "home" || label.startsWith("ayto properties")) {
         e.preventDefault();
         e.stopPropagation();
@@ -408,7 +400,6 @@ export function Index() {
       />
 
       {activePage === "query-form" ? (
-        /* PROPERTY VISIT / QUERY FORM PAGE (On Request A Visit / Get a Quote) */
         <main className="pt-20">
           <div className="mx-auto max-w-2xl px-4 pt-3 md:px-6">
             <button
@@ -422,7 +413,6 @@ export function Index() {
           <Contact prefill={prefill} />
         </main>
       ) : activePage === "about-us" ? (
-        /* 1. ABOUT US PAGE ONLY */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
@@ -458,8 +448,8 @@ export function Index() {
               <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-white/20 bg-white shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)]">
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1e1e1e]">
                   <img
-                    src={imgSrc}
-                    onError={() => setImgSrc(fallbackAvatar)}
+                    src={currentDirectorImg}
+                    onError={() => setPhotoIdx((i) => i + 1)}
                     alt="Ayesha Iqbal - Managing Director, AYTO Properties"
                     className="h-full w-full object-cover object-top"
                   />
@@ -588,7 +578,6 @@ export function Index() {
           </div>
         </main>
       ) : activePage === "our-offices" ? (
-        /* 2. OUR OFFICES PAGE ONLY */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
@@ -655,66 +644,4 @@ export function Index() {
               </h2>
 
               <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
-                <div className="order-2 overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl md:order-1">
-                  <iframe
-                    title="AYTO Properties DHA Phase 6 Branch"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.4300%2C31.4600%2C74.4750%2C31.4950&layer=mapnik&marker=31.4775%2C74.4525"
-                    className="h-[240px] w-full border-0"
-                    loading="lazy"
-                  />
-                </div>
-
-                <div className="order-1 space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:order-2 md:pl-8">
-                  <p className="font-semibold text-white">
-                    Main Boulevard, DHA Phase 6, Lahore, Pakistan
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Phone: +92 331-4972426</span>
-                  </p>
-                  <p className="flex items-center gap-2 font-semibold text-white">
-                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Office Hours:</span>
-                  </p>
-                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
-                </div>
-              </div>
-            </section>
-
-            <section className="mt-24">
-              <h2 className="text-center font-sans text-xl font-bold text-white sm:text-3xl">
-                AYTO Properties &amp; Builders – Bahria Town Branch
-              </h2>
-
-              <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
-                <div className="space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:pl-8">
-                  <p className="font-semibold text-white">
-                    Sector C Commercial, Bahria Town, Lahore, Pakistan
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Phone: +92 331-4972426</span>
-                  </p>
-                  <p className="flex items-center gap-2 font-semibold text-white">
-                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
-                    <span>Office Hours:</span>
-                  </p>
-                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
-                </div>
-
-                <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl">
-                  <iframe
-                    title="AYTO Properties Bahria Town Branch"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.1600%2C31.3550%2C74.2050%2C31.3850&layer=mapnik&marker=31.3700%2C74.1825"
-                    className="h-[240px] w-full border-0"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="mt-28 text-center">
-              <h2 className="font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
-                Let&apos;s Build Your Future Together
-              </h2>
-              <p className="mx-auto mt-3 max-w
+                <div className="order-2 overflow-hidden rounded-xl border border-white/1
