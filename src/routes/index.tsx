@@ -34,6 +34,12 @@ import { Contact } from "@/components/site/Contact";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { scrollToId } from "@/components/site/utils";
 import fallbackAvatar from "@/assets/ayto-logo.jpg";
+const directorPhotos = [
+  "/assets/ayesha-iqbal.jpg",
+  "/assets/ayesha-iqbal.jpg.jpeg",
+  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpg.jpeg",
+  "https://raw.githubusercontent.com/hiramansha/ayto-homefinder/main/src/assets/ayesha-iqbal.jpg",
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -413,11 +419,21 @@ export function Index() {
 
               <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-white/20 bg-white shadow-2xl">
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1e1e1e]">
-                  <img
-                    src={fallbackAvatar}
-                    alt="Ayesha Iqbal - Managing Director, AYTO Properties"
-                    className="h-full w-full object-cover object-top"
-                  />
+<img
+  src={directorPhotos[0]}
+  onError={(e) => {
+    const img = e.currentTarget;
+    const next = Number(img.dataset.idx || "0") + 1;
+    if (next < directorPhotos.length) {
+      img.dataset.idx = String(next);
+      img.src = directorPhotos[next]!;
+    } else {
+      img.src = fallbackAvatar;
+    }
+  }}
+  alt="Ayesha Iqbal - Managing Director, AYTO Properties"
+  className="h-full w-full object-cover object-top"
+/>
                 </div>
                 <div className="bg-white px-5 py-3.5 text-center">
                   <p className="font-sans text-base font-bold text-[#141414]">
