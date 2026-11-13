@@ -4,6 +4,7 @@ import {
   ArrowRight,
   BadgeDollarSign,
   Building2,
+  Clock,
   Home,
   Lightbulb,
   Mail,
@@ -40,7 +41,7 @@ export const Route = createFileRoute("/")({
 });
 
 const FAV_KEY = "ayto-fav";
-type ActivePage = "home" | "about-us" | "contact-us";
+type ActivePage = "home" | "about-us" | "our-offices" | "contact-us";
 
 const partnerLogos = [
   "DHA LAHORE",
@@ -84,6 +85,7 @@ export function Index() {
     const syncFromUrl = () => {
       const s = window.location.search;
       if (s.includes("page=about-us")) setActivePage("about-us");
+      else if (s.includes("page=our-offices")) setActivePage("our-offices");
       else if (s.includes("page=contact-us") || s.includes("page=query-form"))
         setActivePage("contact-us");
       else setActivePage("home");
@@ -102,9 +104,11 @@ export function Index() {
       const nextUrl =
         page === "about-us"
           ? "?page=about-us"
-          : page === "contact-us"
-            ? "?page=contact-us"
-            : window.location.pathname;
+          : page === "our-offices"
+            ? "?page=our-offices"
+            : page === "contact-us"
+              ? "?page=contact-us"
+              : window.location.pathname;
       window.history.pushState({}, "", nextUrl);
     } catch {
       /* ignore */
@@ -123,7 +127,6 @@ export function Index() {
       if (!btn) return;
       const label = (btn.textContent || "").trim().toLowerCase();
 
-      // 1. "About Us" or "More About AYTO" -> Opens ONLY the About Us page (Director Message + Vision & Mission + Why Choose Us)
       if (label === "about us" || label.includes("more about ayto")) {
         e.preventDefault();
         e.stopPropagation();
@@ -131,7 +134,13 @@ export function Index() {
         return;
       }
 
-      // 2. "Contact Us", "Request A Visit", or "Get a Quote" -> Opens ONLY the Contact Us page
+      if (label === "our offices") {
+        e.preventDefault();
+        e.stopPropagation();
+        navigatePage("our-offices");
+        return;
+      }
+
       if (
         label === "contact us" ||
         label.includes("request a visit") ||
@@ -143,7 +152,6 @@ export function Index() {
         return;
       }
 
-      // 3. "Home" -> Opens ONLY the Home page
       if (label === "home") {
         e.preventDefault();
         e.stopPropagation();
@@ -151,9 +159,7 @@ export function Index() {
         return;
       }
 
-      // Other header links
       if (
-        label === "our offices" ||
         label === "projects" ||
         label === "services" ||
         label === "gallery" ||
@@ -162,7 +168,6 @@ export function Index() {
         e.preventDefault();
         e.stopPropagation();
         const map: Record<string, string> = {
-          "our offices": "offices",
           projects: "spotlight",
           services: "about",
           gallery: "listings",
@@ -203,6 +208,13 @@ export function Index() {
 
   return (
     <div id="top" className="min-h-screen bg-[#141414] text-white">
+      {/* Hide old monochrome footer social icons so our colored FB, Insta, Twitter & WhatsApp bar replaces them */}
+      <style>{`
+        footer a[aria-label], footer > div:last-child a {
+          display: none !important;
+        }
+      `}</style>
+
       <SiteHeader
         savedCount={saved.length}
         onShowSaved={() => {
@@ -216,9 +228,8 @@ export function Index() {
       />
 
       {activePage === "about-us" ? (
-        /* ABOUT US PAGE ONLY (EXACTLY MATCHING YOUR SCREENSHOTS) */
+        /* ABOUT US PAGE ONLY */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
-          {/* Geometric Diamond Pattern Background */}
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
             style={{
@@ -228,14 +239,12 @@ export function Index() {
             }}
           />
 
-          {/* Diagonal Glowing Gold Beams */}
           <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[540px] overflow-hidden opacity-85">
             <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
             <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
           </div>
 
           <div className="mx-auto max-w-5xl px-5 pb-20 pt-4 md:px-8">
-            {/* 1. Director Message + Ayesha Iqbal Portrait Card */}
             <section className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
               <div>
                 <h1 className="font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -272,7 +281,6 @@ export function Index() {
               </div>
             </section>
 
-            {/* 2. VISION & MISSION */}
             <section className="mt-24 text-center">
               <h2 className="font-sans text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">
                 VISION & MISSION
@@ -287,7 +295,6 @@ export function Index() {
               </p>
             </section>
 
-            {/* 3. Why Choose Us? */}
             <section className="mt-28">
               <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
                 <div>
@@ -315,7 +322,6 @@ export function Index() {
                   </p>
                 </div>
 
-                {/* Glowing Innovation Card */}
                 <div className="mx-auto flex aspect-[4/3] w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-white/15 bg-gradient-to-br from-[#232323] via-[#191919] to-[#121212] p-8 text-center shadow-2xl">
                   <div className="grid h-20 w-20 place-items-center rounded-full border border-[#f4d06f]/50 bg-[#f4d06f]/15 shadow-[0_0_40px_rgba(244,208,111,0.45)]">
                     <Lightbulb className="h-10 w-10 text-[#f4d06f]" />
@@ -329,7 +335,6 @@ export function Index() {
                 </div>
               </div>
 
-              {/* 3 Icon Pillars */}
               <div className="mt-14 grid gap-8 sm:grid-cols-3">
                 <div>
                   <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/25 bg-white/[0.03] text-white">
@@ -374,7 +379,6 @@ export function Index() {
             </section>
           </div>
 
-          {/* Partner Logos Strip */}
           <div className="border-t border-white/10 py-12">
             <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 sm:grid-cols-3 lg:grid-cols-6 md:px-8">
               {partnerLogos.map((partner) => (
@@ -389,8 +393,146 @@ export function Index() {
             </div>
           </div>
         </main>
+      ) : activePage === "our-offices" ? (
+        /* OUR OFFICES PAGE ONLY */
+        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
+              backgroundSize: "36px 36px",
+            }}
+          />
+
+          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
+            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
+            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
+          </div>
+
+          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <img
+              src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=80"
+              alt="AYTO Properties Head Office & Branches"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black/55" />
+            <h1 className="relative z-10 px-4 text-center font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
+              Our Head Office &amp; Branches
+            </h1>
+          </section>
+
+          <div className="mx-auto max-w-5xl px-5 py-20 md:px-8">
+            <section>
+              <h2 className="text-center font-sans text-xl font-bold text-white sm:text-3xl">
+                AYTO Properties &amp; Builders – Head Office
+              </h2>
+
+              <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
+                <div className="space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:pl-8">
+                  <p className="font-semibold text-white">
+                    E65 DHA Phase 12, Multan Road, Lahore, Pakistan
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Phone: +92 331-4972426</span>
+                  </p>
+                  <p className="flex items-center gap-2 font-semibold text-white">
+                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Office Hours:</span>
+                  </p>
+                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
+                </div>
+
+                <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl">
+                  <iframe
+                    title="AYTO Properties Head Office - E65 DHA Phase 12, Multan Road, Lahore"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.1650%2C31.3850%2C74.2150%2C31.4250&layer=mapnik&marker=31.4050%2C74.1900"
+                    className="h-[240px] w-full border-0"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="mt-24">
+              <h2 className="text-center font-sans text-xl font-bold text-white sm:text-3xl">
+                AYTO Properties &amp; Builders – DHA Phase 6 Branch
+              </h2>
+
+              <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
+                <div className="order-2 overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl md:order-1">
+                  <iframe
+                    title="AYTO Properties DHA Phase 6 Branch"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.4300%2C31.4600%2C74.4750%2C31.4950&layer=mapnik&marker=31.4775%2C74.4525"
+                    className="h-[240px] w-full border-0"
+                    loading="lazy"
+                  />
+                </div>
+
+                <div className="order-1 space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:order-2 md:pl-8">
+                  <p className="font-semibold text-white">
+                    Main Boulevard, DHA Phase 6, Lahore, Pakistan
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Phone: +92 331-4972426</span>
+                  </p>
+                  <p className="flex items-center gap-2 font-semibold text-white">
+                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Office Hours:</span>
+                  </p>
+                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="mt-24">
+              <h2 className="text-center font-sans text-xl font-bold text-white sm:text-3xl">
+                AYTO Properties &amp; Builders – Bahria Town Branch
+              </h2>
+
+              <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
+                <div className="space-y-2 text-xs leading-relaxed text-white/85 sm:text-sm md:pl-8">
+                  <p className="font-semibold text-white">
+                    Sector C Commercial, Bahria Town, Lahore, Pakistan
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Phone: +92 331-4972426</span>
+                  </p>
+                  <p className="flex items-center gap-2 font-semibold text-white">
+                    <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
+                    <span>Office Hours:</span>
+                  </p>
+                  <p className="text-white/80">Monday – Saturday: 10:00 AM – 7:00 PM</p>
+                </div>
+
+                <div className="overflow-hidden rounded-xl border border-white/15 bg-white shadow-2xl">
+                  <iframe
+                    title="AYTO Properties Bahria Town Branch"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=74.1600%2C31.3550%2C74.2050%2C31.3850&layer=mapnik&marker=31.3700%2C74.1825"
+                    className="h-[240px] w-full border-0"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="mt-28 text-center">
+              <h2 className="font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                Let&apos;s Build Your Future Together
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-white/75 sm:text-sm">
+                AYTO Properties &amp; Builders is committed to delivering trusted real estate
+                solutions across Lahore. Visit our nearest office today and start your investment
+                journey with confidence.
+              </p>
+            </section>
+          </div>
+        </main>
       ) : activePage === "contact-us" ? (
-        /* CONTACT US PAGE ONLY (3 GOLD CARDS + SCHEDULE A VISIT + MAP) */
+        /* CONTACT US PAGE ONLY */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 opacity-15"
@@ -626,6 +768,77 @@ export function Index() {
         onType={() => navigatePage("home", "listings")}
         onOpenQuery={() => navigatePage("contact-us")}
       />
+
+      {/* Colored Brand Social Icons Bar (Facebook, Instagram, Twitter/X, WhatsApp) */}
+      <div className="border-t border-white/10 bg-[#0d0d0d] py-5">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 md:px-8">
+          <p className="text-xs text-white/60">
+            Connect with <span className="font-semibold text-white">AYTO Properties &amp; Builders</span>
+          </p>
+
+          <div className="flex items-center gap-3.5">
+            {/* Facebook - Official Blue (#1877F2) */}
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              title="Facebook"
+              className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
+            >
+              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+              </svg>
+            </a>
+
+            {/* Instagram - Official Gradient */}
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              title="Instagram"
+              style={{
+                background:
+                  "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)",
+              }}
+              className="grid h-10 w-10 place-items-center rounded-full text-white shadow-md transition-transform duration-200 hover:scale-110"
+            >
+              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+              </svg>
+            </a>
+
+            {/* Twitter - Official Sky Blue (#1DA1F2) */}
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter"
+              title="Twitter"
+              className="grid h-10 w-10 place-items-center rounded-full bg-[#1DA1F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
+            >
+              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+              </svg>
+            </a>
+
+            {/* WhatsApp - Official Green (#25D366) */}
+            <a
+              href="https://wa.me/923314972426"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              title="WhatsApp (+92 331-4972426)"
+              className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-200 hover:scale-110"
+            >
+              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
 
       <PropertyDialog p={open} onClose={() => setOpen(null)} onInquire={inquire} />
     </div>
