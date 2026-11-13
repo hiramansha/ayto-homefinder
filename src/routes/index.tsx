@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+  ArrowLeft,
   ArrowRight,
   BadgeDollarSign,
   Building,
@@ -29,6 +30,7 @@ import { Hero } from "@/components/site/Hero";
 import { PropertyDialog } from "@/components/site/PropertyDialog";
 import { Spotlight } from "@/components/site/Spotlight";
 import { Testimonials } from "@/components/site/Testimonials";
+import { Contact } from "@/components/site/Contact";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { scrollToId } from "@/components/site/utils";
 import fallbackAvatar from "@/assets/ayto-logo.jpg";
@@ -55,7 +57,8 @@ type ActivePage =
   | "projects"
   | "services"
   | "gallery"
-  | "contact-us";
+  | "contact-us"
+  | "query-form";
 
 const partnerLogos = [
   "DHA LAHORE",
@@ -212,6 +215,7 @@ export function Index() {
   const [open, setOpen] = useState<Property | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>("home");
   const [imgSrc, setImgSrc] = useState(LOCAL_DIRECTOR_IMG || fallbackAvatar);
+  const [prefill, setPrefill] = useState({ text: "", nonce: 0 });
 
   // Gallery filter & lightbox state
   const [galleryFilter, setGalleryFilter] = useState("All");
@@ -236,8 +240,8 @@ export function Index() {
       else if (s.includes("page=projects")) setActivePage("projects");
       else if (s.includes("page=services")) setActivePage("services");
       else if (s.includes("page=gallery")) setActivePage("gallery");
-      else if (s.includes("page=contact-us") || s.includes("page=query-form"))
-        setActivePage("contact-us");
+      else if (s.includes("page=contact-us")) setActivePage("contact-us");
+      else if (s.includes("page=query-form")) setActivePage("query-form");
       else setActivePage("home");
     };
     syncFromUrl();
@@ -247,19 +251,29 @@ export function Index() {
 
   const navigatePage = (page: ActivePage, sectionId?: string, text = "") => {
     if (text) {
+      setPrefill({ text, nonce: Date.now() });
       setFormMessage(text);
     }
-    setActivePage(page);
+    setActivePage((prev) => {
+      // Prevent unnecessary re-render/jump if already at top of Home
+      if (prev === "home" && page === "home" && (!sectionId || sectionId === "top")) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return "home";
+      }
+      return page;
+    });
     try {
       const nextUrl = page === "home" ? window.location.pathname : `?page=${page}`;
-      window.history.pushState({}, "", nextUrl);
+      if (window.location.search !== (page === "home" ? "" : `?page=${page}`)) {
+        window.history.pushState({}, "", nextUrl);
+      }
     } catch {
       /* ignore */
     }
     if (page === "home" && sectionId && sectionId !== "top") {
       window.setTimeout(() => scrollToId(sectionId), 80);
     } else {
-      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
   };
 
@@ -268,8 +282,10 @@ export function Index() {
       const target = e.target as HTMLElement | null;
       const btn = target?.closest("button, a");
       if (!btn) return;
+      // Do not intercept floating WhatsApp or external links
+      if (btn.getAttribute("target") === "_blank") return;
+
       const raw = (btn.textContent || "").trim().toLowerCase();
-      // Normalize dropdown arrow characters if present
       const label = raw.replace(/[^\w\s]/g, "").trim();
 
       if (label === "about us" || label.includes("more about ayto")) {
@@ -307,18 +323,24 @@ export function Index() {
         return;
       }
 
-      if (
-        label === "contact us" ||
-        label.includes("request a visit") ||
-        label.includes("get a quote")
-      ) {
+      // "Request A Visit" or "Get a Quote" -> Opens Query / Visit Request Form ONLY
+      if (label.includes("request a visit") || label.includes("get a quote")) {
+        e.preventDefault();
+        e.stopPropagation();
+        navigatePage("query-form");
+        return;
+      }
+
+      // "Contact Us" -> Opens Our Contact Information page ONLY
+      if (label === "contact us") {
         e.preventDefault();
         e.stopPropagation();
         navigatePage("contact-us");
         return;
       }
 
-      if (label === "home") {
+      // "Home" or Logo -> Stays cleanly on Home page without rotating/jumping
+      if (label === "home" || label.startsWith("ayto properties")) {
         e.preventDefault();
         e.stopPropagation();
         navigatePage("home", "top");
@@ -353,7 +375,7 @@ export function Index() {
   const inquire = (p: Property) => {
     setOpen(null);
     navigatePage(
-      "contact-us",
+      "query-form",
       undefined,
       `Hello, I am interested in "${p.title}" in ${p.location}, ${p.city} (${priceLabel(p)}). Please share more details.`,
     );
@@ -385,7 +407,21 @@ export function Index() {
         }}
       />
 
-      {activePage === "about-us" ? (
+      {activePage === "query-form" ? (
+        /* PROPERTY VISIT / QUERY FORM PAGE (On Request A Visit / Get a Quote) */
+        <main className="pt-20">
+          <div className="mx-auto max-w-2xl px-4 pt-3 md:px-6">
+            <button
+              type="button"
+              onClick={() => navigatePage("home", "top")}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-white/85 transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> Back to Home
+            </button>
+          </div>
+          <Contact prefill={prefill} />
+        </main>
+      ) : activePage === "about-us" ? (
         /* 1. ABOUT US PAGE ONLY */
         <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
           <div
@@ -681,609 +717,4 @@ export function Index() {
               <h2 className="font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                 Let&apos;s Build Your Future Together
               </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-white/75 sm:text-sm">
-                AYTO Properties &amp; Builders is committed to delivering trusted real estate
-                solutions across Lahore. Visit our nearest office today and start your investment
-                journey with confidence.
-              </p>
-            </section>
-          </div>
-        </main>
-      ) : activePage === "projects" ? (
-        /* 3. PROJECTS PAGE ONLY */
-        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
-          {/* Full-Width Projects Hero Banner */}
-          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
-            <img
-              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80"
-              alt="AYTO Properties Signature Projects"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-black/60" />
-            <div className="relative z-10 px-4 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
-                Developments &amp; Developments
-              </p>
-              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
-                Our Signature &amp; Ongoing Projects
-              </h1>
-            </div>
-          </section>
-
-          <div className="mx-auto max-w-6xl px-5 py-20 md:px-8">
-            <div className="grid gap-10 md:grid-cols-2">
-              {projectsList.map((proj) => (
-                <div
-                  key={proj.title}
-                  className="group overflow-hidden rounded-3xl border border-white/15 bg-[#191919] shadow-2xl transition hover:border-[#f4d06f]/50"
-                >
-                  <div className="relative aspect-[16/10] w-full overflow-hidden">
-                    <img
-                      src={proj.image}
-                      alt={proj.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <span className="absolute left-4 top-4 rounded-full bg-[#141414]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f] backdrop-blur-sm">
-                      {proj.tag}
-                    </span>
-                    <span className="absolute bottom-4 right-4 rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#141414]">
-                      {proj.status}
-                    </span>
-                  </div>
-
-                  <div className="p-6 sm:p-8">
-                    <h2 className="font-sans text-xl font-bold text-white sm:text-2xl">
-                      {proj.title}
-                    </h2>
-                    <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-[#f4d06f]">
-                      <MapPin className="h-3.5 w-3.5 shrink-0" />
-                      <span>{proj.location}</span>
-                    </p>
-                    <p className="mt-4 text-xs leading-relaxed text-white/75 sm:text-sm">
-                      {proj.desc}
-                    </p>
-
-                    <div className="mt-6 flex flex-wrap items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          navigatePage(
-                            "contact-us",
-                            undefined,
-                            `Hello AYTO Properties, I would like to book a site visit and get payment plan details for "${proj.title}".`,
-                          )
-                        }
-                        className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-bold text-[#141414] transition hover:brightness-105"
-                      >
-                        Request Project Details
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </main>
-      ) : activePage === "services" ? (
-        /* 4. SERVICES PAGE ONLY */
-        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
-          {/* Full-Width Services Hero Banner */}
-          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
-            <img
-              src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1800&q=80"
-              alt="AYTO Properties Real Estate & Construction Services"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-black/60" />
-            <div className="relative z-10 px-4 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
-                What We Offer
-              </p>
-              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
-                Our Real Estate &amp; Construction Services
-              </h1>
-            </div>
-          </section>
-
-          <div className="mx-auto max-w-6xl px-5 py-20 md:px-8">
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {servicesList.map((srv) => {
-                const Icon = srv.icon;
-                return (
-                  <div
-                    key={srv.title}
-                    className="flex flex-col justify-between rounded-3xl border border-white/15 bg-[#191919] p-7 shadow-xl transition hover:border-[#f4d06f]/50"
-                  >
-                    <div>
-                      <div className="grid h-14 w-14 place-items-center rounded-2xl border border-[#f4d06f]/40 bg-[#f4d06f]/10">
-                        <Icon className="h-7 w-7 text-[#f4d06f]" />
-                      </div>
-                      <h2 className="mt-5 font-sans text-lg font-bold text-white sm:text-xl">
-                        {srv.title}
-                      </h2>
-                      <p className="mt-3 text-xs leading-relaxed text-white/75 sm:text-sm">
-                        {srv.desc}
-                      </p>
-
-                      <ul className="mt-5 space-y-2 border-t border-white/10 pt-4">
-                        {srv.points.map((pt) => (
-                          <li key={pt} className="flex items-center gap-2 text-xs text-white/85">
-                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[#f4d06f]" />
-                            <span>{pt}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigatePage(
-                          "contact-us",
-                          undefined,
-                          `Hello AYTO Properties, I need consultation regarding "${srv.title}".`,
-                        )
-                      }
-                      className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#f4c414] bg-transparent px-5 py-2.5 text-xs font-bold text-[#f4c414] transition hover:bg-[#f4c414] hover:text-[#141414]"
-                    >
-                      Inquire Now
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </main>
-      ) : activePage === "gallery" ? (
-        /* 5. GALLERY PAGE ONLY */
-        <main className="relative isolate overflow-hidden bg-[#141414] pt-20 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-64 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
-          {/* Full-Width Gallery Hero Banner */}
-          <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
-            <img
-              src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=80"
-              alt="AYTO Properties Architecture & Interior Gallery"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-black/60" />
-            <div className="relative z-10 px-4 text-center">
-              <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
-                <Sparkles className="h-3.5 w-3.5" /> Visual Portfolio
-              </p>
-              <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white drop-shadow-lg sm:text-4xl">
-                Project &amp; Interior Gallery
-              </h1>
-            </div>
-          </section>
-
-          <div className="mx-auto max-w-6xl px-5 py-16 md:px-8">
-            {/* Category Filter Tabs */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              {["All", "Luxury Villas", "Interiors", "Commercial & High-Rise"].map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setGalleryFilter(cat)}
-                  className={`rounded-full px-5 py-2 text-xs font-bold transition ${
-                    galleryFilter === cat
-                      ? "bg-[#f4c414] text-[#141414]"
-                      : "border border-white/20 bg-white/[0.03] text-white/80 hover:border-[#f4c414]"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Gallery Grid */}
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {filteredGallery.map((item) => (
-                <div
-                  key={item.title}
-                  onClick={() => setLightboxImg(item)}
-                  className="group cursor-pointer overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-xl"
-                >
-                  <div className="aspect-[4/3] overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#f4d06f]">
-                      {item.category}
-                    </span>
-                    <h2 className="mt-1 text-xs font-bold text-white sm:text-sm">
-                      {item.title}
-                    </h2>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Fullscreen Image Lightbox */}
-          {lightboxImg && (
-            <div
-              onClick={() => setLightboxImg(null)}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl border border-white/20 bg-[#141414]"
-              >
-                <button
-                  type="button"
-                  onClick={() => setLightboxImg(null)}
-                  aria-label="Close preview"
-                  className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/75 text-white hover:bg-[#f4c414] hover:text-[#141414]"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-                <img
-                  src={lightboxImg.image}
-                  alt={lightboxImg.title}
-                  className="max-h-[78vh] w-full object-contain"
-                />
-                <div className="px-5 py-3 text-center text-sm font-bold text-white">
-                  {lightboxImg.title}
-                </div>
-              </div>
-            </div>
-          )}
-        </main>
-      ) : activePage === "contact-us" ? (
-        /* 6. CONTACT US PAGE ONLY */
-        <main className="relative isolate overflow-hidden bg-[#141414] pt-28 text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-
-          <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[540px] overflow-hidden opacity-85">
-            <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-            <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-          </div>
-
-          <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
-            <div className="text-center">
-              <p className="text-xs font-medium tracking-wider text-white/80 sm:text-sm">
-                Get In Touch
-              </p>
-              <h1 className="mt-2 font-sans text-3xl font-bold tracking-tight text-white sm:text-5xl">
-                Our Contact Information
-              </h1>
-            </div>
-
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              <div className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl">
-                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
-                  <MapPin className="h-6 w-6 text-[#141414]" />
-                </div>
-                <div>
-                  <h2 className="font-sans text-lg font-bold">Our Address</h2>
-                  <p className="mt-1 text-xs font-medium leading-relaxed text-[#141414]/90 sm:text-sm">
-                    E65 DHA Phase 12, Multan Road, Lahore
-                  </p>
-                </div>
-              </div>
-
-              <a
-                href="tel:+923314972426"
-                className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition hover:brightness-105"
-              >
-                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
-                  <Phone className="h-6 w-6 text-[#141414]" />
-                </div>
-                <div>
-                  <h2 className="font-sans text-lg font-bold">Phone Number</h2>
-                  <p className="mt-1 text-xs font-semibold text-[#141414]/90 sm:text-sm">
-                    +92 331-4972426
-                  </p>
-                </div>
-              </a>
-
-              <a
-                href="mailto:info2aytoproperties@gmail.com"
-                className="flex items-center gap-4 rounded-2xl bg-[#f4c414] px-6 py-7 text-[#141414] shadow-xl transition hover:brightness-105"
-              >
-                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#141414]">
-                  <Mail className="h-6 w-6 text-[#141414]" />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="font-sans text-lg font-bold">Email Address</h2>
-                  <p className="mt-1 truncate text-xs font-semibold text-[#141414]/90 sm:text-sm">
-                    info2aytoproperties@gmail.com
-                  </p>
-                </div>
-              </a>
-            </div>
-
-            <div className="mt-16 grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
-              <div>
-                <h2 className="font-sans text-3xl font-bold text-white sm:text-4xl">
-                  Schedule a visit
-                </h2>
-
-                <form onSubmit={handleContactSubmit} className="mt-7 space-y-5">
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        required
-                        placeholder="Your Name*"
-                        value={formName}
-                        onChange={(e) => setFormName(e.target.value)}
-                        className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
-                      />
-                      <User className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
-                    </div>
-
-                    <div className="relative">
-                      <input
-                        type="email"
-                        required
-                        placeholder="Your Email*"
-                        value={formEmail}
-                        onChange={(e) => setFormEmail(e.target.value)}
-                        className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
-                      />
-                      <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      placeholder="Your Phone"
-                      value={formPhone}
-                      onChange={(e) => setFormPhone(e.target.value)}
-                      className="w-full rounded-full border border-white/25 bg-[#191919]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
-                    />
-                    <Phone className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
-                  </div>
-
-                  <div className="relative">
-                    <textarea
-                      rows={4}
-                      required
-                      placeholder="Type Your Message*"
-                      value={formMessage}
-                      onChange={(e) => setFormMessage(e.target.value)}
-                      className="w-full rounded-3xl border border-white/25 bg-[#191919]/90 px-5 py-4 pr-11 text-sm text-white placeholder:text-white/55 focus:border-[#f4c414] focus:outline-none"
-                    />
-                    <MessageSquare className="pointer-events-none absolute right-4 top-5 h-4 w-4 text-white/60" />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="rounded-full bg-[#f4c414] px-8 py-3.5 text-sm font-bold text-[#141414] shadow-lg transition hover:brightness-105"
-                  >
-                    Submit Message
-                  </button>
-                </form>
-              </div>
-
-              <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-2xl">
-                <iframe
-                  title="AYTO Properties Head Office Map - E65 DHA Phase 12, Multan Road, Lahore"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=74.1650%2C31.3850%2C74.2150%2C31.4250&layer=mapnik&marker=31.4050%2C74.1900"
-                  className="h-[360px] w-full border-0"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-        </main>
-      ) : (
-        /* 7. MAIN HOME PAGE ONLY */
-        <main>
-          <Hero />
-
-          <Spotlight
-            onView={() => navigatePage("projects")}
-            onInquire={() => inquire(featured)}
-          />
-
-          <section
-            id="listings"
-            className="relative isolate overflow-hidden border-t border-white/10 bg-[#141414] py-20 text-white md:py-28"
-          >
-            <div
-              className="pointer-events-none absolute inset-0 -z-20 opacity-15"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.16) 1px, transparent 0)",
-                backgroundSize: "36px 36px",
-              }}
-            />
-
-            <div className="pointer-events-none absolute -right-24 top-0 -z-10 h-full w-[520px] overflow-hidden opacity-85">
-              <div className="absolute right-24 top-[-10%] h-[130%] w-[2px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#f4d06f] to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.65)]" />
-              <div className="absolute right-52 top-[-10%] h-[130%] w-[3px] rotate-[24deg] bg-gradient-to-b from-transparent via-[#d4af37] to-transparent shadow-[0_0_32px_6px_rgba(212,175,55,0.7)]" />
-            </div>
-
-            <div className="mx-auto max-w-6xl px-5 md:px-8">
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
-                  {showSaved ? "Your Saved Properties" : "Discover the Most Recommended Properties"}
-                </h2>
-                <p className="mt-3 text-xs leading-relaxed text-white/70 sm:text-sm">
-                  Discover the most recommended properties handpicked for their quality, value, and
-                  location. From luxury villas to prime residential &amp; commercial plots across Lahore,
-                  each listing is verified to ensure smart returns and long-term comfort.
-                </p>
-              </div>
-
-              <div className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                {list.slice(0, 8).map((p) => (
-                  <div
-                    key={p.id}
-                    onClick={() => setOpen(p)}
-                    className="group cursor-pointer"
-                  >
-                    <div className="aspect-square overflow-hidden rounded-2xl border border-white/15 bg-[#1c1c1c] shadow-lg">
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    </div>
-
-                    <div className="mt-3.5 flex items-center justify-between gap-2 border-b border-white/15 pb-3">
-                      <div className="min-w-0">
-                        <h3 className="truncate text-xs font-bold text-white transition group-hover:text-[#f4d06f] sm:text-sm">
-                          {p.location}
-                        </h3>
-                        <p className="truncate text-[11px] text-white/55">{p.title}</p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpen(p);
-                        }}
-                        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/45 px-3.5 py-1 text-[11px] font-medium text-white transition-all duration-300 group-hover:border-[#f4d06f] group-hover:bg-[#f4d06f] group-hover:text-[#141414]"
-                      >
-                        Details
-                        <ArrowRight className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <Testimonials />
-        </main>
-      )}
-
-      <SiteFooter
-        onType={() => navigatePage("home", "listings")}
-        onOpenQuery={() => navigatePage("contact-us")}
-      />
-
-      {/* Colored Brand Social Icons Bar (Facebook, Instagram, Twitter, WhatsApp) */}
-      <div className="border-t border-white/10 bg-[#0d0d0d] py-5">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 md:px-8">
-          <p className="text-xs text-white/60">
-            Connect with{" "}
-            <span className="font-semibold text-white">AYTO Properties &amp; Builders</span>
-          </p>
-
-          <div className="flex items-center gap-3.5">
-            <a
-              href="https://www.facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              title="Facebook"
-              className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
-            >
-              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-              </svg>
-            </a>
-
-            <a
-              href="https://www.instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              title="Instagram"
-              style={{
-                background:
-                  "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)",
-              }}
-              className="grid h-10 w-10 place-items-center rounded-full text-white shadow-md transition-transform duration-200 hover:scale-110"
-            >
-              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-              </svg>
-            </a>
-
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Twitter"
-              title="Twitter"
-              className="grid h-10 w-10 place-items-center rounded-full bg-[#1DA1F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
-            >
-              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-              </svg>
-            </a>
-
-            <a
-              href="https://wa.me/923314972426"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="WhatsApp"
-              title="WhatsApp (+92 331-4972426)"
-              className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-200 hover:scale-110"
-            >
-              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <PropertyDialog p={open} onClose={() => setOpen(null)} onInquire={inquire} />
-    </div>
-  );
-}
+              <p className="mx-auto mt-3 max-w
