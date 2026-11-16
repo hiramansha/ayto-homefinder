@@ -1001,91 +1001,145 @@ export function Index() {
         )}
 
         {activePage === "user-profile" && viewedProfileUser ? (
-          <main key="user-profile" className="ayto-page-enter relative isolate overflow-hidden pt-32 text-white">
+          <main key="user-profile" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
-              <button
-                type="button"
-                onClick={() => navigatePage("home", "listings")}
-                className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/25 bg-[#0f192d]/80 px-4 py-1.5 text-xs font-medium text-white/85 backdrop-blur-md transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" /> Back to All Properties
-              </button>
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => navigatePage("home", "listings")}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/25 bg-[#0f192d]/80 px-4 py-1.5 text-xs font-medium text-white/85 backdrop-blur-md transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" /> Back to All Properties
+                </button>
 
-              <div className="mt-6 flex flex-col justify-between gap-6 rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 p-7 shadow-2xl backdrop-blur-md md:flex-row md:items-center sm:p-9">
-                <div className="flex items-center gap-5">
-                  <div className="grid h-20 w-20 shrink-0 place-items-center rounded-full border-2 border-[#f4c414] bg-[#f4c414]/15 font-sans text-3xl font-extrabold text-[#f4c414]">
-                    {viewedProfileUser.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h1 className="font-sans text-2xl font-extrabold text-white sm:text-3xl">
-                        {viewedProfileUser.name}
-                      </h1>
-                      <span className="rounded-full bg-[#f4c414] px-3 py-0.5 text-[10px] font-extrabold uppercase text-[#070b14]">
-                        {viewedProfileUser.agency || "Verified Seller"}
-                      </span>
-                    </div>
-                    <p className="mt-1.5 flex flex-wrap items-center gap-4 text-xs text-slate-300">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Phone className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.phone}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <Mail className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.email}
-                      </span>
-                    </p>
-                    <p className="mt-1 text-[11px] text-slate-400">
-                      Member since {viewedProfileUser.joinedAt} • {profileListings.length} Active{" "}
-                      {profileListings.length === 1 ? "Listing" : "Listings"}
-                    </p>
+                {currentUser?.id === viewedProfileUser.id && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/35 bg-emerald-500/10 px-3.5 py-1 text-[11px] font-bold text-emerald-300">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Seller Dashboard Mode
+                  </span>
+                )}
+              </div>
+
+              <div className="mt-5 overflow-hidden rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 shadow-2xl backdrop-blur-md">
+                <div className="relative h-28 w-full bg-gradient-to-r from-[#13264a] via-[#1c3563] to-[#3a2f12] sm:h-32">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,196,20,0.28),transparent_55%)]" />
+                  <div className="absolute bottom-3 right-6 hidden text-[11px] font-bold uppercase tracking-[0.25em] text-[#f4d06f]/60 sm:block">
+                    AYTO Verified Partner Portal
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  {currentUser?.id === viewedProfileUser.id ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditName(currentUser.name);
-                          setEditPhone(currentUser.phone);
-                          setEditAgency(currentUser.agency || "");
-                          setEditProfileOpen(true);
-                        }}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/30 bg-[#080f1d] px-4 py-2.5 text-xs font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
-                      >
-                        <Edit3 className="h-3.5 w-3.5" /> Edit Profile
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPostModalOpen(true)}
-                        className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
-                      >
-                        <PlusCircle className="h-4 w-4" /> Post New Property
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openWhatsAppChat(
-                          `Assalam-o-Alaikum! I saw ${viewedProfileUser.name}'s profile on AYTO Properties and want to inquire about their listings.`,
-                        )
-                      }
-                      className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-2.5 text-xs font-extrabold text-white shadow-lg transition hover:brightness-105"
-                    >
-                      <MessageCircle className="h-4 w-4" /> Contact Seller
-                    </button>
-                  )}
+                <div className="px-6 pb-7 sm:px-9">
+                  <div className="-mt-11 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+                      <div className="grid h-24 w-24 shrink-0 place-items-center rounded-2xl border-2 border-[#f4c414] bg-[#0b1322] font-sans text-4xl font-extrabold text-[#f4c414] shadow-[0_10px_30px_rgba(0,0,0,0.65)]">
+                        {viewedProfileUser.name.charAt(0).toUpperCase()}
+                      </div>
+
+                      <div className="pb-1">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <h1 className="font-sans text-2xl font-extrabold text-white sm:text-3xl">
+                            {viewedProfileUser.name}
+                          </h1>
+                          <span className="rounded-full bg-[#f4c414] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-[#070b14]">
+                            {viewedProfileUser.agency || "Direct Property Owner"}
+                          </span>
+                        </div>
+
+                        <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-300">
+                          <span className="inline-flex items-center gap-1.5">
+                            <Phone className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.phone}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5">
+                            <Mail className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.email}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 text-slate-400">
+                            <Clock className="h-3.5 w-3.5 text-[#f4c414]" /> Joined {viewedProfileUser.joinedAt}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      {currentUser?.id === viewedProfileUser.id ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditName(currentUser.name);
+                              setEditPhone(currentUser.phone);
+                              setEditAgency(currentUser.agency || "");
+                              setEditProfileOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300/30 bg-[#080f1d] px-4 py-2.5 text-xs font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
+                          >
+                            <Edit3 className="h-3.5 w-3.5" /> Edit Profile
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPostModalOpen(true)}
+                            className="inline-flex items-center gap-2 rounded-xl bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+                          >
+                            <PlusCircle className="h-4 w-4" /> Post New Property
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            openWhatsAppChat(
+                              `Assalam-o-Alaikum! I saw ${viewedProfileUser.name}'s profile on AYTO Properties and want to inquire about their listings.`,
+                            )
+                          }
+                          className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-xs font-extrabold text-white shadow-lg transition hover:brightness-105"
+                        >
+                          <MessageCircle className="h-4 w-4" /> Contact Seller
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-7 grid grid-cols-3 gap-3 border-t border-sky-300/15 pt-6 sm:gap-5">
+                    <div className="rounded-2xl border border-sky-300/15 bg-[#080f1d]/80 px-4 py-3.5">
+                      <p className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                        Total Properties
+                      </p>
+                      <p className="mt-1 font-sans text-xl font-extrabold text-white sm:text-2xl">
+                        {profileListings.length}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-emerald-400/20 bg-[#080f1d]/80 px-4 py-3.5">
+                      <p className="text-[11px] font-medium uppercase tracking-wider text-emerald-300/80">
+                        Active / Available
+                      </p>
+                      <p className="mt-1 font-sans text-xl font-extrabold text-emerald-400 sm:text-2xl">
+                        {profileListings.filter((l) => l.listingStatus !== "Sold").length}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-[#f4c414]/25 bg-[#080f1d]/80 px-4 py-3.5">
+                      <p className="text-[11px] font-medium uppercase tracking-wider text-[#f4d06f]/80">
+                        Sold Deals
+                      </p>
+                      <p className="mt-1 font-sans text-xl font-extrabold text-[#f4c414] sm:text-2xl">
+                        {profileListings.filter((l) => l.listingStatus === "Sold").length}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-12">
-                <h2 className="font-sans text-xl font-bold text-white sm:text-2xl">
-                  Properties Listed by {viewedProfileUser.name} ({profileListings.length})
-                </h2>
+              <div className="mt-11">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h2 className="font-sans text-xl font-bold text-white sm:text-2xl">
+                      Manage Listed Properties ({profileListings.length})
+                    </h2>
+                    <p className="mt-0.5 text-xs text-slate-400">
+                      All properties published under {viewedProfileUser.name}&apos;s portfolio
+                    </p>
+                  </div>
+                </div>
 
                 {profileListings.length === 0 ? (
-                  <div className="mt-6 rounded-3xl border border-sky-300/15 bg-[#0e172a]/70 p-12 text-center">
+                  <div className="mt-6 rounded-3xl border border-dashed border-sky-300/25 bg-[#0e172a]/70 p-12 text-center">
                     <p className="text-sm text-slate-300">
                       No properties posted by this user yet.
                     </p>
@@ -1105,19 +1159,20 @@ export function Index() {
                       <div
                         key={item.id}
                         onClick={() => setOpen(item)}
-                        className="group cursor-pointer rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-3 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
+                        className="group cursor-pointer overflow-hidden rounded-2xl border border-sky-300/15 bg-[#0e172a]/90 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/60"
                       >
-                        <div className="relative aspect-[16/11] overflow-hidden rounded-xl bg-[#131f36]">
+                        <div className="relative aspect-[16/10] overflow-hidden bg-[#131f36]">
                           <img
                             src={item.image}
                             alt={item.title}
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                           />
-                          <span className="absolute left-3 top-3 rounded-full bg-[#070b14]/85 px-3 py-1 text-xs font-extrabold text-[#f4c414]">
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#070b14]/80 via-transparent to-transparent" />
+                          <span className="absolute left-3.5 top-3.5 rounded-lg bg-[#070b14]/90 px-3 py-1 text-xs font-extrabold text-[#f4c414] backdrop-blur-md">
                             {item.customPriceText}
                           </span>
                           <span
-                            className={`absolute right-3 top-3 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                            className={`absolute right-3.5 top-3.5 rounded-lg px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider ${
                               item.listingStatus === "Sold"
                                 ? "bg-red-500 text-white"
                                 : "bg-emerald-500 text-[#070b14]"
@@ -1125,27 +1180,29 @@ export function Index() {
                           >
                             {item.listingStatus || "Available"}
                           </span>
+                          <span className="absolute bottom-3 left-3.5 inline-flex items-center gap-1 text-[11px] font-semibold text-white/90">
+                            <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {item.areaText}
+                          </span>
                         </div>
 
-                        <div className="mt-3.5 px-1">
+                        <div className="p-4">
                           <h3 className="truncate text-base font-bold text-white group-hover:text-[#f4d06f]">
                             {item.title}
                           </h3>
-                          <p className="mt-1 flex items-center gap-1 text-xs text-slate-300/80">
-                            <MapPin className="h-3.5 w-3.5 text-[#f4c414]" /> {item.location}
+                          <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-300/80">
+                            <MapPin className="h-3.5 w-3.5 shrink-0 text-[#f4c414]" /> {item.location}
                           </p>
-                          <p className="mt-1 text-[11px] text-slate-400">Size: {item.areaText}</p>
 
-                          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-sky-300/15 pt-3">
+                          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-sky-300/15 pt-3.5">
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setOpen(item);
                               }}
-                              className="rounded-full bg-[#f4c414] px-3.5 py-1.5 text-xs font-extrabold text-[#070b14]"
+                              className="rounded-lg bg-[#f4c414] px-3.5 py-1.5 text-xs font-extrabold text-[#070b14] transition hover:brightness-105"
                             >
-                              Details
+                              View Details
                             </button>
 
                             {currentUser?.id === viewedProfileUser.id && (
@@ -1160,7 +1217,7 @@ export function Index() {
                                     setEditPropLocation(item.location);
                                     setEditPropStatus(item.listingStatus || "Available");
                                   }}
-                                  className="inline-flex items-center gap-1 rounded-full border border-sky-300/35 px-3 py-1.5 text-[11px] font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-sky-300/30 bg-[#080f1d] px-3 py-1.5 text-[11px] font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
                                 >
                                   <Edit3 className="h-3 w-3" /> Edit
                                 </button>
@@ -1171,7 +1228,7 @@ export function Index() {
                                     handleDeleteUserListing(item.id);
                                   }}
                                   title="Delete Listing"
-                                  className="inline-flex items-center gap-1 rounded-full border border-red-400/40 px-3 py-1.5 text-[11px] font-bold text-red-300 transition hover:bg-red-500/20"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-red-400/35 bg-red-500/10 px-3 py-1.5 text-[11px] font-bold text-red-300 transition hover:bg-red-500/25"
                                 >
                                   <Trash2 className="h-3 w-3" /> Remove
                                 </button>
@@ -2251,7 +2308,6 @@ export function Index() {
         </div>
       </div>
 
-      {/* Floating Compare Bar (Bottom-Left when 1+ property selected) */}
       {compareIds.length > 0 && (
         <div className="fixed bottom-6 left-6 z-40 flex items-center gap-3 rounded-full border border-[#f4c414]/50 bg-[#0b1322]/95 px-4 py-2.5 text-xs shadow-2xl backdrop-blur-xl">
           <ArrowLeftRight className="h-4 w-4 text-[#f4c414]" />
@@ -2276,7 +2332,6 @@ export function Index() {
         </div>
       )}
 
-      {/* Side-by-Side Property Comparison Modal */}
       {compareModalOpen && (
         <div
           onClick={() => setCompareModalOpen(false)}
@@ -2343,7 +2398,6 @@ export function Index() {
         </div>
       )}
 
-      {/* Login / Sign Up Modal */}
       {authModalOpen && (
         <div
           onClick={() => setAuthModalOpen(false)}
@@ -2454,7 +2508,6 @@ export function Index() {
         </div>
       )}
 
-      {/* Authenticated Post Property Modal with Direct Photo Upload */}
       {postModalOpen && currentUser && (
         <div
           onClick={() => setPostModalOpen(false)}
@@ -2542,7 +2595,6 @@ export function Index() {
                 />
               </div>
 
-              {/* Direct Device Photo Upload */}
               <div className="rounded-xl border border-dashed border-[#f4c414]/45 bg-[#070b14] p-3.5 text-center">
                 <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#f4c414]/15 px-4 py-2 text-xs font-bold text-[#f4d06f] transition hover:bg-[#f4c414] hover:text-[#070b14]">
                   <ImagePlus className="h-4 w-4" />
@@ -2574,7 +2626,6 @@ export function Index() {
         </div>
       )}
 
-      {/* Edit Profile Modal */}
       {editProfileOpen && currentUser && (
         <div
           onClick={() => setEditProfileOpen(false)}
@@ -2627,7 +2678,6 @@ export function Index() {
         </div>
       )}
 
-      {/* Edit Posted Listing Modal */}
       {editingListing && (
         <div
           onClick={() => setEditingListing(null)}
@@ -2689,7 +2739,6 @@ export function Index() {
         </div>
       )}
 
-      {/* Standard Round WhatsApp Logo Icon (Bottom-Right) */}
       <button
         type="button"
         onClick={() => openWhatsAppChat()}
