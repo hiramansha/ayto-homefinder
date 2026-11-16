@@ -1019,18 +1019,20 @@ export function Index() {
                 )}
               </div>
 
-              <div className="mt-5 overflow-hidden rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 shadow-2xl backdrop-blur-md">
-                <div className="relative h-28 w-full bg-gradient-to-r from-[#13264a] via-[#1c3563] to-[#3a2f12] sm:h-32">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,196,20,0.28),transparent_55%)]" />
-                  <div className="absolute bottom-3 right-6 hidden text-[11px] font-bold uppercase tracking-[0.25em] text-[#f4d06f]/60 sm:block">
+<div className="mt-5 overflow-hidden rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/95 shadow-2xl backdrop-blur-md">
+                <div className="flex items-center justify-between border-b border-[#f4c414]/20 bg-gradient-to-r from-[#13264a] via-[#182f59] to-[#2e2611] px-6 py-3 sm:px-9">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f4d06f]">
                     AYTO Verified Partner Portal
-                  </div>
+                  </span>
+                  <span className="hidden text-[11px] text-slate-300/80 sm:inline">
+                    Lahore Real Estate Network
+                  </span>
                 </div>
 
-                <div className="px-6 pb-7 sm:px-9">
-                  <div className="-mt-11 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-                      <div className="grid h-24 w-24 shrink-0 place-items-center rounded-2xl border-2 border-[#f4c414] bg-[#0b1322] font-sans text-4xl font-extrabold text-[#f4c414] shadow-[0_10px_30px_rgba(0,0,0,0.65)]">
+                <div className="p-6 sm:p-9">
+                  <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+                    <div className="flex items-center gap-4 sm:gap-5">
+                      <div className="grid h-20 w-20 shrink-0 place-items-center rounded-2xl border-2 border-[#f4c414] bg-[#080f1d] font-sans text-3xl font-extrabold text-[#f4c414] shadow-[0_8px_25px_rgba(244,196,20,0.2)]">
                         {viewedProfileUser.name.charAt(0).toUpperCase()}
                       </div>
 
