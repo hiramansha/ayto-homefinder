@@ -459,9 +459,39 @@ export function Index() {
   };
 
   useEffect(() => {
+    let hoverTimer: number | undefined;
+
+    const isProjectsTrigger = (el: HTMLElement | null) => {
+      const btn = el?.closest("header button, header a");
+      if (!btn) return false;
+      const clean = (btn.textContent || "").replace(/[^\w\s]/g, "").trim().toLowerCase();
+      return clean === "projects";
+    };
+
+    const onMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (isProjectsTrigger(target) || target?.closest("[data-projects-dropdown]")) {
+        if (hoverTimer) window.clearTimeout(hoverTimer);
+        setProjectsMenuOpen(true);
+      }
+    };
+
+    const onMouseOut = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const related = e.relatedTarget as HTMLElement | null;
+      if (isProjectsTrigger(target) || target?.closest("[data-projects-dropdown]")) {
+        if (isProjectsTrigger(related) || related?.closest("[data-projects-dropdown]")) {
+          return;
+        }
+        hoverTimer = window.setTimeout(() => {
+          setProjectsMenuOpen(false);
+        }, 220);
+      }
+    };
+
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      if (!target?.closest("[data-projects-dropdown]")) {
+      if (!target?.closest("[data-projects-dropdown]") && !isProjectsTrigger(target)) {
         setProjectsMenuOpen(false);
       }
 
@@ -498,15 +528,7 @@ export function Index() {
         return;
       }
 
-      if (label === "projects") {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        setProjectsMenuOpen((prev) => !prev);
-        return;
-      }
-
-      if (label === "view project") {
+      if (label === "projects" || label === "view project") {
         stopAndGo("projects");
         return;
       }
@@ -540,8 +562,16 @@ export function Index() {
         stopAndGo("home", "listings");
       }
     };
+
+    document.addEventListener("mouseover", onMouseOver, true);
+    document.addEventListener("mouseout", onMouseOut, true);
     document.addEventListener("click", onDocClick, true);
-    return () => document.removeEventListener("click", onDocClick, true);
+    return () => {
+      if (hoverTimer) window.clearTimeout(hoverTimer);
+      document.removeEventListener("mouseover", onMouseOver, true);
+      document.removeEventListener("mouseout", onMouseOut, true);
+      document.removeEventListener("click", onDocClick, true);
+    };
   }, [currentUser]);
 
   const handleAuthSubmit = (e: React.FormEvent) => {
@@ -835,6 +865,9 @@ export function Index() {
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
         }
+        header [role="menu"], header nav div[class*="absolute"] {
+          display: none !important;
+        }
         main section, footer {
           background-color: transparent !important;
         }
@@ -934,7 +967,9 @@ export function Index() {
         {projectsMenuOpen && (
           <div
             data-projects-dropdown
-            className="fixed left-1/2 top-[72px] z-50 w-[310px] -translate-x-1/2 rounded-2xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl"
+            onMouseEnter={() => setProjectsMenuOpen(true)}
+            onMouseLeave={() => setProjectsMenuOpen(false)}
+            className="fixed left-1/2 top-[68px] z-50 w-[310px] -translate-x-1/2 rounded-2xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl"
           >
             <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#f4d06f]">
               AYTO Signature Projects
@@ -2187,8 +2222,7 @@ export function Index() {
                 className="grid h-10 w-10 place-items-center rounded-full text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
                 <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44
-                c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                 </svg>
               </a>
 
@@ -2671,4 +2705,4 @@ export function Index() {
       <PropertyDialog p={open} onClose={() => setOpen(null)} onInquire={inquire} />
     </div>
   );
-}  
+}
