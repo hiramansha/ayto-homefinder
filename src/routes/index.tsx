@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
+  ArrowLeftRight,
   ArrowRight,
   BadgeDollarSign,
   BedDouble,
@@ -11,9 +12,11 @@ import {
   CheckCircle2,
   Clock,
   Compass,
+  Edit3,
   FileCheck2,
   Hammer,
   Home,
+  ImagePlus,
   Lightbulb,
   Lock,
   LogIn,
@@ -549,7 +552,7 @@ export function Index() {
     return () => document.removeEventListener("click", onDocClick, true);
   }, [currentUser]);
 
-  const handleAuthSubmit = (e: FormEvent) => {
+  const handleAuthSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanEmail = authEmail.trim().toLowerCase();
 
@@ -587,7 +590,7 @@ export function Index() {
         (u) => u.email.toLowerCase() === cleanEmail && u.password === authPassword,
       );
       if (!matched) {
-        toast.error("Invalid email or password. If you're new, click Sign Up.");
+        toast.error("Invalid email or password. If you are new, click Sign Up.");
         return;
       }
       setCurrentUser(matched);
@@ -617,7 +620,7 @@ export function Index() {
     }
   };
 
-  const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2.5 * 1024 * 1024) {
@@ -634,7 +637,7 @@ export function Index() {
     reader.readAsDataURL(file);
   };
 
-  const handleCreatePropertyListing = (e: FormEvent) => {
+  const handleCreatePropertyListing = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) {
       setPostModalOpen(false);
@@ -682,7 +685,7 @@ export function Index() {
     navigatePage("user-profile");
   };
 
-  const handleSaveProfileChanges = (e: FormEvent) => {
+  const handleSaveProfileChanges = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser || !editName.trim() || !editPhone.trim()) {
       toast.error("Name and Phone Number are required.");
@@ -707,4 +710,324 @@ export function Index() {
     );
     setUsers(nextUsers);
     setCurrentUser(updatedUser);
-    setViewedProfileUser
+    setViewedProfileUser(updatedUser);
+    setUserListings(nextListings);
+    localStorage.setItem(USERS_KEY, JSON.stringify(nextUsers));
+    localStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser));
+    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
+    setEditProfileOpen(false);
+    toast.success("Profile updated!");
+  };
+
+  const handleSaveListingEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingListing || !editPropTitle.trim() || !editPropDemand.trim()) {
+      toast.error("Please fill in Title and Demand.");
+      return;
+    }
+    const updatedListings = userListings.map((item) =>
+      item.id === editingListing.id
+        ? {
+            ...item,
+            title: editPropTitle.trim(),
+            location: editPropLocation.trim() || item.location,
+            customPriceText: editPropDemand.trim(),
+            listingStatus: editPropStatus,
+          }
+        : item,
+    );
+    setUserListings(updatedListings);
+    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updatedListings));
+    setEditingListing(null);
+    toast.success("Property listing updated!");
+  };
+
+  const handleDeleteUserListing = (listingId: number) => {
+    const updated = userListings.filter((item) => item.id !== listingId);
+    setUserListings(updated);
+    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
+    toast.success("Listing removed from your profile.");
+  };
+
+  const toggleCompareProperty = (id: number) => {
+    setCompareIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 2) {
+        toast("Comparing latest 2 selected properties.");
+        return [prev[1]!, id];
+      }
+      return [...prev, id];
+    });
+  };
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formName.trim() || !formEmail.trim() || !formMessage.trim()) {
+      toast.error("Please fill in Your Name, Email, and Message.");
+      return;
+    }
+    toast.success("Thank you! Your visit request has been sent to AYTO Properties.");
+    setFormName("");
+    setFormEmail("");
+    setFormPhone("");
+    setFormMessage("");
+  };
+
+  const openWhatsAppChat = (customText?: string) => {
+    const phone = "923314972426";
+    const msg = encodeURIComponent(
+      customText ||
+        "Assalam-o-Alaikum AYTO Properties! I would like to get property details.",
+    );
+    window.open(`https://wa.me/${phone}?text=${msg}`, "_blank", "noopener,noreferrer");
+  };
+
+  const combinedProperties: Array<Property | UserPostedProperty> = [
+    ...userListings,
+    ...properties,
+  ];
+  const baseList = showSaved
+    ? combinedProperties.filter((p) => saved.includes(p.id))
+    : combinedProperties;
+
+  const list = baseList.filter((p) => {
+    const matchesSearch =
+      !searchQuery.trim() ||
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.city.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType =
+      typeFilter === "All" ||
+      String((p as { type?: string; category?: string }).type || (p as { category?: string }).category || p.title)
+        .toLowerCase()
+        .includes(typeFilter.toLowerCase());
+    return matchesSearch && matchesType;
+  });
+
+  const comparedItems = combinedProperties.filter((p) => compareIds.includes(p.id));
+
+  // Construction Cost Estimator Calculation
+  const coveredAreaSqFt = plotMarla === 5 ? 1950 : plotMarla === 10 ? 3600 : 6200;
+  const ratePerSqFt = buildQuality === "grey" ? 2750 : 5400;
+  const estimatedCrore = ((coveredAreaSqFt * ratePerSqFt) / 10000000).toFixed(2);
+
+  // Installment Plan Calculation
+  const downPaymentLac = Math.round((installmentTotalLac * downPaymentPct) / 100);
+  const remainingLac = installmentTotalLac - downPaymentLac;
+  const monthlyInstallmentThousands = Math.round((remainingLac * 100) / installmentMonths);
+
+  const inquire = (p: Property) => {
+    setOpen(null);
+    const displayPrice =
+      "customPriceText" in p && (p as UserPostedProperty).customPriceText
+        ? (p as UserPostedProperty).customPriceText
+        : priceLabel(p);
+    navigatePage(
+      "query-form",
+      undefined,
+      `Hello, I am interested in "${p.title}" in ${p.location}, ${p.city} (${displayPrice}). Please share more details.`,
+    );
+  };
+
+  const featured = properties[0]!;
+  const filteredGallery =
+    galleryFilter === "All"
+      ? galleryItems
+      : galleryItems.filter((item) => item.category === galleryFilter);
+
+  const profileListings = viewedProfileUser
+    ? userListings.filter((item) => item.ownerId === viewedProfileUser.id)
+    : [];
+
+  return (
+    <div id="top" className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]">
+      <style>{`
+        footer a[aria-label], footer > div:last-child a {
+          display: none !important;
+        }
+        main section, footer {
+          background-color: transparent !important;
+        }
+        @keyframes aytoAuroraDrift1 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(40px, 28px, 0) scale(1.08); }
+        }
+        @keyframes aytoAuroraDrift2 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(-35px, -22px, 0) scale(1.07); }
+        }
+        @keyframes aytoAuroraDrift3 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(28px, -30px, 0) scale(1.06); }
+        }
+        @keyframes aytoLatticeGlow {
+          0%, 100% { opacity: 0.28; }
+          50% { opacity: 0.55; }
+        }
+        @keyframes aytoBeamSweepLeft {
+          0%, 100% { opacity: 0.45; transform: rotate(-22deg) translateX(0px); }
+          50% { opacity: 0.95; transform: rotate(-22deg) translateX(14px); }
+        }
+        @keyframes aytoBeamSweepRight {
+          0%, 100% { opacity: 0.55; transform: rotate(24deg) translateX(0px); }
+          50% { opacity: 1; transform: rotate(24deg) translateX(-14px); }
+        }
+        @keyframes aytoPageFade {
+          from { opacity: 0; transform: translateY(14px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .ayto-aurora-1 { animation: aytoAuroraDrift1 14s ease-in-out infinite; }
+        .ayto-aurora-2 { animation: aytoAuroraDrift2 16s ease-in-out infinite; }
+        .ayto-aurora-3 { animation: aytoAuroraDrift3 18s ease-in-out infinite; }
+        .ayto-lattice-pulse { animation: aytoLatticeGlow 6s ease-in-out infinite; }
+        .ayto-beam-left { animation: aytoBeamSweepLeft 5.5s ease-in-out infinite; }
+        .ayto-beam-left-soft { animation: aytoBeamSweepLeft 7s ease-in-out 1.5s infinite; }
+        .ayto-beam-right { animation: aytoBeamSweepRight 6s ease-in-out infinite; }
+        .ayto-beam-right-soft { animation: aytoBeamSweepRight 7.5s ease-in-out 2s infinite; }
+        .ayto-page-enter { animation: aytoPageFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+      `}</style>
+
+      {/* Royal Midnight Sapphire + Diamond Lattice + V-Shaped Golden Light Beams */}
+      <RoyalArchitecturalBackdrop />
+
+      <div className="relative z-10">
+        <SiteHeader
+          savedCount={saved.length}
+          onShowSaved={() => {
+            if (!saved.length) {
+              toast("Tap a property to view details or request a visit");
+              return;
+            }
+            setShowSaved((s) => !s);
+            navigatePage("home", "listings");
+          }}
+        />
+
+        {/* Sleek Account & Profile Status Pill */}
+        <div className="fixed right-5 top-[72px] z-40 flex items-center gap-2">
+          {currentUser ? (
+            <div className="flex items-center gap-1.5 rounded-full border border-[#f4c414]/45 bg-[#0b1322]/90 px-3 py-1.5 text-xs shadow-xl backdrop-blur-md">
+              <button
+                type="button"
+                onClick={() => openUserProfile(currentUser.id)}
+                className="inline-flex items-center gap-1.5 font-bold text-[#f4d06f] hover:underline"
+              >
+                <UserCheck className="h-3.5 w-3.5" />
+                <span>{currentUser.name}</span>
+                <span className="rounded-full bg-[#f4c414] px-1.5 py-0.5 text-[10px] font-extrabold text-[#070b14]">
+                  {userListings.filter((l) => l.ownerId === currentUser.id).length}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                title="Logout"
+                className="ml-1 rounded-full p-1 text-slate-400 transition hover:bg-white/10 hover:text-white"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setOpenPostAfterAuth(false);
+                setAuthTab("login");
+                setAuthModalOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/25 bg-[#0b1322]/85 px-3.5 py-1.5 text-xs font-bold text-white/90 shadow-lg backdrop-blur-md transition hover:border-[#f4c414] hover:text-[#f4c414]"
+            >
+              <LogIn className="h-3.5 w-3.5 text-[#f4c414]" />
+              <span>Seller Login</span>
+            </button>
+          )}
+        </div>
+
+        {/* Floating Projects Dropdown Menu */}
+        {projectsMenuOpen && (
+          <div
+            data-projects-dropdown
+            className="fixed left-1/2 top-[72px] z-50 w-[310px] -translate-x-1/2 rounded-2xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl"
+          >
+            <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#f4d06f]">
+              AYTO Signature Projects
+            </div>
+            {projectsList.map((proj) => (
+              <button
+                key={proj.id}
+                type="button"
+                onClick={() => navigatePage("projects", proj.id)}
+                className="flex w-full items-start justify-between gap-2 rounded-xl px-3 py-2.5 text-left transition hover:bg-[#f4c414]/15"
+              >
+                <div>
+                  <p className="text-xs font-bold text-white">{proj.title}</p>
+                  <p className="text-[11px] text-slate-400">{proj.status}</p>
+                </div>
+                <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#f4c414]" />
+              </button>
+            ))}
+            <div className="mt-1 border-t border-sky-300/15 pt-1">
+              <button
+                type="button"
+                onClick={() => navigatePage("projects")}
+                className="w-full rounded-xl bg-[#f4c414] py-2 text-center text-xs font-extrabold text-[#070b14] transition hover:brightness-105"
+              >
+                View All Projects
+              </button>
+            </div>
+          </div>
+        )}
+
+        {activePage === "user-profile" && viewedProfileUser ? (
+          <main key="user-profile" className="ayto-page-enter relative isolate overflow-hidden pt-32 text-white">
+            <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
+              <button
+                type="button"
+                onClick={() => navigatePage("home", "listings")}
+                className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/25 bg-[#0f192d]/80 px-4 py-1.5 text-xs font-medium text-white/85 backdrop-blur-md transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" /> Back to All Properties
+              </button>
+
+              {/* User Profile Header Card */}
+              <div className="mt-6 flex flex-col justify-between gap-6 rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 p-7 shadow-2xl backdrop-blur-md md:flex-row md:items-center sm:p-9">
+                <div className="flex items-center gap-5">
+                  <div className="grid h-20 w-20 shrink-0 place-items-center rounded-full border-2 border-[#f4c414] bg-[#f4c414]/15 font-sans text-3xl font-extrabold text-[#f4c414]">
+                    {viewedProfileUser.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h1 className="font-sans text-2xl font-extrabold text-white sm:text-3xl">
+                        {viewedProfileUser.name}
+                      </h1>
+                      <span className="rounded-full bg-[#f4c414] px-3 py-0.5 text-[10px] font-extrabold uppercase text-[#070b14]">
+                        {viewedProfileUser.agency || "Verified Seller"}
+                      </span>
+                    </div>
+                    <p className="mt-1.5 flex flex-wrap items-center gap-4 text-xs text-slate-300">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Phone className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.phone}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Mail className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.email}
+                      </span>
+                    </p>
+                    <p className="mt-1 text-[11px] text-slate-400">
+                      Member since {viewedProfileUser.joinedAt} • {profileListings.length} Active{" "}
+                      {profileListings.length === 1 ? "Listing" : "Listings"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  {currentUser?.id === viewedProfileUser.id ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditName(currentUser.name);
+                          setEditPhone(currentUser.phone);
+                          setEditAgency(currentUser.agency || "");
+                          setEditProfileOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/30 bg-[#080f1d] px-4 py-2.5 text-xs font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
