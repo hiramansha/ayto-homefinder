@@ -15,6 +15,9 @@ import {
   Hammer,
   Home,
   Lightbulb,
+  Lock,
+  LogIn,
+  LogOut,
   Mail,
   MapPin,
   Maximize2,
@@ -25,7 +28,9 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  Trash2,
   User,
+  UserCheck,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -63,6 +68,29 @@ export const Route = createFileRoute("/")({
 });
 
 const FAV_KEY = "ayto-fav";
+const USERS_KEY = "ayto-registered-users";
+const SESSION_KEY = "ayto-active-user";
+const USER_POSTS_KEY = "ayto-user-listings";
+
+interface AytoUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  agency?: string;
+  joinedAt: string;
+}
+
+interface UserPostedProperty extends Property {
+  ownerId: string;
+  ownerName: string;
+  ownerPhone: string;
+  ownerAgency?: string;
+  customPriceText: string;
+  areaText: string;
+}
+
 type ActivePage =
   | "home"
   | "about-us"
@@ -71,7 +99,8 @@ type ActivePage =
   | "services"
   | "gallery"
   | "contact-us"
-  | "query-form";
+  | "query-form"
+  | "user-profile";
 
 const partnerLogos = [
   "DHA LAHORE",
@@ -215,6 +244,14 @@ const galleryItems = [
   },
 ];
 
+const propertySampleImages: Record<string, string> = {
+  House: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80",
+  Villa: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=80",
+  Plot: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80",
+  Commercial: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
+  Apartment: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80",
+};
+
 function RoyalArchitecturalBackdrop() {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-gradient-to-b from-[#070b14] via-[#0b1322] to-[#070c16]">
@@ -268,22 +305,40 @@ export function Index() {
   const [activePage, setActivePage] = useState<ActivePage>("home");
   const [prefill, setPrefill] = useState({ text: "", nonce: 0 });
 
-  // Improvement 1: Projects Dropdown State
+  // User Auth, Profiles & User-Posted Listings State
+  const [users, setUsers] = useState<AytoUser[]>([]);
+  const [currentUser, setCurrentUser] = useState<AytoUser | null>(null);
+  const [userListings, setUserListings] = useState<UserPostedProperty[]>([]);
+  const [viewedProfileUser, setViewedProfileUser] = useState<AytoUser | null>(null);
+
+  // Auth Modal (Required before Posting Property)
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authTab, setAuthTab] = useState<"login" | "signup">("login");
+  const [openPostAfterAuth, setOpenPostAfterAuth] = useState(false);
+  const [authName, setAuthName] = useState("");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPhone, setAuthPhone] = useState("");
+  const [authAgency, setAuthAgency] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+
+  // Projects Dropdown State
   const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
 
-  // Improvement 2: Property Search & Category Filter
+  // Public Property Search & Category Filter (No Login Required)
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
 
-  // Improvement 3: Post Property Modal State
+  // Post Property Modal State (Only accessible when logged in)
   const [postModalOpen, setPostModalOpen] = useState(false);
-  const [sellerName, setSellerName] = useState("");
-  const [sellerPhone, setSellerPhone] = useState("");
-  const [sellerLocation, setSellerLocation] = useState("DHA Phase 6, Lahore");
-  const [sellerSize, setSellerSize] = useState("10 Marla House");
-  const [sellerDemand, setSellerDemand] = useState("");
+  const [propTitle, setPropTitle] = useState("");
+  const [propCategory, setPropCategory] = useState("House");
+  const [propLocation, setPropLocation] = useState("DHA Phase 6, Lahore");
+  const [propArea, setPropArea] = useState("10 Marla");
+  const [propBeds, setPropBeds] = useState("5");
+  const [propDemand, setPropDemand] = useState("");
+  const [propImageUrl, setPropImageUrl] = useState("");
 
-  // Improvement 5: Turnkey Construction Cost Estimator State
+  // Turnkey Construction Cost Estimator State
   const [plotMarla, setPlotMarla] = useState<5 | 10 | 20>(10);
   const [buildQuality, setBuildQuality] = useState<"grey" | "luxury">("luxury");
 
@@ -298,6 +353,14 @@ export function Index() {
   useEffect(() => {
     try {
       setSaved(JSON.parse(localStorage.getItem(FAV_KEY) || "[]"));
+      const storedUsers: AytoUser[] = JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+      setUsers(storedUsers);
+      const sessionUser: AytoUser | null = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+      if (sessionUser) setCurrentUser(sessionUser);
+      const storedPosts: UserPostedProperty[] = JSON.parse(
+        localStorage.getItem(USER_POSTS_KEY) || "[]",
+      );
+      setUserListings(storedPosts);
     } catch {
       /* ignore */
     }
@@ -310,6 +373,7 @@ export function Index() {
       else if (s.includes("page=gallery")) setActivePage("gallery");
       else if (s.includes("page=contact-us")) setActivePage("contact-us");
       else if (s.includes("page=query-form")) setActivePage("query-form");
+      else if (s.includes("page=user-profile")) setActivePage("user-profile");
       else setActivePage("home");
     };
     syncFromUrl();
@@ -349,6 +413,37 @@ export function Index() {
     }
   };
 
+  const openUserProfile = (ownerId: string, fallbackName?: string, fallbackPhone?: string) => {
+    const found = users.find((u) => u.id === ownerId);
+    if (found) {
+      setViewedProfileUser(found);
+    } else if (currentUser && currentUser.id === ownerId) {
+      setViewedProfileUser(currentUser);
+    } else {
+      setViewedProfileUser({
+        id: ownerId,
+        name: fallbackName || "AYTO Verified Member",
+        email: "verified@aytoproperties.com",
+        phone: fallbackPhone || "+92 331-4972426",
+        password: "",
+        agency: "AYTO Partner Network",
+        joinedAt: "2026",
+      });
+    }
+    navigatePage("user-profile");
+  };
+
+  const triggerPostPropertyFlow = () => {
+    if (!currentUser) {
+      setOpenPostAfterAuth(true);
+      setAuthTab("login");
+      setAuthModalOpen(true);
+      toast("Please login or create an account to post your property.");
+      return;
+    }
+    setPostModalOpen(true);
+  };
+
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
@@ -375,7 +470,7 @@ export function Index() {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        setPostModalOpen(true);
+        triggerPostPropertyFlow();
         return;
       }
 
@@ -433,7 +528,129 @@ export function Index() {
     };
     document.addEventListener("click", onDocClick, true);
     return () => document.removeEventListener("click", onDocClick, true);
-  }, []);
+  }, [currentUser]);
+
+  const handleAuthSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanEmail = authEmail.trim().toLowerCase();
+
+    if (authTab === "signup") {
+      if (!authName.trim() || !cleanEmail || !authPhone.trim() || !authPassword.trim()) {
+        toast.error("Please fill in Name, Email, Phone, and Password.");
+        return;
+      }
+      if (users.some((u) => u.email.toLowerCase() === cleanEmail)) {
+        toast.error("This email is already registered. Please log in.");
+        setAuthTab("login");
+        return;
+      }
+      const newUser: AytoUser = {
+        id: `user-${Date.now()}`,
+        name: authName.trim(),
+        email: cleanEmail,
+        phone: authPhone.trim(),
+        password: authPassword,
+        agency: authAgency.trim() || "Direct Property Owner",
+        joinedAt: new Date().toLocaleDateString("en-PK", { month: "short", year: "numeric" }),
+      };
+      const updatedUsers = [...users, newUser];
+      setUsers(updatedUsers);
+      setCurrentUser(newUser);
+      localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+      localStorage.setItem(SESSION_KEY, JSON.stringify(newUser));
+      toast.success(`Welcome ${newUser.name}! Your AYTO Profile is ready.`);
+    } else {
+      if (!cleanEmail || !authPassword.trim()) {
+        toast.error("Please enter your Email and Password.");
+        return;
+      }
+      const matched = users.find(
+        (u) => u.email.toLowerCase() === cleanEmail && u.password === authPassword,
+      );
+      if (!matched) {
+        toast.error("Invalid email or password. If you're new, click Sign Up.");
+        return;
+      }
+      setCurrentUser(matched);
+      localStorage.setItem(SESSION_KEY, JSON.stringify(matched));
+      toast.success(`Welcome back, ${matched.name}!`);
+    }
+
+    setAuthModalOpen(false);
+    setAuthName("");
+    setAuthEmail("");
+    setAuthPhone("");
+    setAuthAgency("");
+    setAuthPassword("");
+
+    if (openPostAfterAuth) {
+      setOpenPostAfterAuth(false);
+      setPostModalOpen(true);
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem(SESSION_KEY);
+    toast.success("Logged out successfully.");
+    if (activePage === "user-profile") {
+      navigatePage("home", "top");
+    }
+  };
+
+  const handleCreatePropertyListing = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser) {
+      setPostModalOpen(false);
+      setAuthModalOpen(true);
+      return;
+    }
+    if (!propTitle.trim() || !propLocation.trim() || !propDemand.trim()) {
+      toast.error("Please enter Property Title, Location, and Demand.");
+      return;
+    }
+
+    const baseTemplate = properties[0]!;
+    const newListing: UserPostedProperty = {
+      ...baseTemplate,
+      id: Date.now(),
+      title: propTitle.trim(),
+      location: propLocation.trim(),
+      city: "Lahore",
+      image:
+        propImageUrl.trim() ||
+        propertySampleImages[propCategory] ||
+        propertySampleImages.House!,
+      ownerId: currentUser.id,
+      ownerName: currentUser.name,
+      ownerPhone: currentUser.phone,
+      ownerAgency: currentUser.agency,
+      customPriceText: propDemand.trim(),
+      areaText: propArea.trim() || "10 Marla",
+      ...(propCategory === "House" || propCategory === "Villa"
+        ? { beds: Number(propBeds) || 4 }
+        : {}),
+    };
+
+    const nextListings = [newListing, ...userListings];
+    setUserListings(nextListings);
+    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
+
+    toast.success("Property published under your profile and added to live listings!");
+    setPropTitle("");
+    setPropDemand("");
+    setPropImageUrl("");
+    setPostModalOpen(false);
+    setViewedProfileUser(currentUser);
+    navigatePage("user-profile");
+  };
+
+  const handleDeleteUserListing = (listingId: number) => {
+    const updated = userListings.filter((item) => item.id !== listingId);
+    setUserListings(updated);
+    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
+    toast.success("Listing removed from your profile.");
+  };
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -448,29 +665,24 @@ export function Index() {
     setFormMessage("");
   };
 
-  const handleSellerSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!sellerName.trim() || !sellerPhone.trim() || !sellerDemand.trim()) {
-      toast.error("Please enter your Name, Phone Number, and Demand.");
-      return;
-    }
-    toast.success("Property submitted! AYTO Properties team will verify and contact you shortly.");
-    setSellerName("");
-    setSellerPhone("");
-    setSellerDemand("");
-    setPostModalOpen(false);
-  };
-
-  const openWhatsAppChat = () => {
+  const openWhatsAppChat = (customText?: string) => {
     const phone = "923314972426";
     const msg = encodeURIComponent(
-      "Assalam-o-Alaikum AYTO Properties! I would like to get property details.",
+      customText ||
+        "Assalam-o-Alaikum AYTO Properties! I would like to get property details.",
     );
     window.open(`https://wa.me/${phone}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
-  // Filtered Properties for Smart Search Bar
-  const baseList = showSaved ? properties.filter((p) => saved.includes(p.id)) : properties;
+  // Merge user-posted listings + built-in properties (Search & Contact work WITHOUT Login)
+  const combinedProperties: Array<Property | UserPostedProperty> = [
+    ...userListings,
+    ...properties,
+  ];
+  const baseList = showSaved
+    ? combinedProperties.filter((p) => saved.includes(p.id))
+    : combinedProperties;
+
   const list = baseList.filter((p) => {
     const matchesSearch =
       !searchQuery.trim() ||
@@ -485,17 +697,21 @@ export function Index() {
     return matchesSearch && matchesType;
   });
 
-  // Construction Cost Estimator Calculation (Lahore Market Rates)
+  // Construction Cost Estimator Calculation
   const coveredAreaSqFt = plotMarla === 5 ? 1950 : plotMarla === 10 ? 3600 : 6200;
   const ratePerSqFt = buildQuality === "grey" ? 2750 : 5400;
   const estimatedCrore = ((coveredAreaSqFt * ratePerSqFt) / 10000000).toFixed(2);
 
   const inquire = (p: Property) => {
     setOpen(null);
+    const displayPrice =
+      "customPriceText" in p && (p as UserPostedProperty).customPriceText
+        ? (p as UserPostedProperty).customPriceText
+        : priceLabel(p);
     navigatePage(
       "query-form",
       undefined,
-      `Hello, I am interested in "${p.title}" in ${p.location}, ${p.city} (${priceLabel(p)}). Please share more details.`,
+      `Hello, I am interested in "${p.title}" in ${p.location}, ${p.city} (${displayPrice}). Please share more details.`,
     );
   };
 
@@ -504,6 +720,10 @@ export function Index() {
     galleryFilter === "All"
       ? galleryItems
       : galleryItems.filter((item) => item.category === galleryFilter);
+
+  const profileListings = viewedProfileUser
+    ? userListings.filter((item) => item.ownerId === viewedProfileUser.id)
+    : [];
 
   return (
     <div id="top" className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]">
@@ -569,7 +789,47 @@ export function Index() {
           }}
         />
 
-        {/* Floating Projects Dropdown Menu (Opens when clicking "Projects ▾" in Navbar) */}
+        {/* Floating Account & Profile Status Pill (Top-Right Below Header) */}
+        <div className="fixed right-4 top-[76px] z-40 flex items-center gap-2">
+          {currentUser ? (
+            <div className="flex items-center gap-1.5 rounded-full border border-[#f4c414]/45 bg-[#0b1322]/90 px-3 py-1.5 text-xs shadow-xl backdrop-blur-md">
+              <button
+                type="button"
+                onClick={() => openUserProfile(currentUser.id)}
+                className="inline-flex items-center gap-1.5 font-bold text-[#f4d06f] hover:underline"
+              >
+                <UserCheck className="h-3.5 w-3.5" />
+                <span>{currentUser.name}</span>
+                <span className="rounded-full bg-[#f4c414] px-1.5 py-0.5 text-[10px] font-extrabold text-[#070b14]">
+                  {userListings.filter((l) => l.ownerId === currentUser.id).length}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                title="Logout"
+                className="ml-1 rounded-full p-1 text-slate-400 transition hover:bg-white/10 hover:text-white"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setOpenPostAfterAuth(false);
+                setAuthTab("login");
+                setAuthModalOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/25 bg-[#0b1322]/85 px-3.5 py-1.5 text-xs font-bold text-white/90 shadow-lg backdrop-blur-md transition hover:border-[#f4c414] hover:text-[#f4c414]"
+            >
+              <LogIn className="h-3.5 w-3.5 text-[#f4c414]" />
+              <span>Seller Login</span>
+            </button>
+          )}
+        </div>
+
+        {/* Floating Projects Dropdown Menu */}
         {projectsMenuOpen && (
           <div
             data-projects-dropdown
@@ -604,7 +864,156 @@ export function Index() {
           </div>
         )}
 
-        {activePage === "query-form" ? (
+        {activePage === "user-profile" && viewedProfileUser ? (
+          <main key="user-profile" className="ayto-page-enter relative isolate overflow-hidden pt-32 text-white">
+            <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
+              <button
+                type="button"
+                onClick={() => navigatePage("home", "listings")}
+                className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/25 bg-[#0f192d]/80 px-4 py-1.5 text-xs font-medium text-white/85 backdrop-blur-md transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" /> Back to All Properties
+              </button>
+
+              {/* User Profile Header Card */}
+              <div className="mt-6 flex flex-col justify-between gap-6 rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 p-7 shadow-2xl backdrop-blur-md md:flex-row md:items-center sm:p-9">
+                <div className="flex items-center gap-5">
+                  <div className="grid h-20 w-20 shrink-0 place-items-center rounded-full border-2 border-[#f4c414] bg-[#f4c414]/15 font-sans text-3xl font-extrabold text-[#f4c414]">
+                    {viewedProfileUser.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h1 className="font-sans text-2xl font-extrabold text-white sm:text-3xl">
+                        {viewedProfileUser.name}
+                      </h1>
+                      <span className="rounded-full bg-[#f4c414] px-3 py-0.5 text-[10px] font-extrabold uppercase text-[#070b14]">
+                        {viewedProfileUser.agency || "Verified Seller"}
+                      </span>
+                    </div>
+                    <p className="mt-1.5 flex flex-wrap items-center gap-4 text-xs text-slate-300">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Phone className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.phone}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Mail className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.email}
+                      </span>
+                    </p>
+                    <p className="mt-1 text-[11px] text-slate-400">
+                      Member since {viewedProfileUser.joinedAt} • {profileListings.length} Active{" "}
+                      {profileListings.length === 1 ? "Listing" : "Listings"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  {currentUser?.id === viewedProfileUser.id ? (
+                    <button
+                      type="button"
+                      onClick={() => setPostModalOpen(true)}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+                    >
+                      <PlusCircle className="h-4 w-4" /> Post New Property
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openWhatsAppChat(
+                          `Assalam-o-Alaikum! I saw ${viewedProfileUser.name}'s profile on AYTO Properties and want to inquire about their listings.`,
+                        )
+                      }
+                      className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-2.5 text-xs font-extrabold text-white shadow-lg transition hover:brightness-105"
+                    >
+                      <MessageCircle className="h-4 w-4" /> Contact Seller
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* All Listings Posted by This User */}
+              <div className="mt-12">
+                <h2 className="font-sans text-xl font-bold text-white sm:text-2xl">
+                  Properties Listed by {viewedProfileUser.name} ({profileListings.length})
+                </h2>
+
+                {profileListings.length === 0 ? (
+                  <div className="mt-6 rounded-3xl border border-sky-300/15 bg-[#0e172a]/70 p-12 text-center">
+                    <p className="text-sm text-slate-300">
+                      No properties posted by this user yet.
+                    </p>
+                    {currentUser?.id === viewedProfileUser.id && (
+                      <button
+                        type="button"
+                        onClick={() => setPostModalOpen(true)}
+                        className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-6 py-2.5 text-xs font-extrabold text-[#070b14]"
+                      >
+                        <PlusCircle className="h-4 w-4" /> Post Your First Property
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-6 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+                    {profileListings.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => setOpen(item)}
+                        className="group cursor-pointer rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-3 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
+                      >
+                        <div className="relative aspect-[16/11] overflow-hidden rounded-xl bg-[#131f36]">
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                          <span className="absolute left-3 top-3 rounded-full bg-[#070b14]/85 px-3 py-1 text-xs font-extrabold text-[#f4c414]">
+                            {item.customPriceText}
+                          </span>
+                        </div>
+
+                        <div className="mt-3.5 px-1">
+                          <h3 className="truncate text-base font-bold text-white group-hover:text-[#f4d06f]">
+                            {item.title}
+                          </h3>
+                          <p className="mt-1 flex items-center gap-1 text-xs text-slate-300/80">
+                            <MapPin className="h-3.5 w-3.5 text-[#f4c414]" /> {item.location}
+                          </p>
+                          <p className="mt-1 text-[11px] text-slate-400">Size: {item.areaText}</p>
+
+                          <div className="mt-4 flex items-center justify-between border-t border-sky-300/15 pt-3">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setOpen(item);
+                              }}
+                              className="rounded-full bg-[#f4c414] px-4 py-1.5 text-xs font-extrabold text-[#070b14]"
+                            >
+                              View Details
+                            </button>
+
+                            {currentUser?.id === viewedProfileUser.id && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteUserListing(item.id);
+                                }}
+                                title="Delete Listing"
+                                className="inline-flex items-center gap-1 rounded-full border border-red-400/40 px-3 py-1.5 text-[11px] font-bold text-red-300 transition hover:bg-red-500/20"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" /> Remove
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </main>
+        ) : activePage === "query-form" ? (
           <main key="query-form" className="ayto-page-enter pt-20">
             <div className="mx-auto max-w-2xl px-4 pt-3 md:px-6">
               <button
@@ -954,7 +1363,6 @@ export function Index() {
             </section>
 
             <div className="mx-auto max-w-6xl px-5 py-16 md:px-8">
-              {/* Improvement 5: Turnkey House Construction Cost Estimator */}
               <div className="mb-16 rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 p-7 shadow-2xl backdrop-blur-md sm:p-9">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
@@ -1358,12 +1766,11 @@ export function Index() {
                     {showSaved ? "Your Saved Properties" : "Discover the Most Recommended Properties"}
                   </h2>
                   <p className="mt-3 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
-                    Discover the most recommended properties handpicked for their quality, value, and
-                    location across Lahore.
+                    Search, explore, and contact verified owners or AYTO advisors directly — no login required to browse.
                   </p>
                 </div>
 
-                {/* Improvement 2: Smart Search & Filter Bar */}
+                {/* Public Search & Filter Bar (Works without Login) */}
                 <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-4 backdrop-blur-md md:flex-row">
                   <div className="relative w-full md:max-w-xs">
                     <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -1394,11 +1801,17 @@ export function Index() {
                   </div>
                 </div>
 
-                {/* Improvement 4: Rich Property Cards with Price, Beds & Marla Badges */}
+                {/* Property Cards with Clickable Seller/User Profile Link */}
                 <div className="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                  {list.slice(0, 8).map((p) => {
+                  {list.slice(0, 12).map((p) => {
+                    const userPost = "ownerId" in p ? (p as UserPostedProperty) : null;
                     const beds = (p as { beds?: number }).beds;
-                    const area = (p as { area?: string; size?: string }).area || (p as { size?: string }).size;
+                    const area =
+                      userPost?.areaText ||
+                      (p as { area?: string; size?: string }).area ||
+                      (p as { size?: string }).size;
+                    const displayPrice = userPost?.customPriceText || priceLabel(p);
+
                     return (
                       <div
                         key={p.id}
@@ -1413,7 +1826,7 @@ export function Index() {
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                           <span className="absolute left-2.5 top-2.5 rounded-full bg-[#070b14]/85 px-3 py-1 text-[11px] font-extrabold text-[#f4c414] backdrop-blur-md">
-                            {priceLabel(p)}
+                            {displayPrice}
                           </span>
                         </div>
 
@@ -1438,10 +1851,31 @@ export function Index() {
                             </div>
                           )}
 
-                          <div className="mt-3 flex items-center justify-between border-t border-sky-300/10 pt-2.5">
-                            <span className="text-[11px] font-semibold text-[#f4d06f]">
-                              Verified Listing
-                            </span>
+                          {/* Clickable User/Seller Profile Link + Details Button */}
+                          <div className="mt-3 flex items-center justify-between gap-1.5 border-t border-sky-300/10 pt-2.5">
+                            {userPost ? (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openUserProfile(
+                                    userPost.ownerId,
+                                    userPost.ownerName,
+                                    userPost.ownerPhone,
+                                  );
+                                }}
+                                title="View Seller Profile & All Listings"
+                                className="inline-flex min-w-0 items-center gap-1 truncate text-[11px] font-bold text-[#f4d06f] hover:underline"
+                              >
+                                <User className="h-3 w-3 shrink-0" />
+                                <span className="truncate">{userPost.ownerName}</span>
+                              </button>
+                            ) : (
+                              <span className="text-[11px] font-semibold text-[#f4d06f]">
+                                AYTO Verified
+                              </span>
+                            )}
+
                             <button
                               type="button"
                               onClick={(e) => {
@@ -1487,7 +1921,7 @@ export function Index() {
           onOpenQuery={() => navigatePage("query-form")}
         />
 
-        {/* Colored Brand Social Icons Bar (Facebook, Proper Instagram Camera Icon, X, WhatsApp) */}
+        {/* Colored Brand Social Icons Bar */}
         <div className="border-t border-sky-300/10 bg-[#050912]/90 py-5 backdrop-blur-md">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 md:px-8">
             <p className="text-xs text-slate-300/70">
@@ -1537,7 +1971,7 @@ export function Index() {
 
               <button
                 type="button"
-                onClick={openWhatsAppChat}
+                onClick={() => openWhatsAppChat()}
                 aria-label="WhatsApp"
                 title="WhatsApp (+92 331-4972426)"
                 className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-200 hover:scale-110"
@@ -1549,8 +1983,120 @@ export function Index() {
         </div>
       </div>
 
-      {/* Improvement 3: Post Property Seller Modal */}
-      {postModalOpen && (
+      {/* Login / Sign Up Modal (Required Before Posting Property) */}
+      {authModalOpen && (
+        <div
+          onClick={() => setAuthModalOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md rounded-3xl border border-[#f4c414]/45 bg-[#0b1322] p-7 text-white shadow-2xl"
+          >
+            <button
+              type="button"
+              onClick={() => setAuthModalOpen(false)}
+              aria-label="Close Auth Modal"
+              className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white hover:bg-[#f4c414] hover:text-[#070b14]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3 py-1 text-[11px] font-bold text-[#f4d06f]">
+              <Lock className="h-3.5 w-3.5" /> AYTO Seller Account
+            </span>
+            <h2 className="mt-2 font-sans text-2xl font-extrabold text-white">
+              {authTab === "login" ? "Login to Post Property" : "Create Seller Profile"}
+            </h2>
+            <p className="mt-1 text-xs text-slate-300/75">
+              Browsing &amp; contacting is open to everyone. Login is required to create your profile and post listings.
+            </p>
+
+            {/* Login / Sign Up Tabs */}
+            <div className="mt-5 grid grid-cols-2 rounded-full border border-sky-300/20 bg-[#070b14] p-1">
+              <button
+                type="button"
+                onClick={() => setAuthTab("login")}
+                className={`rounded-full py-2 text-xs font-extrabold transition ${
+                  authTab === "login"
+                    ? "bg-[#f4c414] text-[#070b14]"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                onClick={() => setAuthTab("signup")}
+                className={`rounded-full py-2 text-xs font-extrabold transition ${
+                  authTab === "signup"
+                    ? "bg-[#f4c414] text-[#070b14]"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                Sign Up
+              </button>
+            </div>
+
+            <form onSubmit={handleAuthSubmit} className="mt-5 space-y-3.5">
+              {authTab === "signup" && (
+                <>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Full Name*"
+                    value={authName}
+                    onChange={(e) => setAuthName(e.target.value)}
+                    className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                  />
+                  <input
+                    type="tel"
+                    required
+                    placeholder="Mobile / WhatsApp Number*"
+                    value={authPhone}
+                    onChange={(e) => setAuthPhone(e.target.value)}
+                    className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Agency / Role (Optional, e.g., Owner / Dealer)"
+                    value={authAgency}
+                    onChange={(e) => setAuthAgency(e.target.value)}
+                    className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                  />
+                </>
+              )}
+
+              <input
+                type="email"
+                required
+                placeholder="Email Address*"
+                value={authEmail}
+                onChange={(e) => setAuthEmail(e.target.value)}
+                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+              />
+              <input
+                type="password"
+                required
+                placeholder="Password*"
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
+                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+              />
+
+              <button
+                type="submit"
+                className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+              >
+                {authTab === "login" ? "Login & Continue" : "Create Profile & Continue"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Authenticated Post Property Modal */}
+      {postModalOpen && currentUser && (
         <div
           onClick={() => setPostModalOpen(false)}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
@@ -1569,63 +2115,90 @@ export function Index() {
             </button>
 
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3 py-1 text-[11px] font-bold text-[#f4d06f]">
-              <PlusCircle className="h-3.5 w-3.5" /> List With AYTO Properties
+              <UserCheck className="h-3.5 w-3.5" /> Posting as {currentUser.name}
             </span>
             <h2 className="mt-2 font-sans text-2xl font-extrabold text-white">
-              Post Your Property
+              Post New Property
             </h2>
             <p className="mt-1 text-xs text-slate-300/75">
-              Submit your plot, house, or commercial file for direct verified buyers in Lahore.
+              This listing will appear on your public profile and in the live marketplace.
             </p>
 
-            <form onSubmit={handleSellerSubmit} className="mt-5 space-y-4">
+            <form onSubmit={handleCreatePropertyListing} className="mt-5 space-y-3.5">
               <input
                 type="text"
                 required
-                placeholder="Owner Full Name*"
-                value={sellerName}
-                onChange={(e) => setSellerName(e.target.value)}
+                placeholder="Property Title (e.g., 10 Marla Brand New Designer House)*"
+                value={propTitle}
+                onChange={(e) => setPropTitle(e.target.value)}
                 className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
               />
-              <input
-                type="tel"
-                required
-                placeholder="WhatsApp / Phone Number*"
-                value={sellerPhone}
-                onChange={(e) => setSellerPhone(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
-              <input
-                type="text"
-                required
-                placeholder="Society / Phase (e.g., DHA Phase 6, Lahore)"
-                value={sellerLocation}
-                onChange={(e) => setSellerLocation(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
+
               <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  placeholder="Size & Type (e.g., 10 Marla Plot)"
-                  value={sellerSize}
-                  onChange={(e) => setSellerSize(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                />
+                <select
+                  value={propCategory}
+                  onChange={(e) => setPropCategory(e.target.value)}
+                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3 py-3 text-xs text-white focus:border-[#f4c414] focus:outline-none"
+                >
+                  <option value="House">House</option>
+                  <option value="Villa">Villa</option>
+                  <option value="Plot">Plot</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Apartment">Apartment</option>
+                </select>
+
                 <input
                   type="text"
                   required
-                  placeholder="Demand (e.g., 4.2 Crore)*"
-                  value={sellerDemand}
-                  onChange={(e) => setSellerDemand(e.target.value)}
+                  placeholder="Area (e.g., 10 Marla / 1 Kanal)"
+                  value={propArea}
+                  onChange={(e) => setPropArea(e.target.value)}
                   className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
                 />
               </div>
+
+              <input
+                type="text"
+                required
+                placeholder="Location (e.g., DHA Phase 6, Lahore)*"
+                value={propLocation}
+                onChange={(e) => setPropLocation(e.target.value)}
+                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+              />
+
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  required
+                  placeholder="Demand (e.g., PKR 4.5 Crore)*"
+                  value={propDemand}
+                  onChange={(e) => setPropDemand(e.target.value)}
+                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  max="15"
+                  placeholder="Bedrooms (e.g., 5)"
+                  value={propBeds}
+                  onChange={(e) => setPropBeds(e.target.value)}
+                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                />
+              </div>
+
+              <input
+                type="url"
+                placeholder="Property Photo URL (Optional - auto-filled if blank)"
+                value={propImageUrl}
+                onChange={(e) => setPropImageUrl(e.target.value)}
+                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+              />
 
               <button
                 type="submit"
                 className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
               >
-                Submit Property For Listing
+                Publish Property To My Profile
               </button>
             </form>
           </div>
@@ -1635,7 +2208,7 @@ export function Index() {
       {/* Standard Round WhatsApp Logo Icon (Bottom-Right) */}
       <button
         type="button"
-        onClick={openWhatsAppChat}
+        onClick={() => openWhatsAppChat()}
         aria-label="WhatsApp"
         title="WhatsApp (+92 331-4972426)"
         className="fixed bottom-6 right-6 z-50 grid h-[66px] w-[66px] place-items-center rounded-full bg-[#25D366] text-white shadow-[0_8px_26px_rgba(37,211,102,0.5)] transition-transform duration-200 hover:scale-110"
