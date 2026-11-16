@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
+  ArrowLeftRight,
   ArrowRight,
   BadgeDollarSign,
   BedDouble,
@@ -11,9 +12,11 @@ import {
   CheckCircle2,
   Clock,
   Compass,
+  Edit3,
   FileCheck2,
   Hammer,
   Home,
+  ImagePlus,
   Lightbulb,
   Lock,
   LogIn,
@@ -89,6 +92,7 @@ interface UserPostedProperty extends Property {
   ownerAgency?: string;
   customPriceText: string;
   areaText: string;
+  listingStatus?: "Available" | "Sold";
 }
 
 type ActivePage =
@@ -311,7 +315,7 @@ export function Index() {
   const [userListings, setUserListings] = useState<UserPostedProperty[]>([]);
   const [viewedProfileUser, setViewedProfileUser] = useState<AytoUser | null>(null);
 
-  // Auth Modal (Required before Posting Property)
+  // Auth Modal
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [openPostAfterAuth, setOpenPostAfterAuth] = useState(false);
@@ -321,12 +325,27 @@ export function Index() {
   const [authAgency, setAuthAgency] = useState("");
   const [authPassword, setAuthPassword] = useState("");
 
+  // Edit Profile Modal State
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editAgency, setEditAgency] = useState("");
+
+  // Edit Listing Modal State
+  const [editingListing, setEditingListing] = useState<UserPostedProperty | null>(null);
+  const [editPropTitle, setEditPropTitle] = useState("");
+  const [editPropDemand, setEditPropDemand] = useState("");
+  const [editPropLocation, setEditPropLocation] = useState("");
+  const [editPropStatus, setEditPropStatus] = useState<"Available" | "Sold">("Available");
+
   // Projects Dropdown State
   const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
 
-  // Public Property Search & Category Filter (No Login Required)
+  // Public Property Search, Category Filter & Property Compare
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [compareIds, setCompareIds] = useState<number[]>([]);
+  const [compareModalOpen, setCompareModalOpen] = useState(false);
 
   // Post Property Modal State (Only accessible when logged in)
   const [postModalOpen, setPostModalOpen] = useState(false);
@@ -338,9 +357,12 @@ export function Index() {
   const [propDemand, setPropDemand] = useState("");
   const [propImageUrl, setPropImageUrl] = useState("");
 
-  // Turnkey Construction Cost Estimator State
+  // Construction & Installment Calculators State
   const [plotMarla, setPlotMarla] = useState<5 | 10 | 20>(10);
   const [buildQuality, setBuildQuality] = useState<"grey" | "luxury">("luxury");
+  const [installmentTotalLac, setInstallmentTotalLac] = useState(150);
+  const [downPaymentPct, setDownPaymentPct] = useState(25);
+  const [installmentMonths, setInstallmentMonths] = useState(36);
 
   const [galleryFilter, setGalleryFilter] = useState("All");
   const [lightboxImg, setLightboxImg] = useState<{ title: string; image: string } | null>(null);
@@ -598,6 +620,23 @@ export function Index() {
     }
   };
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2.5 * 1024 * 1024) {
+      toast.error("Please select an image smaller than 2.5 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setPropImageUrl(reader.result);
+        toast.success("Photo attached!");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleCreatePropertyListing = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) {
@@ -627,6 +666,7 @@ export function Index() {
       ownerAgency: currentUser.agency,
       customPriceText: propDemand.trim(),
       areaText: propArea.trim() || "10 Marla",
+      listingStatus: "Available",
       ...(propCategory === "House" || propCategory === "Villa"
         ? { beds: Number(propBeds) || 4 }
         : {}),
@@ -645,11 +685,79 @@ export function Index() {
     navigatePage("user-profile");
   };
 
+  const handleSaveProfileChanges = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser || !editName.trim() || !editPhone.trim()) {
+      toast.error("Name and Phone Number are required.");
+      return;
+    }
+    const updatedUser: AytoUser = {
+      ...currentUser,
+      name: editName.trim(),
+      phone: editPhone.trim(),
+      agency: editAgency.trim() || "Direct Property Owner",
+    };
+    const nextUsers = users.map((u) => (u.id === currentUser.id ? updatedUser : u));
+    const nextListings = userListings.map((l) =>
+      l.ownerId === currentUser.id
+        ? {
+            ...l,
+            ownerName: updatedUser.name,
+            ownerPhone: updatedUser.phone,
+            ownerAgency: updatedUser.agency,
+          }
+        : l,
+    );
+    setUsers(nextUsers);
+    setCurrentUser(updatedUser);
+    setViewedProfileUser(updatedUser);
+    setUserListings(nextListings);
+    localStorage.setItem(USERS_KEY, JSON.stringify(nextUsers));
+    localStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser));
+    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
+    setEditProfileOpen(false);
+    toast.success("Profile updated!");
+  };
+
+  const handleSaveListingEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingListing || !editPropTitle.trim() || !editPropDemand.trim()) {
+      toast.error("Please fill in Title and Demand.");
+      return;
+    }
+    const updatedListings = userListings.map((item) =>
+      item.id === editingListing.id
+        ? {
+            ...item,
+            title: editPropTitle.trim(),
+            location: editPropLocation.trim() || item.location,
+            customPriceText: editPropDemand.trim(),
+            listingStatus: editPropStatus,
+          }
+        : item,
+    );
+    setUserListings(updatedListings);
+    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updatedListings));
+    setEditingListing(null);
+    toast.success("Property listing updated!");
+  };
+
   const handleDeleteUserListing = (listingId: number) => {
     const updated = userListings.filter((item) => item.id !== listingId);
     setUserListings(updated);
     localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
     toast.success("Listing removed from your profile.");
+  };
+
+  const toggleCompareProperty = (id: number) => {
+    setCompareIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 2) {
+        toast("Comparing latest 2 selected properties.");
+        return [prev[1]!, id];
+      }
+      return [...prev, id];
+    });
   };
 
   const handleContactSubmit = (e: React.FormEvent) => {
@@ -674,7 +782,6 @@ export function Index() {
     window.open(`https://wa.me/${phone}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
-  // Merge user-posted listings + built-in properties (Search & Contact work WITHOUT Login)
   const combinedProperties: Array<Property | UserPostedProperty> = [
     ...userListings,
     ...properties,
@@ -697,10 +804,17 @@ export function Index() {
     return matchesSearch && matchesType;
   });
 
+  const comparedItems = combinedProperties.filter((p) => compareIds.includes(p.id));
+
   // Construction Cost Estimator Calculation
   const coveredAreaSqFt = plotMarla === 5 ? 1950 : plotMarla === 10 ? 3600 : 6200;
   const ratePerSqFt = buildQuality === "grey" ? 2750 : 5400;
   const estimatedCrore = ((coveredAreaSqFt * ratePerSqFt) / 10000000).toFixed(2);
+
+  // Installment Plan Calculation
+  const downPaymentLac = Math.round((installmentTotalLac * downPaymentPct) / 100);
+  const remainingLac = installmentTotalLac - downPaymentLac;
+  const monthlyInstallmentThousands = Math.round((remainingLac * 100) / installmentMonths);
 
   const inquire = (p: Property) => {
     setOpen(null);
@@ -789,8 +903,8 @@ export function Index() {
           }}
         />
 
-        {/* Floating Account & Profile Status Pill (Top-Right Below Header) */}
-        <div className="fixed right-4 top-[76px] z-40 flex items-center gap-2">
+        {/* Sleek Account & Profile Status Pill */}
+        <div className="fixed right-5 top-[72px] z-40 flex items-center gap-2">
           {currentUser ? (
             <div className="flex items-center gap-1.5 rounded-full border border-[#f4c414]/45 bg-[#0b1322]/90 px-3 py-1.5 text-xs shadow-xl backdrop-blur-md">
               <button
@@ -907,13 +1021,27 @@ export function Index() {
 
                 <div className="flex flex-wrap items-center gap-3">
                   {currentUser?.id === viewedProfileUser.id ? (
-                    <button
-                      type="button"
-                      onClick={() => setPostModalOpen(true)}
-                      className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
-                    >
-                      <PlusCircle className="h-4 w-4" /> Post New Property
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditName(currentUser.name);
+                          setEditPhone(currentUser.phone);
+                          setEditAgency(currentUser.agency || "");
+                          setEditProfileOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/30 bg-[#080f1d] px-4 py-2.5 text-xs font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
+                      >
+                        <Edit3 className="h-3.5 w-3.5" /> Edit Profile
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPostModalOpen(true)}
+                        className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+                      >
+                        <PlusCircle className="h-4 w-4" /> Post New Property
+                      </button>
+                    </>
                   ) : (
                     <button
                       type="button"
@@ -968,6 +1096,15 @@ export function Index() {
                           <span className="absolute left-3 top-3 rounded-full bg-[#070b14]/85 px-3 py-1 text-xs font-extrabold text-[#f4c414]">
                             {item.customPriceText}
                           </span>
+                          <span
+                            className={`absolute right-3 top-3 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                              item.listingStatus === "Sold"
+                                ? "bg-red-500 text-white"
+                                : "bg-emerald-500 text-[#070b14]"
+                            }`}
+                          >
+                            {item.listingStatus || "Available"}
+                          </span>
                         </div>
 
                         <div className="mt-3.5 px-1">
@@ -979,30 +1116,46 @@ export function Index() {
                           </p>
                           <p className="mt-1 text-[11px] text-slate-400">Size: {item.areaText}</p>
 
-                          <div className="mt-4 flex items-center justify-between border-t border-sky-300/15 pt-3">
+                          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-sky-300/15 pt-3">
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setOpen(item);
                               }}
-                              className="rounded-full bg-[#f4c414] px-4 py-1.5 text-xs font-extrabold text-[#070b14]"
+                              className="rounded-full bg-[#f4c414] px-3.5 py-1.5 text-xs font-extrabold text-[#070b14]"
                             >
-                              View Details
+                              Details
                             </button>
 
                             {currentUser?.id === viewedProfileUser.id && (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteUserListing(item.id);
-                                }}
-                                title="Delete Listing"
-                                className="inline-flex items-center gap-1 rounded-full border border-red-400/40 px-3 py-1.5 text-[11px] font-bold text-red-300 transition hover:bg-red-500/20"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" /> Remove
-                              </button>
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingListing(item);
+                                    setEditPropTitle(item.title);
+                                    setEditPropDemand(item.customPriceText);
+                                    setEditPropLocation(item.location);
+                                    setEditPropStatus(item.listingStatus || "Available");
+                                  }}
+                                  className="inline-flex items-center gap-1 rounded-full border border-sky-300/35 px-3 py-1.5 text-[11px] font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
+                                >
+                                  <Edit3 className="h-3 w-3" /> Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteUserListing(item.id);
+                                  }}
+                                  title="Delete Listing"
+                                  className="inline-flex items-center gap-1 rounded-full border border-red-400/40 px-3 py-1.5 text-[11px] font-bold text-red-300 transition hover:bg-red-500/20"
+                                >
+                                  <Trash2 className="h-3 w-3" /> Remove
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -1363,77 +1516,162 @@ export function Index() {
             </section>
 
             <div className="mx-auto max-w-6xl px-5 py-16 md:px-8">
-              <div className="mb-16 rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 p-7 shadow-2xl backdrop-blur-md sm:p-9">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f]">
-                      <Calculator className="h-3.5 w-3.5" /> Instant Lahore Cost Estimator
-                    </span>
-                    <h2 className="mt-2 font-sans text-2xl font-extrabold text-white sm:text-3xl">
-                      Turnkey House Construction Calculator
-                    </h2>
-                  </div>
+              {/* Dual Calculators Grid: Turnkey Construction + Installment Plan */}
+              <div className="mb-16 grid gap-8 lg:grid-cols-2">
+                {/* 1. Construction Cost Calculator */}
+                <div className="rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/90 p-7 shadow-2xl backdrop-blur-md">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f]">
+                    <Calculator className="h-3.5 w-3.5" /> Lahore Construction Rates
+                  </span>
+                  <h2 className="mt-2 font-sans text-2xl font-extrabold text-white">
+                    House Construction Estimator
+                  </h2>
 
-                  <div className="rounded-2xl border border-[#f4c414]/40 bg-[#080f1d] px-6 py-4 text-right">
+                  <div className="mt-4 rounded-2xl border border-[#f4c414]/40 bg-[#080f1d] px-5 py-3.5">
                     <p className="text-[11px] uppercase tracking-wider text-slate-400">
-                      Estimated Construction Cost ({coveredAreaSqFt.toLocaleString()} sq.ft)
+                      Estimated Cost ({coveredAreaSqFt.toLocaleString()} sq.ft Covered Area)
                     </p>
-                    <p className="mt-0.5 font-sans text-2xl font-extrabold text-[#f4c414] sm:text-3xl">
+                    <p className="mt-0.5 font-sans text-2xl font-extrabold text-[#f4c414]">
                       PKR {estimatedCrore} Crore
                     </p>
                   </div>
-                </div>
 
-                <div className="mt-7 grid gap-6 md:grid-cols-2">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                      1. Select Plot Size
-                    </p>
-                    <div className="mt-3 grid grid-cols-3 gap-3">
-                      {([5, 10, 20] as const).map((m) => (
+                  <div className="mt-5 space-y-4">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                        Plot Size
+                      </p>
+                      <div className="mt-2 grid grid-cols-3 gap-2.5">
+                        {([5, 10, 20] as const).map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            onClick={() => setPlotMarla(m)}
+                            className={`rounded-xl py-2.5 text-xs font-extrabold transition ${
+                              plotMarla === m
+                                ? "bg-[#f4c414] text-[#070b14]"
+                                : "border border-sky-300/20 bg-[#080f1d] text-white/85 hover:border-[#f4c414]"
+                            }`}
+                          >
+                            {m === 20 ? "1 Kanal" : `${m} Marla`}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                        Finishing Package
+                      </p>
+                      <div className="mt-2 grid grid-cols-2 gap-2.5">
                         <button
-                          key={m}
                           type="button"
-                          onClick={() => setPlotMarla(m)}
-                          className={`rounded-xl py-3 text-xs font-extrabold transition ${
-                            plotMarla === m
-                              ? "bg-[#f4c414] text-[#070b14] shadow-lg"
+                          onClick={() => setBuildQuality("grey")}
+                          className={`rounded-xl py-2.5 text-xs font-extrabold transition ${
+                            buildQuality === "grey"
+                              ? "bg-[#f4c414] text-[#070b14]"
                               : "border border-sky-300/20 bg-[#080f1d] text-white/85 hover:border-[#f4c414]"
                           }`}
                         >
-                          {m === 20 ? "1 Kanal" : `${m} Marla`}
+                          A+ Grey Structure
                         </button>
-                      ))}
+                        <button
+                          type="button"
+                          onClick={() => setBuildQuality("luxury")}
+                          className={`rounded-xl py-2.5 text-xs font-extrabold transition ${
+                            buildQuality === "luxury"
+                              ? "bg-[#f4c414] text-[#070b14]"
+                              : "border border-sky-300/20 bg-[#080f1d] text-white/85 hover:border-[#f4c414]"
+                          }`}
+                        >
+                          Luxury Turnkey
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Plot / High-Rise Installment & ROI Calculator */}
+                <div className="rounded-3xl border border-sky-300/25 bg-[#0e172a]/90 p-7 shadow-2xl backdrop-blur-md">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-400/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-sky-300">
+                    <BadgeDollarSign className="h-3.5 w-3.5" /> Easy Payment Planner
+                  </span>
+                  <h2 className="mt-2 font-sans text-2xl font-extrabold text-white">
+                    Installment Plan Calculator
+                  </h2>
+
+                  <div className="mt-4 grid grid-cols-2 gap-3 rounded-2xl border border-sky-300/25 bg-[#080f1d] px-5 py-3.5">
+                    <div>
+                      <p className="text-[11px] text-slate-400">Down Payment ({downPaymentPct}%)</p>
+                      <p className="font-sans text-lg font-extrabold text-white">
+                        PKR {downPaymentLac} Lac
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[11px] text-slate-400">Monthly Installment</p>
+                      <p className="font-sans text-lg font-extrabold text-[#f4c414]">
+                        PKR {monthlyInstallmentThousands.toLocaleString()}k / mo
+                      </p>
                     </div>
                   </div>
 
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                      2. Construction Package
-                    </p>
-                    <div className="mt-3 grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setBuildQuality("grey")}
-                        className={`rounded-xl py-3 text-xs font-extrabold transition ${
-                          buildQuality === "grey"
-                            ? "bg-[#f4c414] text-[#070b14] shadow-lg"
-                            : "border border-sky-300/20 bg-[#080f1d] text-white/85 hover:border-[#f4c414]"
-                        }`}
-                      >
-                        A+ Grey Structure
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setBuildQuality("luxury")}
-                        className={`rounded-xl py-3 text-xs font-extrabold transition ${
-                          buildQuality === "luxury"
-                            ? "bg-[#f4c414] text-[#070b14] shadow-lg"
-                            : "border border-sky-300/20 bg-[#080f1d] text-white/85 hover:border-[#f4c414]"
-                        }`}
-                      >
-                        Luxury Turnkey Finish
-                      </button>
+                  <div className="mt-5 space-y-4">
+                    <div>
+                      <div className="flex justify-between text-xs font-bold text-slate-300">
+                        <span>Total Property Price</span>
+                        <span className="text-[#f4c414]">PKR {installmentTotalLac} Lac</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={50}
+                        max={600}
+                        step={10}
+                        value={installmentTotalLac}
+                        onChange={(e) => setInstallmentTotalLac(Number(e.target.value))}
+                        className="mt-2 w-full accent-[#f4c414]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-xs font-bold text-slate-300">Down Payment</p>
+                        <div className="mt-1.5 grid grid-cols-2 gap-2">
+                          {[20, 30].map((pct) => (
+                            <button
+                              key={pct}
+                              type="button"
+                              onClick={() => setDownPaymentPct(pct)}
+                              className={`rounded-xl py-2 text-xs font-extrabold ${
+                                downPaymentPct === pct
+                                  ? "bg-[#f4c414] text-[#070b14]"
+                                  : "border border-sky-300/20 bg-[#080f1d] text-white"
+                              }`}
+                            >
+                              {pct}%
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-bold text-slate-300">Duration</p>
+                        <div className="mt-1.5 grid grid-cols-2 gap-2">
+                          {[24, 36].map((mo) => (
+                            <button
+                              key={mo}
+                              type="button"
+                              onClick={() => setInstallmentMonths(mo)}
+                              className={`rounded-xl py-2 text-xs font-extrabold ${
+                                installmentMonths === mo
+                                  ? "bg-[#f4c414] text-[#070b14]"
+                                  : "border border-sky-300/20 bg-[#080f1d] text-white"
+                              }`}
+                            >
+                              {mo} Mos
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1536,689 +1774,3 @@ export function Index() {
                       <img
                         src={item.image}
                         alt={item.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#f4d06f]">
-                        {item.category}
-                      </span>
-                      <h2 className="mt-1 text-xs font-bold text-white sm:text-sm">
-                        {item.title}
-                      </h2>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {lightboxImg && (
-              <div
-                onClick={() => setLightboxImg(null)}
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-              >
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl border border-sky-300/25 bg-[#0b1322]"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setLightboxImg(null)}
-                    aria-label="Close preview"
-                    className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/75 text-white hover:bg-[#f4c414] hover:text-[#070b14]"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                  <img
-                    src={lightboxImg.image}
-                    alt={lightboxImg.title}
-                    className="max-h-[78vh] w-full object-contain"
-                  />
-                  <div className="px-5 py-3 text-center text-sm font-bold text-white">
-                    {lightboxImg.title}
-                  </div>
-                </div>
-              </div>
-            )}
-          </main>
-        ) : activePage === "contact-us" ? (
-          <main key="contact-us" className="ayto-page-enter relative isolate overflow-hidden pt-32 text-white">
-            <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
-              <div className="text-center">
-                <div className="mx-auto mb-3 h-[2px] w-10 rounded-full bg-[#f4c414]" />
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300">
-                  Get In Touch
-                </p>
-                <h1 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
-                  Our Contact Information
-                </h1>
-              </div>
-
-              <div className="mt-14 grid gap-6 md:grid-cols-3">
-                <div className="flex min-h-[156px] items-center gap-5 rounded-2xl bg-[#f4c414] px-7 py-7 text-[#070b14] shadow-[0_18px_45px_-12px_rgba(244,196,20,0.45)] transition duration-300 hover:-translate-y-1.5">
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14] bg-[#070b14]/5">
-                    <MapPin className="h-6 w-6 text-[#070b14]" />
-                  </div>
-                  <div>
-                    <h2 className="font-sans text-xl font-extrabold">Our Address</h2>
-                    <p className="mt-1.5 text-xs font-semibold leading-relaxed text-[#070b14]/90 sm:text-sm">
-                      E65 DHA Phase 12, Multan Road, Lahore
-                    </p>
-                  </div>
-                </div>
-
-                <a
-                  href="tel:+923314972426"
-                  className="flex min-h-[156px] items-center gap-5 rounded-2xl bg-[#f4c414] px-7 py-7 text-[#070b14] shadow-[0_18px_45px_-12px_rgba(244,196,20,0.45)] transition duration-300 hover:-translate-y-1.5 hover:brightness-105"
-                >
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14] bg-[#070b14]/5">
-                    <Phone className="h-6 w-6 text-[#070b14]" />
-                  </div>
-                  <div>
-                    <h2 className="font-sans text-xl font-extrabold">Phone Number</h2>
-                    <p className="mt-1.5 text-sm font-bold text-[#070b14]/95">
-                      +92 331-4972426
-                    </p>
-                  </div>
-                </a>
-
-                <a
-                  href="mailto:info2aytoproperties@gmail.com"
-                  className="flex min-h-[156px] items-center gap-5 rounded-2xl bg-[#f4c414] px-7 py-7 text-[#070b14] shadow-[0_18px_45px_-12px_rgba(244,196,20,0.45)] transition duration-300 hover:-translate-y-1.5 hover:brightness-105"
-                >
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14] bg-[#070b14]/5">
-                    <Mail className="h-6 w-6 text-[#070b14]" />
-                  </div>
-                  <div className="min-w-0">
-                    <h2 className="font-sans text-xl font-extrabold">Email Address</h2>
-                    <p className="mt-1.5 break-all text-xs font-bold text-[#070b14]/95 sm:text-sm">
-                      info2aytoproperties@gmail.com
-                    </p>
-                  </div>
-                </a>
-              </div>
-
-              <div className="mt-16 grid items-stretch gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-                <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 p-7 shadow-2xl backdrop-blur-md sm:p-9">
-                  <h2 className="font-sans text-3xl font-extrabold text-white sm:text-4xl">
-                    Schedule a visit
-                  </h2>
-                  <p className="mt-2 text-xs text-slate-300/75 sm:text-sm">
-                    Fill out your details below and our DHA Lahore property advisor will call you back.
-                  </p>
-
-                  <form onSubmit={handleContactSubmit} className="mt-7 space-y-5">
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          required
-                          placeholder="Your Name*"
-                          value={formName}
-                          onChange={(e) => setFormName(e.target.value)}
-                          className="w-full rounded-full border border-sky-300/20 bg-[#080f1d]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                        />
-                        <User className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                      </div>
-
-                      <div className="relative">
-                        <input
-                          type="email"
-                          required
-                          placeholder="Your Email*"
-                          value={formEmail}
-                          onChange={(e) => setFormEmail(e.target.value)}
-                          className="w-full rounded-full border border-sky-300/20 bg-[#080f1d]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                        />
-                        <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                      </div>
-                    </div>
-
-                    <div className="relative">
-                      <input
-                        type="tel"
-                        placeholder="Your Phone"
-                        value={formPhone}
-                        onChange={(e) => setFormPhone(e.target.value)}
-                        className="w-full rounded-full border border-sky-300/20 bg-[#080f1d]/90 px-5 py-3.5 pr-11 text-sm text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                      />
-                      <Phone className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                    </div>
-
-                    <div className="relative">
-                      <textarea
-                        rows={4}
-                        required
-                        placeholder="Type Your Message*"
-                        value={formMessage}
-                        onChange={(e) => setFormMessage(e.target.value)}
-                        className="w-full rounded-3xl border border-sky-300/20 bg-[#080f1d]/90 px-5 py-4 pr-11 text-sm text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                      />
-                      <MessageSquare className="pointer-events-none absolute right-4 top-5 h-4 w-4 text-slate-400" />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="rounded-full bg-[#f4c414] px-8 py-3.5 text-sm font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
-                    >
-                      Submit Message
-                    </button>
-                  </form>
-                </div>
-
-                <div className="flex flex-col justify-between overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md">
-                  <div className="h-[250px] w-full bg-[#09101f]">
-                    <iframe
-                      title="AYTO Properties DHA Phase 12 Lahore Map"
-                      src="https://www.openstreetmap.org/export/embed.html?bbox=74.205%2C31.415%2C74.245%2C31.445&layer=mapnik&marker=31.430%2C74.225"
-                      className="h-full w-full border-0"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  <div className="p-7">
-                    <span className="rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#070b14]">
-                      LAHORE HEAD OFFICE
-                    </span>
-                    <h3 className="mt-3 font-sans text-xl font-bold text-white">
-                      E65 DHA Phase 12, Multan Road
-                    </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
-                      Visit our main sales &amp; consultancy office in DHA Phase 12 (EME Sector),
-                      Multan Road, Lahore for verified plots, villas &amp; construction.
-                    </p>
-
-                    <div className="mt-5 space-y-2 border-t border-sky-300/15 pt-4 text-xs text-slate-100/90">
-                      <p className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-[#f4c414]" />
-                        <span>Monday - Saturday: 10:00 AM - 7:00 PM</span>
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-[#f4c414]" />
-                        <span>Direct Helpline: +92 331-4972426</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </main>
-        ) : (
-          <main key="home" className="ayto-page-enter">
-            <Hero />
-
-            <Spotlight
-              onView={() => navigatePage("projects")}
-              onInquire={() => inquire(featured)}
-            />
-
-            <section
-              id="listings"
-              className="relative isolate overflow-hidden border-t border-sky-300/10 py-20 text-white md:py-28"
-            >
-              <div className="mx-auto max-w-6xl px-5 md:px-8">
-                <div className="mx-auto max-w-2xl text-center">
-                  <span className="inline-block rounded-full border border-[#f4d06f]/40 bg-[#f4d06f]/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[#f4d06f]">
-                    Handpicked Portfolio
-                  </span>
-                  <h2 className="mt-3 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
-                    {showSaved ? "Your Saved Properties" : "Discover the Most Recommended Properties"}
-                  </h2>
-                  <p className="mt-3 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
-                    Search, explore, and contact verified owners or AYTO advisors directly — no login required to browse.
-                  </p>
-                </div>
-
-                {/* Public Search & Filter Bar (Works without Login) */}
-                <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-4 backdrop-blur-md md:flex-row">
-                  <div className="relative w-full md:max-w-xs">
-                    <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search DHA, Bahria, Gulberg..."
-                      className="w-full rounded-full border border-sky-300/20 bg-[#080f1d] py-2 pl-10 pr-4 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    {["All", "House", "Villa", "Apartment", "Plot", "Commercial"].map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => setTypeFilter(cat)}
-                        className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
-                          typeFilter === cat
-                            ? "bg-[#f4c414] text-[#070b14]"
-                            : "border border-sky-300/20 bg-[#080f1d]/80 text-slate-200 hover:border-[#f4c414]"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Property Cards with Clickable Seller/User Profile Link */}
-                <div className="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                  {list.slice(0, 12).map((p) => {
-                    const userPost = "ownerId" in p ? (p as UserPostedProperty) : null;
-                    const beds = (p as { beds?: number }).beds;
-                    const area =
-                      userPost?.areaText ||
-                      (p as { area?: string; size?: string }).area ||
-                      (p as { size?: string }).size;
-                    const displayPrice = userPost?.customPriceText || priceLabel(p);
-
-                    return (
-                      <div
-                        key={p.id}
-                        onClick={() => setOpen(p)}
-                        className="group cursor-pointer rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-2.5 shadow-lg backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
-                      >
-                        <div className="relative aspect-square overflow-hidden rounded-xl bg-[#131f36] shadow-lg">
-                          <img
-                            src={p.image}
-                            alt={p.title}
-                            loading="lazy"
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                          <span className="absolute left-2.5 top-2.5 rounded-full bg-[#070b14]/85 px-3 py-1 text-[11px] font-extrabold text-[#f4c414] backdrop-blur-md">
-                            {displayPrice}
-                          </span>
-                        </div>
-
-                        <div className="mt-3 px-1 pb-1.5">
-                          <h3 className="truncate text-xs font-bold text-white transition group-hover:text-[#f4d06f] sm:text-sm">
-                            {p.location}
-                          </h3>
-                          <p className="truncate text-[11px] text-slate-300/75">{p.title}</p>
-
-                          {(beds || area) && (
-                            <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-300/80">
-                              {beds && (
-                                <span className="inline-flex items-center gap-1">
-                                  <BedDouble className="h-3.5 w-3.5 text-[#f4c414]" /> {beds} Beds
-                                </span>
-                              )}
-                              {area && (
-                                <span className="inline-flex items-center gap-1">
-                                  <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {area}
-                                </span>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Clickable User/Seller Profile Link + Details Button */}
-                          <div className="mt-3 flex items-center justify-between gap-1.5 border-t border-sky-300/10 pt-2.5">
-                            {userPost ? (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openUserProfile(
-                                    userPost.ownerId,
-                                    userPost.ownerName,
-                                    userPost.ownerPhone,
-                                  );
-                                }}
-                                title="View Seller Profile & All Listings"
-                                className="inline-flex min-w-0 items-center gap-1 truncate text-[11px] font-bold text-[#f4d06f] hover:underline"
-                              >
-                                <User className="h-3 w-3 shrink-0" />
-                                <span className="truncate">{userPost.ownerName}</span>
-                              </button>
-                            ) : (
-                              <span className="text-[11px] font-semibold text-[#f4d06f]">
-                                AYTO Verified
-                              </span>
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setOpen(p);
-                              }}
-                              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sky-200/40 px-3 py-1 text-[11px] font-medium text-white transition-all duration-300 group-hover:border-[#f4d06f] group-hover:bg-[#f4d06f] group-hover:text-[#070b14]"
-                            >
-                              Details
-                              <ArrowRight className="h-3 w-3" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {list.length === 0 && (
-                  <div className="mt-10 rounded-2xl border border-sky-300/15 bg-[#0e172a]/70 py-10 text-center">
-                    <p className="text-sm text-slate-300">No properties matched your filter.</p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setTypeFilter("All");
-                      }}
-                      className="mt-3 rounded-full bg-[#f4c414] px-5 py-2 text-xs font-bold text-[#070b14]"
-                    >
-                      Reset Filters
-                    </button>
-                  </div>
-                )}
-              </div>
-            </section>
-
-            <Testimonials />
-          </main>
-        )}
-
-        <SiteFooter
-          onType={() => navigatePage("home", "listings")}
-          onOpenQuery={() => navigatePage("query-form")}
-        />
-
-        {/* Colored Brand Social Icons Bar */}
-        <div className="border-t border-sky-300/10 bg-[#050912]/90 py-5 backdrop-blur-md">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 md:px-8">
-            <p className="text-xs text-slate-300/70">
-              Connect with{" "}
-              <span className="font-semibold text-white">AYTO Properties &amp; Builders</span>
-            </p>
-
-            <div className="flex items-center gap-3.5">
-              <a
-                href="https://www.facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                title="Facebook"
-                className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
-              >
-                <span className="font-sans text-lg font-extrabold leading-none">f</span>
-              </a>
-
-              <a
-                href="https://www.instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                title="Instagram"
-                style={{
-                  background:
-                    "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)",
-                }}
-                className="grid h-10 w-10 place-items-center rounded-full text-white shadow-md transition-transform duration-200 hover:scale-110"
-              >
-                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                </svg>
-              </a>
-
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                title="Twitter"
-                className="grid h-10 w-10 place-items-center rounded-full bg-[#1DA1F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
-              >
-                <span className="font-sans text-base font-extrabold leading-none">X</span>
-              </a>
-
-              <button
-                type="button"
-                onClick={() => openWhatsAppChat()}
-                aria-label="WhatsApp"
-                title="WhatsApp (+92 331-4972426)"
-                className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-200 hover:scale-110"
-              >
-                <MessageCircle className="h-5 w-5 fill-current" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Login / Sign Up Modal (Required Before Posting Property) */}
-      {authModalOpen && (
-        <div
-          onClick={() => setAuthModalOpen(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md rounded-3xl border border-[#f4c414]/45 bg-[#0b1322] p-7 text-white shadow-2xl"
-          >
-            <button
-              type="button"
-              onClick={() => setAuthModalOpen(false)}
-              aria-label="Close Auth Modal"
-              className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white hover:bg-[#f4c414] hover:text-[#070b14]"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3 py-1 text-[11px] font-bold text-[#f4d06f]">
-              <Lock className="h-3.5 w-3.5" /> AYTO Seller Account
-            </span>
-            <h2 className="mt-2 font-sans text-2xl font-extrabold text-white">
-              {authTab === "login" ? "Login to Post Property" : "Create Seller Profile"}
-            </h2>
-            <p className="mt-1 text-xs text-slate-300/75">
-              Browsing &amp; contacting is open to everyone. Login is required to create your profile and post listings.
-            </p>
-
-            {/* Login / Sign Up Tabs */}
-            <div className="mt-5 grid grid-cols-2 rounded-full border border-sky-300/20 bg-[#070b14] p-1">
-              <button
-                type="button"
-                onClick={() => setAuthTab("login")}
-                className={`rounded-full py-2 text-xs font-extrabold transition ${
-                  authTab === "login"
-                    ? "bg-[#f4c414] text-[#070b14]"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                Login
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthTab("signup")}
-                className={`rounded-full py-2 text-xs font-extrabold transition ${
-                  authTab === "signup"
-                    ? "bg-[#f4c414] text-[#070b14]"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
-
-            <form onSubmit={handleAuthSubmit} className="mt-5 space-y-3.5">
-              {authTab === "signup" && (
-                <>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Full Name*"
-                    value={authName}
-                    onChange={(e) => setAuthName(e.target.value)}
-                    className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                  />
-                  <input
-                    type="tel"
-                    required
-                    placeholder="Mobile / WhatsApp Number*"
-                    value={authPhone}
-                    onChange={(e) => setAuthPhone(e.target.value)}
-                    className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Agency / Role (Optional, e.g., Owner / Dealer)"
-                    value={authAgency}
-                    onChange={(e) => setAuthAgency(e.target.value)}
-                    className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                  />
-                </>
-              )}
-
-              <input
-                type="email"
-                required
-                placeholder="Email Address*"
-                value={authEmail}
-                onChange={(e) => setAuthEmail(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
-              <input
-                type="password"
-                required
-                placeholder="Password*"
-                value={authPassword}
-                onChange={(e) => setAuthPassword(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
-
-              <button
-                type="submit"
-                className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
-              >
-                {authTab === "login" ? "Login & Continue" : "Create Profile & Continue"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Authenticated Post Property Modal */}
-      {postModalOpen && currentUser && (
-        <div
-          onClick={() => setPostModalOpen(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md rounded-3xl border border-[#f4c414]/40 bg-[#0b1322] p-7 text-white shadow-2xl"
-          >
-            <button
-              type="button"
-              onClick={() => setPostModalOpen(false)}
-              aria-label="Close Post Property Modal"
-              className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white hover:bg-[#f4c414] hover:text-[#070b14]"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3 py-1 text-[11px] font-bold text-[#f4d06f]">
-              <UserCheck className="h-3.5 w-3.5" /> Posting as {currentUser.name}
-            </span>
-            <h2 className="mt-2 font-sans text-2xl font-extrabold text-white">
-              Post New Property
-            </h2>
-            <p className="mt-1 text-xs text-slate-300/75">
-              This listing will appear on your public profile and in the live marketplace.
-            </p>
-
-            <form onSubmit={handleCreatePropertyListing} className="mt-5 space-y-3.5">
-              <input
-                type="text"
-                required
-                placeholder="Property Title (e.g., 10 Marla Brand New Designer House)*"
-                value={propTitle}
-                onChange={(e) => setPropTitle(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
-
-              <div className="grid grid-cols-2 gap-3">
-                <select
-                  value={propCategory}
-                  onChange={(e) => setPropCategory(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3 py-3 text-xs text-white focus:border-[#f4c414] focus:outline-none"
-                >
-                  <option value="House">House</option>
-                  <option value="Villa">Villa</option>
-                  <option value="Plot">Plot</option>
-                  <option value="Commercial">Commercial</option>
-                  <option value="Apartment">Apartment</option>
-                </select>
-
-                <input
-                  type="text"
-                  required
-                  placeholder="Area (e.g., 10 Marla / 1 Kanal)"
-                  value={propArea}
-                  onChange={(e) => setPropArea(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                />
-              </div>
-
-              <input
-                type="text"
-                required
-                placeholder="Location (e.g., DHA Phase 6, Lahore)*"
-                value={propLocation}
-                onChange={(e) => setPropLocation(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
-
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  required
-                  placeholder="Demand (e.g., PKR 4.5 Crore)*"
-                  value={propDemand}
-                  onChange={(e) => setPropDemand(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="15"
-                  placeholder="Bedrooms (e.g., 5)"
-                  value={propBeds}
-                  onChange={(e) => setPropBeds(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                />
-              </div>
-
-              <input
-                type="url"
-                placeholder="Property Photo URL (Optional - auto-filled if blank)"
-                value={propImageUrl}
-                onChange={(e) => setPropImageUrl(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
-
-              <button
-                type="submit"
-                className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
-              >
-                Publish Property To My Profile
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Standard Round WhatsApp Logo Icon (Bottom-Right) */}
-      <button
-        type="button"
-        onClick={() => openWhatsAppChat()}
-        aria-label="WhatsApp"
-        title="WhatsApp (+92 331-4972426)"
-        className="fixed bottom-6 right-6 z-50 grid h-[66px] w-[66px] place-items-center rounded-full bg-[#25D366] text-white shadow-[0_8px_26px_rgba(37,211,102,0.5)] transition-transform duration-200 hover:scale-110"
-      >
-        <svg className="h-9 w-9 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z" />
-        </svg>
-      </button>
-
-      <PropertyDialog p={open} onClose={() => setOpen(null)} onInquire={inquire} />
-    </div>
-  );
-}
