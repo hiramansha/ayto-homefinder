@@ -392,8 +392,30 @@ export function Index() {
     };
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
-    return () => window.removeEventListener("popstate", syncFromUrl);
-  }, []);
+
+    const replaceLegacyContactInfo = () => {
+      document.querySelectorAll("footer a, footer p, footer span, section a, section p").forEach((el) => {
+        if (el.children.length === 0 && el.textContent && el.textContent.includes("331-4972426")) {
+          el.textContent = el.textContent.replace(/331-4972426/g, "336-4785098");
+        }
+        if (el instanceof HTMLAnchorElement) {
+          if (el.href.includes("3314972426")) {
+            el.href = el.href.replace(/3314972426/g, "3364785098");
+          }
+          if (el.href.includes("facebook.com")) {
+            el.href = "https://www.facebook.com/profile.php?id=61596721197006";
+          }
+        }
+      });
+    };
+    replaceLegacyContactInfo();
+    const timer = window.setTimeout(replaceLegacyContactInfo, 400);
+
+    return () => {
+      window.removeEventListener("popstate", syncFromUrl);
+      window.clearTimeout(timer);
+    };
+  }, [activePage]);
 
   useEffect(() => {
     if (activePage !== "home") {
@@ -438,7 +460,7 @@ export function Index() {
         id: ownerId,
         name: fallbackName || "AYTO Verified Member",
         email: "verified@aytoproperties.com",
-        phone: fallbackPhone || "+92 331-4972426",
+        phone: fallbackPhone || "+92 336-4785098",
         password: "",
         agency: "AYTO Partner Network",
         joinedAt: "2026",
@@ -796,7 +818,7 @@ export function Index() {
   };
 
   const openWhatsAppChat = (customText?: string) => {
-    const phone = "923314972426";
+    const phone = "923364785098";
     const msg = encodeURIComponent(
       customText ||
         "Assalam-o-Alaikum AYTO Properties! I would like to get property details.",
@@ -1019,7 +1041,7 @@ export function Index() {
                 )}
               </div>
 
-<div className="mt-5 overflow-hidden rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/95 shadow-2xl backdrop-blur-md">
+              <div className="mt-5 overflow-hidden rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/95 shadow-2xl backdrop-blur-md">
                 <div className="flex items-center justify-between border-b border-[#f4c414]/20 bg-gradient-to-r from-[#13264a] via-[#182f59] to-[#2e2611] px-6 py-3 sm:px-9">
                   <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#f4d06f]">
                     AYTO Verified Partner Portal
@@ -1036,7 +1058,7 @@ export function Index() {
                         {viewedProfileUser.name.charAt(0).toUpperCase()}
                       </div>
 
-                      <div className="pb-1">
+                      <div>
                         <div className="flex flex-wrap items-center gap-2.5">
                           <h1 className="font-sans text-2xl font-extrabold text-white sm:text-3xl">
                             {viewedProfileUser.name}
@@ -1046,7 +1068,7 @@ export function Index() {
                           </span>
                         </div>
 
-                        <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-300">
+                        <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-slate-300">
                           <span className="inline-flex items-center gap-1.5">
                             <Phone className="h-3.5 w-3.5 text-[#f4c414]" /> {viewedProfileUser.phone}
                           </span>
@@ -1440,7 +1462,7 @@ export function Index() {
                   </p>
                   <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
                     <Phone className="h-3.5 w-3.5" />
-                    <span>+92 331-4972426</span>
+                    <span>+92 336-4785098</span>
                   </p>
                   <p className="mt-2 flex items-center gap-2 text-xs text-slate-300/75">
                     <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
@@ -1460,7 +1482,7 @@ export function Index() {
                   </p>
                   <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
                     <Phone className="h-3.5 w-3.5" />
-                    <span>+92 331-4972426</span>
+                    <span>+92 336-4785098</span>
                   </p>
                   <p className="mt-2 flex items-center gap-2 text-xs text-slate-300/75">
                     <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
@@ -1480,7 +1502,7 @@ export function Index() {
                   </p>
                   <p className="mt-3 flex items-center gap-2 text-xs text-[#f4d06f]">
                     <Phone className="h-3.5 w-3.5" />
-                    <span>+92 331-4972426</span>
+                    <span>+92 336-4785098</span>
                   </p>
                   <p className="mt-2 flex items-center gap-2 text-xs text-slate-300/75">
                     <Clock className="h-3.5 w-3.5 text-[#f4d06f]" />
@@ -1923,7 +1945,7 @@ export function Index() {
                 </div>
 
                 <a
-                  href="tel:+923314972426"
+                  href="tel:+923364785098"
                   className="flex min-h-[156px] items-center gap-5 rounded-2xl bg-[#f4c414] px-7 py-7 text-[#070b14] shadow-[0_18px_45px_-12px_rgba(244,196,20,0.45)] transition duration-300 hover:-translate-y-1.5 hover:brightness-105"
                 >
                   <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14] bg-[#070b14]/5">
@@ -1932,7 +1954,7 @@ export function Index() {
                   <div>
                     <h2 className="font-sans text-xl font-extrabold">Phone Number</h2>
                     <p className="mt-1.5 text-sm font-bold text-[#070b14]/95">
-                      +92 331-4972426
+                      +92 336-4785098
                     </p>
                   </div>
                 </a>
@@ -2050,7 +2072,7 @@ export function Index() {
                       </p>
                       <p className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-[#f4c414]" />
-                        <span>Direct Helpline: +92 331-4972426</span>
+                        <span>Direct Helpline: +92 336-4785098</span>
                       </p>
                     </div>
                   </div>
@@ -2258,11 +2280,11 @@ export function Index() {
 
             <div className="flex items-center gap-3.5">
               <a
-                href="https://www.facebook.com"
+                href="https://www.facebook.com/profile.php?id=61596721197006"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                title="Facebook"
+                title="AYTO Properties Official Facebook"
                 className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
                 <span className="font-sans text-lg font-extrabold leading-none">f</span>
@@ -2300,7 +2322,7 @@ export function Index() {
                 type="button"
                 onClick={() => openWhatsAppChat()}
                 aria-label="WhatsApp"
-                title="WhatsApp (+92 331-4972426)"
+                title="WhatsApp (+92 336-4785098)"
                 className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
                 <MessageCircle className="h-5 w-5 fill-current" />
@@ -2745,7 +2767,7 @@ export function Index() {
         type="button"
         onClick={() => openWhatsAppChat()}
         aria-label="WhatsApp"
-        title="WhatsApp (+92 331-4972426)"
+        title="WhatsApp (+92 336-4785098)"
         className="fixed bottom-6 right-6 z-50 grid h-[66px] w-[66px] place-items-center rounded-full bg-[#25D366] text-white shadow-[0_8px_26px_rgba(37,211,102,0.5)] transition-transform duration-200 hover:scale-110"
       >
         <svg className="h-9 w-9 fill-current" viewBox="0 0 24 24" aria-hidden="true">
