@@ -1301,10 +1301,17 @@ export function Index() {
                   </p>
                 </div>
 
-                <div className="mx-auto w-full max-w-[290px] overflow-hidden rounded-3xl border border-[#f4d06f]/40 bg-white shadow-[0_25px_70px_-15px_rgba(3,8,20,0.95)] transition duration-500 hover:-translate-y-1.5">
+<div
+                  onContextMenu={(e) => e.preventDefault()}
+                  onDragStart={(e) => e.preventDefault()}
+                  className="mx-auto w-full max-w-[290px] select-none overflow-hidden rounded-3xl border border-[#f4d06f]/40 bg-white shadow-[0_25px_70px_-15px_rgba(3,8,20,0.95)] transition duration-500 hover:-translate-y-1.5"
+                >
                   <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#131d33]">
                     <img
                       src={directorPhotos[0]}
+                      draggable={false}
+                      onContextMenu={(e) => e.preventDefault()}
+                      onDragStart={(e) => e.preventDefault()}
                       onError={(e) => {
                         const img = e.currentTarget;
                         const next = Number(img.dataset.idx || "0") + 1;
@@ -1316,7 +1323,13 @@ export function Index() {
                         }
                       }}
                       alt="Ayesha Iqbal - Managing Director, AYTO Properties"
-                      className="h-full w-full object-cover object-top"
+                      style={{ WebkitTouchCallout: "none", WebkitUserSelect: "none" }}
+                      className="pointer-events-none h-full w-full select-none object-cover object-top"
+                    />
+                    <div
+                      onContextMenu={(e) => e.preventDefault()}
+                      onDragStart={(e) => e.preventDefault()}
+                      className="absolute inset-0 z-10 bg-transparent"
                     />
                   </div>
                   <div className="bg-white px-5 py-3.5 text-center">
