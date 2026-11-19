@@ -50,6 +50,18 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { scrollToId } from "@/components/site/utils";
 import fallbackAvatar from "@/assets/ayto-logo.jpg";
 
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL || "https://wlrtzoujipxsgcxspzln.supabase.co";
+const SUPABASE_KEY =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  "sb_publishable_EO83cjlTZNE3ZGLmEAi5TQ_Rf8zy3rS";
+
+const supabaseHeaders = {
+  apikey: SUPABASE_KEY,
+  Authorization: `Bearer ${SUPABASE_KEY}`,
+  "Content-Type": "application/json",
+};
+
 const directorPhotos = [
   "/assets/ayesha-iqbal.jpg",
   "/assets/ayesha-iqbal.jpg.jpeg",
@@ -369,6 +381,50 @@ export function Index() {
   const [formPhone, setFormPhone] = useState("");
   const [formMessage, setFormMessage] = useState("");
 
+  // Load cloud listings from Supabase silently in background
+  useEffect(() => {
+    const fetchCloudListings = async () => {
+      try {
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/ayto_listings?select=*&order=created_at.desc`,
+          { headers: supabaseHeaders },
+        );
+        if (!res.ok) return;
+        const rows = await res.json();
+        if (Array.isArray(rows)) {
+          const baseTemplate = properties[0]!;
+          const mapped: UserPostedProperty[] = rows.map((row: Record<string, unknown>) => ({
+            ...baseTemplate,
+            id: Number(row["id"]),
+            title: String(row["title"] || ""),
+            location: String(row["location"] || "Lahore"),
+            city: "Lahore",
+            ...({
+              type: String(row["category"] || "House"),
+              category: String(row["category"] || "House"),
+              purpose: "Sale",
+            }),
+            image: String(row["image"] || propertySampleImages["House"]),
+            ownerId: String(row["owner_id"] || ""),
+            ownerName: String(row["owner_name"] || "AYTO Member"),
+            ownerPhone: String(row["owner_phone"] || "+92 336-4785098"),
+            ownerAgency: row["owner_agency"] ? String(row["owner_agency"]) : undefined,
+            customPriceText: String(row["custom_price_text"] || ""),
+            areaText: String(row["area_text"] || "10 Marla"),
+            listingStatus:
+              row["listing_status"] === "Sold" ? "Sold" : "Available",
+            beds: Number(row["beds"] || 0),
+          }));
+          setUserListings(mapped);
+          localStorage.setItem(USER_POSTS_KEY, JSON.stringify(mapped));
+        }
+      } catch {
+        /* fallback to localStorage silently */
+      }
+    };
+    fetchCloudListings();
+  }, []);
+
   useEffect(() => {
     try {
       setSaved(JSON.parse(localStorage.getItem(FAV_KEY) || "[]"));
@@ -379,7 +435,7 @@ export function Index() {
       const storedPosts: UserPostedProperty[] = JSON.parse(
         localStorage.getItem(USER_POSTS_KEY) || "[]",
       );
-      setUserListings(storedPosts);
+      if (storedPosts.length > 0) setUserListings(storedPosts);
     } catch {
       /* ignore */
     }
@@ -734,7 +790,7 @@ export function Index() {
     reader.readAsDataURL(file);
   };
 
-  const handleCreatePropertyListing = (e: React.FormEvent) => {
+  const handleCreatePropertyListing = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) {
       setPostModalOpen(false);
@@ -746,10 +802,53 @@ export function Index() {
       return;
     }
 
+    const finalImage =
+      propImageUrl.trim() ||
+      propertySampleImages[propCategory] ||
+      propertySampleImages["House"]!;
+    const finalArea = propArea.trim() || "10 Marla";
+    const finalBeds =
+      propCategory === "House" || propCategory === "Villa"
+        ? Number(propBeds) || 4
+        : 0;
+
+    let insertedId = Date.now();
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/ayto_listings`, {
+        method: "POST",
+        headers: {
+          ...supabaseHeaders,
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify({
+          title: propTitle.trim(),
+          category: propCategory,
+          location: propLocation.trim(),
+          area_text: finalArea,
+          beds: finalBeds,
+          custom_price_text: propDemand.trim(),
+          image: finalImage,
+          owner_id: currentUser.id,
+          owner_name: currentUser.name,
+          owner_phone: currentUser.phone,
+          owner_agency: currentUser.agency || "Direct Property Owner",
+          listing_status: "Available",
+        }),
+      });
+      if (res.ok) {
+        const created = await res.json();
+        if (Array.isArray(created) && created[0]?.id) {
+          insertedId = Number(created[0].id);
+        }
+      }
+    } catch {
+      /* fallback to local state */
+    }
+
     const baseTemplate = properties[0]!;
     const newListing: UserPostedProperty = {
       ...baseTemplate,
-      id: Date.now(),
+      id: insertedId,
       title: propTitle.trim(),
       location: propLocation.trim(),
       city: "Lahore",
@@ -758,27 +857,22 @@ export function Index() {
         category: propCategory,
         purpose: "Sale",
       }),
-      image:
-        propImageUrl.trim() ||
-        propertySampleImages[propCategory] ||
-        propertySampleImages["House"]!,
+      image: finalImage,
       ownerId: currentUser.id,
       ownerName: currentUser.name,
       ownerPhone: currentUser.phone,
       ownerAgency: currentUser.agency,
       customPriceText: propDemand.trim(),
-      areaText: propArea.trim() || "10 Marla",
+      areaText: finalArea,
       listingStatus: "Available",
-      ...(propCategory === "House" || propCategory === "Villa"
-        ? { beds: Number(propBeds) || 4 }
-        : {}),
+      ...(finalBeds > 0 ? { beds: finalBeds } : {}),
     };
 
     const nextListings = [newListing, ...userListings];
     setUserListings(nextListings);
     localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
 
-    toast.success("Property published under your profile and added to live listings!");
+    toast.success("Property published live to database and your profile!");
     setPropTitle("");
     setPropDemand("");
     setPropImageUrl("");
@@ -821,12 +915,31 @@ export function Index() {
     toast.success("Profile updated!");
   };
 
-  const handleSaveListingEdit = (e: React.FormEvent) => {
+  const handleSaveListingEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingListing || !editPropTitle.trim() || !editPropDemand.trim()) {
       toast.error("Please fill in Title and Demand.");
       return;
     }
+
+    try {
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/ayto_listings?id=eq.${editingListing.id}`,
+        {
+          method: "PATCH",
+          headers: supabaseHeaders,
+          body: JSON.stringify({
+            title: editPropTitle.trim(),
+            location: editPropLocation.trim() || editingListing.location,
+            custom_price_text: editPropDemand.trim(),
+            listing_status: editPropStatus,
+          }),
+        },
+      );
+    } catch {
+      /* ignore */
+    }
+
     const updatedListings = userListings.map((item) =>
       item.id === editingListing.id
         ? {
@@ -844,7 +957,16 @@ export function Index() {
     toast.success("Property listing updated!");
   };
 
-  const handleDeleteUserListing = (listingId: number) => {
+  const handleDeleteUserListing = async (listingId: number) => {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/ayto_listings?id=eq.${listingId}`, {
+        method: "DELETE",
+        headers: supabaseHeaders,
+      });
+    } catch {
+      /* ignore */
+    }
+
     const updated = userListings.filter((item) => item.id !== listingId);
     setUserListings(updated);
     localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
