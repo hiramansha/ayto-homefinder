@@ -381,48 +381,76 @@ export function Index() {
   const [formPhone, setFormPhone] = useState("");
   const [formMessage, setFormMessage] = useState("");
 
-  // Load cloud listings from Supabase silently in background
+  // Load cloud listings & cloud seller accounts from Supabase
   useEffect(() => {
-    const fetchCloudListings = async () => {
+    const fetchCloudData = async () => {
       try {
-        const res = await fetch(
-          `${SUPABASE_URL}/rest/v1/ayto_listings?select=*&order=created_at.desc`,
-          { headers: supabaseHeaders },
-        );
-        if (!res.ok) return;
-        const rows = await res.json();
-        if (Array.isArray(rows)) {
-          const baseTemplate = properties[0]!;
-          const mapped: UserPostedProperty[] = rows.map((row: Record<string, unknown>) => ({
-            ...baseTemplate,
-            id: Number(row["id"]),
-            title: String(row["title"] || ""),
-            location: String(row["location"] || "Lahore"),
-            city: "Lahore",
-            ...({
-              type: String(row["category"] || "House"),
-              category: String(row["category"] || "House"),
-              purpose: "Sale",
-            }),
-            image: String(row["image"] || propertySampleImages["House"]),
-            ownerId: String(row["owner_id"] || ""),
-            ownerName: String(row["owner_name"] || "AYTO Member"),
-            ownerPhone: String(row["owner_phone"] || "+92 336-4785098"),
-            ownerAgency: row["owner_agency"] ? String(row["owner_agency"]) : undefined,
-            customPriceText: String(row["custom_price_text"] || ""),
-            areaText: String(row["area_text"] || "10 Marla"),
-            listingStatus:
-              row["listing_status"] === "Sold" ? "Sold" : "Available",
-            beds: Number(row["beds"] || 0),
-          }));
-          setUserListings(mapped);
-          localStorage.setItem(USER_POSTS_KEY, JSON.stringify(mapped));
+        const [listingsRes, usersRes] = await Promise.all([
+          fetch(`${SUPABASE_URL}/rest/v1/ayto_listings?select=*&order=created_at.desc`, {
+            headers: supabaseHeaders,
+          }),
+          fetch(`${SUPABASE_URL}/rest/v1/ayto_users?select=*`, {
+            headers: supabaseHeaders,
+          }),
+        ]);
+
+        if (listingsRes.ok) {
+          const rows = await listingsRes.json();
+          if (Array.isArray(rows)) {
+            const baseTemplate = properties[0]!;
+            const mapped: UserPostedProperty[] = rows.map((row: Record<string, unknown>) => ({
+              ...baseTemplate,
+              id: Number(row["id"]),
+              title: String(row["title"] || ""),
+              location: String(row["location"] || "Lahore"),
+              city: "Lahore",
+              ...({
+                type: String(row["category"] || "House"),
+                category: String(row["category"] || "House"),
+                purpose: "Sale",
+              }),
+              image: String(row["image"] || propertySampleImages["House"]),
+              ownerId: String(row["owner_id"] || ""),
+              ownerName: String(row["owner_name"] || "AYTO Member"),
+              ownerPhone: String(row["owner_phone"] || "+92 336-4785098"),
+              ownerAgency: row["owner_agency"] ? String(row["owner_agency"]) : undefined,
+              customPriceText: String(row["custom_price_text"] || ""),
+              areaText: String(row["area_text"] || "10 Marla"),
+              listingStatus: row["listing_status"] === "Sold" ? "Sold" : "Available",
+              beds: Number(row["beds"] || 0),
+            }));
+            setUserListings(mapped);
+            localStorage.setItem(USER_POSTS_KEY, JSON.stringify(mapped));
+          }
+        }
+
+        if (usersRes.ok) {
+          const uRows = await usersRes.json();
+          if (Array.isArray(uRows) && uRows.length > 0) {
+            const cloudUsers: AytoUser[] = uRows.map((u: Record<string, unknown>) => ({
+              id: String(u["id"]),
+              name: String(u["name"]),
+              email: String(u["email"]),
+              phone: String(u["phone"]),
+              password: String(u["password"]),
+              agency: u["agency"] ? String(u["agency"]) : "Direct Property Owner",
+              joinedAt: String(u["joined_at"] || "2026"),
+            }));
+            setUsers((prev) => {
+              const mergedMap = new Map<string, AytoUser>();
+              prev.forEach((item) => mergedMap.set(item.email.toLowerCase(), item));
+              cloudUsers.forEach((item) => mergedMap.set(item.email.toLowerCase(), item));
+              const merged = Array.from(mergedMap.values());
+              localStorage.setItem(USERS_KEY, JSON.stringify(merged));
+              return merged;
+            });
+          }
         }
       } catch {
         /* fallback to localStorage silently */
       }
     };
-    fetchCloudListings();
+    fetchCloudData();
   }, []);
 
   useEffect(() => {
@@ -705,7 +733,7 @@ export function Index() {
     };
   }, [currentUser]);
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanEmail = authEmail.trim().toLowerCase();
 
@@ -728,6 +756,25 @@ export function Index() {
         agency: authAgency.trim() || "Direct Property Owner",
         joinedAt: new Date().toLocaleDateString("en-PK", { month: "short", year: "numeric" }),
       };
+
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/ayto_users`, {
+          method: "POST",
+          headers: supabaseHeaders,
+          body: JSON.stringify({
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            phone: newUser.phone,
+            password: newUser.password,
+            agency: newUser.agency,
+            joined_at: newUser.joinedAt,
+          }),
+        });
+      } catch {
+        /* ignore */
+      }
+
       const updatedUsers = [...users, newUser];
       setUsers(updatedUsers);
       setCurrentUser(newUser);
@@ -739,9 +786,36 @@ export function Index() {
         toast.error("Please enter your Email and Password.");
         return;
       }
-      const matched = users.find(
+      let matched = users.find(
         (u) => u.email.toLowerCase() === cleanEmail && u.password === authPassword,
       );
+
+      if (!matched) {
+        try {
+          const res = await fetch(
+            `${SUPABASE_URL}/rest/v1/ayto_users?email=eq.${encodeURIComponent(cleanEmail)}&password=eq.${encodeURIComponent(authPassword)}&select=*`,
+            { headers: supabaseHeaders },
+          );
+          if (res.ok) {
+            const rows = await res.json();
+            if (Array.isArray(rows) && rows[0]) {
+              const r = rows[0];
+              matched = {
+                id: String(r["id"]),
+                name: String(r["name"]),
+                email: String(r["email"]),
+                phone: String(r["phone"]),
+                password: String(r["password"]),
+                agency: r["agency"] ? String(r["agency"]) : "Direct Property Owner",
+                joinedAt: String(r["joined_at"] || "2026"),
+              };
+            }
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+
       if (!matched) {
         toast.error("Invalid email or password. If you are new, click Sign Up.");
         return;
@@ -881,7 +955,7 @@ export function Index() {
     navigatePage("user-profile");
   };
 
-  const handleSaveProfileChanges = (e: React.FormEvent) => {
+  const handleSaveProfileChanges = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser || !editName.trim() || !editPhone.trim()) {
       toast.error("Name and Phone Number are required.");
@@ -893,6 +967,32 @@ export function Index() {
       phone: editPhone.trim(),
       agency: editAgency.trim() || "Direct Property Owner",
     };
+
+    try {
+      await Promise.all([
+        fetch(`${SUPABASE_URL}/rest/v1/ayto_users?id=eq.${encodeURIComponent(currentUser.id)}`, {
+          method: "PATCH",
+          headers: supabaseHeaders,
+          body: JSON.stringify({
+            name: updatedUser.name,
+            phone: updatedUser.phone,
+            agency: updatedUser.agency,
+          }),
+        }),
+        fetch(`${SUPABASE_URL}/rest/v1/ayto_listings?owner_id=eq.${encodeURIComponent(currentUser.id)}`, {
+          method: "PATCH",
+          headers: supabaseHeaders,
+          body: JSON.stringify({
+            owner_name: updatedUser.name,
+            owner_phone: updatedUser.phone,
+            owner_agency: updatedUser.agency,
+          }),
+        }),
+      ]);
+    } catch {
+      /* ignore */
+    }
+
     const nextUsers = users.map((u) => (u.id === currentUser.id ? updatedUser : u));
     const nextListings = userListings.map((l) =>
       l.ownerId === currentUser.id
@@ -984,13 +1084,29 @@ export function Index() {
     });
   };
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim() || !formEmail.trim() || !formMessage.trim()) {
       toast.error("Please fill in Your Name, Email, and Message.");
       return;
     }
-    toast.success("Thank you! Your visit request has been sent to AYTO Properties.");
+
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/ayto_inquiries`, {
+        method: "POST",
+        headers: supabaseHeaders,
+        body: JSON.stringify({
+          name: formName.trim(),
+          email: formEmail.trim(),
+          phone: formPhone.trim() || null,
+          message: formMessage.trim(),
+        }),
+      });
+    } catch {
+      /* ignore */
+    }
+
+    toast.success("Thank you! Your visit request has been saved & sent to AYTO Properties.");
     setFormName("");
     setFormEmail("");
     setFormPhone("");
