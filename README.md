@@ -1,26 +1,19 @@
 # Ayto Homefinder
 
-https://github.com/hiramansha/-Ayto_Properties   (is link ko dekho or meri website ko real professional bnana hai okay or hero section mai jo pic lagi hai os ko change krna hai property ky related )
+A modern, responsive real estate and property finder web application designed for seamless property browsing and discovery.
 
-This project was built with [Lovable](https://lovable.dev).
+**Live App**: https://ayto-homefinder.vercel.app
 
-**Live app**: https://ayto-homefinder.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/c154f30f-f799-58ff-9cf0-813c629c0236).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## Tech Stack
+- **Frontend**: TypeScript, React / TanStack Start, Tailwind CSS
+- **Backend & Database**: Supabase, Drizzle ORM
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+To run this project locally:
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
+git clone [https://github.com/hiramansha/ayto-homefinder.git](https://github.com/hiramansha/ayto-homefinder.git)
+cd ayto-homefinder
 npm i
 npm run dev
-```
