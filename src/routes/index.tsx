@@ -339,6 +339,7 @@ export function Index() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [purposeFilter, setPurposeFilter] = useState<"All" | "Sale" | "Rent">("All");
+  const [showAllListings, setShowAllListings] = useState(false);
   const [compareIds, setCompareIds] = useState<number[]>([]);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
 
@@ -702,6 +703,11 @@ export function Index() {
       title: propTitle.trim(),
       location: propLocation.trim(),
       city: "Lahore",
+      ...({
+        type: propCategory,
+        category: propCategory,
+        purpose: "Sale",
+      }),
       image:
         propImageUrl.trim() ||
         propertySampleImages[propCategory] ||
@@ -837,20 +843,43 @@ export function Index() {
     : combinedProperties;
 
   const list = baseList.filter((p) => {
+    const query = searchQuery.trim().toLowerCase();
     const matchesSearch =
-      !searchQuery.trim() ||
-      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.city.toLowerCase().includes(searchQuery.toLowerCase());
+      !query ||
+      p.title.toLowerCase().includes(query) ||
+      p.location.toLowerCase().includes(query) ||
+      p.city.toLowerCase().includes(query);
+
+    const rawCategory = String(
+      (p as { type?: string; category?: string }).type ||
+        (p as { category?: string }).category ||
+        p.title,
+    ).toLowerCase();
+
     const matchesType =
       typeFilter === "All" ||
-      String((p as { type?: string; category?: string }).type || (p as { category?: string }).category || p.title)
-        .toLowerCase()
-        .includes(typeFilter.toLowerCase());
+      rawCategory.includes(typeFilter.toLowerCase()) ||
+      (typeFilter === "Villa" &&
+        (rawCategory.includes("villa") || rawCategory.includes("house")));
+
+    const itemPurpose = String(
+      (p as { purpose?: string }).purpose || "Sale",
+    ).toLowerCase();
+
     const matchesPurpose =
-      purposeFilter === "All" || (p as { purpose?: string }).purpose === purposeFilter;
+      purposeFilter === "All" ||
+      itemPurpose === purposeFilter.toLowerCase();
+
     return matchesSearch && matchesType && matchesPurpose;
   });
+
+  const resetAllFilters = () => {
+    setSearchQuery("");
+    setTypeFilter("All");
+    setPurposeFilter("All");
+    setShowSaved(false);
+    setShowAllListings(false);
+  };
 
   const comparedItems = combinedProperties.filter((p) => compareIds.includes(p.id));
 
@@ -1305,7 +1334,7 @@ export function Index() {
                   </p>
                 </div>
 
-<div
+                <div
                   onContextMenu={(e) => e.preventDefault()}
                   onDragStart={(e) => e.preventDefault()}
                   className="mx-auto w-full max-w-[290px] select-none overflow-hidden rounded-3xl border border-[#f4d06f]/40 bg-white shadow-[0_25px_70px_-15px_rgba(3,8,20,0.95)] transition duration-500 hover:-translate-y-1.5"
@@ -2116,60 +2145,130 @@ export function Index() {
                     Handpicked Portfolio
                   </span>
                   <h2 className="mt-3 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
-                    {showSaved ? "Your Saved Properties" : "Discover the Most Recommended Properties"}
+                    {showSaved
+                      ? "Your Saved Properties"
+                      : "Discover the Most Recommended Properties"}
                   </h2>
                   <p className="mt-3 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
                     Search, compare, and contact verified owners or AYTO advisors directly — no login required to browse.
                   </p>
                 </div>
 
-                <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-4 backdrop-blur-md md:flex-row">
-                  <div className="relative w-full md:max-w-xs">
-                    <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search DHA, Bahria, Gulberg..."
-                      className="w-full rounded-full border border-sky-300/20 bg-[#080f1d] py-2 pl-10 pr-4 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                    />
+                {/* Filter & Search Bar */}
+                <div className="mt-10 rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-4 shadow-xl backdrop-blur-md">
+                  <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+                    {/* Search Input with Clear Button */}
+                    <div className="relative w-full md:max-w-xs">
+                      <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search DHA, Bahria, Gulberg..."
+                        className="w-full rounded-full border border-sky-300/20 bg-[#080f1d] py-2 pl-10 pr-9 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery("")}
+                          aria-label="Clear search"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Purpose & Category Pills */}
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      <div
+                        className="mr-1 inline-flex rounded-full border border-sky-300/20 bg-[#080f1d]/80 p-0.5"
+                        role="group"
+                        aria-label="Buy or rent"
+                      >
+                        {(
+                          [
+                            ["All", "All"],
+                            ["Sale", "Buy"],
+                            ["Rent", "Rent"],
+                          ] as const
+                        ).map(([v, l]) => (
+                          <button
+                            key={v}
+                            type="button"
+                            aria-pressed={purposeFilter === v}
+                            onClick={() => setPurposeFilter(v)}
+                            className={`rounded-full px-3.5 py-1 text-xs font-bold transition ${
+                              purposeFilter === v
+                                ? "bg-white text-[#070b14]"
+                                : "text-slate-200 hover:text-[#f4c414]"
+                            }`}
+                          >
+                            {l}
+                          </button>
+                        ))}
+                      </div>
+
+                      {["All", "House", "Villa", "Apartment", "Plot", "Commercial"].map(
+                        (cat) => (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setTypeFilter(cat)}
+                            className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
+                              typeFilter === cat
+                                ? "bg-[#f4c414] text-[#070b14] shadow-md"
+                                : "border border-sky-300/20 bg-[#080f1d]/80 text-slate-200 hover:border-[#f4c414]"
+                            }`}
+                          >
+                            {cat}
+                          </button>
+                        ),
+                      )}
+                    </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    <div className="mr-1 inline-flex rounded-full border border-sky-300/20 bg-[#080f1d]/80 p-0.5" role="group" aria-label="Buy or rent">
-                      {([["All", "All"], ["Sale", "Buy"], ["Rent", "Rent"]] as const).map(([v, l]) => (
-                        <button
-                          key={v}
-                          type="button"
-                          aria-pressed={purposeFilter === v}
-                          onClick={() => setPurposeFilter(v)}
-                          className={`rounded-full px-3.5 py-1 text-xs font-bold transition ${
-                            purposeFilter === v ? "bg-white text-[#070b14]" : "text-slate-200 hover:text-[#f4c414]"
-                          }`}
-                        >
-                          {l}
-                        </button>
-                      ))}
-                    </div>
-                    {["All", "House", "Villa", "Apartment", "Plot", "Commercial"].map((cat) => (
+                  {/* Active Filter Summary Bar */}
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-sky-300/10 pt-3 text-[11px] text-slate-400">
+                    <span>
+                      Showing{" "}
+                      <strong className="text-white">{list.length}</strong>{" "}
+                      {list.length === 1 ? "property" : "properties"}
+                      {typeFilter !== "All" && (
+                        <>
+                          {" "}
+                          in <strong className="text-[#f4c414]">{typeFilter}</strong>
+                        </>
+                      )}
+                      {purposeFilter !== "All" && (
+                        <>
+                          {" "}
+                          for{" "}
+                          <strong className="text-[#f4c414]">
+                            {purposeFilter === "Sale" ? "Buy" : "Rent"}
+                          </strong>
+                        </>
+                      )}
+                    </span>
+
+                    {(searchQuery ||
+                      typeFilter !== "All" ||
+                      purposeFilter !== "All" ||
+                      showSaved) && (
                       <button
-                        key={cat}
                         type="button"
-                        onClick={() => setTypeFilter(cat)}
-                        className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
-                          typeFilter === cat
-                            ? "bg-[#f4c414] text-[#070b14]"
-                            : "border border-sky-300/20 bg-[#080f1d]/80 text-slate-200 hover:border-[#f4c414]"
-                        }`}
+                        onClick={resetAllFilters}
+                        className="font-bold text-[#f4d06f] hover:underline"
                       >
-                        {cat}
+                        Reset All Filters
                       </button>
-                    ))}
+                    )}
                   </div>
                 </div>
 
+                {/* Property Cards Grid */}
                 <div className="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                  {list.slice(0, 12).map((p) => {
+                  {(showAllListings ? list : list.slice(0, 12)).map((p) => {
                     const userPost = "ownerId" in p ? (p as UserPostedProperty) : null;
                     const beds = (p as { beds?: number }).beds;
                     const area =
@@ -2217,18 +2316,22 @@ export function Index() {
                           <h3 className="truncate text-xs font-bold text-white transition group-hover:text-[#f4d06f] sm:text-sm">
                             {p.location}
                           </h3>
-                          <p className="truncate text-[11px] text-slate-300/75">{p.title}</p>
+                          <p className="truncate text-[11px] text-slate-300/75">
+                            {p.title}
+                          </p>
 
                           {(showBeds(p) || area) && (
                             <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-300/80">
                               {showBeds(p) && (
                                 <span className="inline-flex items-center gap-1">
-                                  <BedDouble className="h-3.5 w-3.5 text-[#f4c414]" /> {bedsLabel(beds ?? 0)}
+                                  <BedDouble className="h-3.5 w-3.5 text-[#f4c414]" />{" "}
+                                  {bedsLabel(beds ?? 0)}
                                 </span>
                               )}
                               {area && (
                                 <span className="inline-flex items-center gap-1">
-                                  <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {area}
+                                  <Maximize2 className="h-3 w-3 text-[#f4c414]" />{" "}
+                                  {area}
                                 </span>
                               )}
                             </div>
@@ -2250,7 +2353,9 @@ export function Index() {
                                 className="inline-flex min-w-0 items-center gap-1 truncate text-[11px] font-bold text-[#f4d06f] hover:underline"
                               >
                                 <User className="h-3 w-3 shrink-0" />
-                                <span className="truncate">{userPost.ownerName}</span>
+                                <span className="truncate">
+                                  {userPost.ownerName}
+                                </span>
                               </button>
                             ) : (
                               <span className="text-[11px] font-semibold text-[#f4d06f]">
@@ -2276,16 +2381,34 @@ export function Index() {
                   })}
                 </div>
 
-                {list.length === 0 && (
-                  <div className="mt-10 rounded-2xl border border-sky-300/15 bg-[#0e172a]/70 py-10 text-center">
-                    <p className="text-sm text-slate-300">No properties matched your filter.</p>
+                {/* Show More / Less Button if > 12 properties */}
+                {list.length > 12 && (
+                  <div className="mt-10 text-center">
                     <button
                       type="button"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setTypeFilter("All");
-                      }}
-                      className="mt-3 rounded-full bg-[#f4c414] px-5 py-2 text-xs font-bold text-[#070b14]"
+                      onClick={() => setShowAllListings((prev) => !prev)}
+                      className="inline-flex items-center gap-2 rounded-full border border-[#f4c414] bg-[#0e172a] px-6 py-2.5 text-xs font-extrabold text-[#f4c414] transition hover:bg-[#f4c414] hover:text-[#070b14]"
+                    >
+                      {showAllListings
+                        ? "Show Less"
+                        : `View All Properties (${list.length})`}
+                    </button>
+                  </div>
+                )}
+
+                {/* Empty State */}
+                {list.length === 0 && (
+                  <div className="mt-10 rounded-2xl border border-sky-300/15 bg-[#0e172a]/70 py-12 text-center">
+                    <p className="text-sm font-medium text-slate-200">
+                      No properties matched your filter.
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      Try clearing your search or switching back to all categories.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={resetAllFilters}
+                      className="mt-4 rounded-full bg-[#f4c414] px-6 py-2 text-xs font-extrabold text-[#070b14] shadow-md transition hover:brightness-105"
                     >
                       Reset Filters
                     </button>
