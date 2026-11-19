@@ -15,6 +15,7 @@ import {
   Edit3,
   FileCheck2,
   Hammer,
+  Heart,
   Home,
   ImagePlus,
   Lightbulb,
@@ -336,9 +337,13 @@ export function Index() {
 
   const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
 
+  // Filters & Quick Search
+  const [quickArea, setQuickArea] = useState("");
+  const [quickCategory, setQuickCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [purposeFilter, setPurposeFilter] = useState<"All" | "Sale" | "Rent">("All");
+  const [areaFilter, setAreaFilter] = useState("All");
   const [showAllListings, setShowAllListings] = useState(false);
   const [compareIds, setCompareIds] = useState<number[]>([]);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
@@ -483,6 +488,28 @@ export function Index() {
     } else {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
+  };
+
+  const toggleSaveProperty = (id: number) => {
+    setSaved((prev) => {
+      const exists = prev.includes(id);
+      const next = exists ? prev.filter((item) => item !== id) : [...prev, id];
+      try {
+        localStorage.setItem(FAV_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      toast(exists ? "Removed from saved properties" : "Saved to your wishlist!");
+      return next;
+    });
+  };
+
+  const handleHeroQuickSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowSaved(false);
+    setSearchQuery(quickArea);
+    setTypeFilter(quickCategory);
+    scrollToId("listings");
   };
 
   const openUserProfile = (ownerId: string, fallbackName?: string, fallbackPhone?: string) => {
@@ -903,13 +930,27 @@ export function Index() {
       purposeFilter === "All" ||
       itemPurpose === purposeFilter.toLowerCase();
 
-    return matchesSearch && matchesType && matchesPurpose;
+    const itemArea = String(
+      ("areaText" in p ? (p as UserPostedProperty).areaText : "") ||
+        (p as { area?: string; size?: string }).area ||
+        (p as { size?: string }).size ||
+        p.title,
+    ).toLowerCase();
+
+    const matchesArea =
+      areaFilter === "All" ||
+      itemArea.includes(areaFilter.toLowerCase()) ||
+      (areaFilter === "1 Kanal" &&
+        (itemArea.includes("kanal") || itemArea.includes("20 marla")));
+
+    return matchesSearch && matchesType && matchesPurpose && matchesArea;
   });
 
   const resetAllFilters = () => {
     setSearchQuery("");
     setTypeFilter("All");
     setPurposeFilter("All");
+    setAreaFilter("All");
     setShowSaved(false);
     setShowAllListings(false);
   };
@@ -1066,7 +1107,7 @@ export function Index() {
           savedCount={saved.length}
           onShowSaved={() => {
             if (!saved.length) {
-              toast("Tap a property to view details or request a visit");
+              toast("Click the heart icon on any property card to save it");
               return;
             }
             setShowSaved((s) => !s);
@@ -2185,6 +2226,77 @@ export function Index() {
           <main key="home" className="ayto-page-enter pt-8">
             <Hero />
 
+            {/* Floating Hero Quick-Search Bar */}
+            <div className="relative z-20 mx-auto -mt-12 mb-8 max-w-5xl px-5 md:px-8">
+              <form
+                onSubmit={handleHeroQuickSearch}
+                className="grid gap-3 rounded-3xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-3.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl sm:grid-cols-[1.3fr_1fr_auto]"
+              >
+                <div className="flex items-center gap-2.5 rounded-2xl border border-sky-300/15 bg-[#070b14] px-4 py-2.5">
+                  <MapPin className="h-4 w-4 shrink-0 text-[#f4c414]" />
+                  <select
+                    value={quickArea}
+                    onChange={(e) => setQuickArea(e.target.value)}
+                    aria-label="Select Lahore Society"
+                    className="w-full bg-transparent text-xs font-semibold text-white focus:outline-none"
+                  >
+                    <option value="" className="bg-[#0b1322]">
+                      All Lahore Societies (DHA, Bahria...)
+                    </option>
+                    <option value="DHA" className="bg-[#0b1322]">
+                      DHA Lahore (All Phases)
+                    </option>
+                    <option value="Bahria" className="bg-[#0b1322]">
+                      Bahria Town Lahore
+                    </option>
+                    <option value="Gulberg" className="bg-[#0b1322]">
+                      Gulberg Lahore
+                    </option>
+                    <option value="Lake City" className="bg-[#0b1322]">
+                      Lake City Lahore
+                    </option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2.5 rounded-2xl border border-sky-300/15 bg-[#070b14] px-4 py-2.5">
+                  <Home className="h-4 w-4 shrink-0 text-[#f4c414]" />
+                  <select
+                    value={quickCategory}
+                    onChange={(e) => setQuickCategory(e.target.value)}
+                    aria-label="Select Property Type"
+                    className="w-full bg-transparent text-xs font-semibold text-white focus:outline-none"
+                  >
+                    <option value="All" className="bg-[#0b1322]">
+                      All Property Types
+                    </option>
+                    <option value="House" className="bg-[#0b1322]">
+                      Houses
+                    </option>
+                    <option value="Villa" className="bg-[#0b1322]">
+                      Luxury Villas
+                    </option>
+                    <option value="Apartment" className="bg-[#0b1322]">
+                      Apartments
+                    </option>
+                    <option value="Plot" className="bg-[#0b1322]">
+                      Residential / Commercial Plots
+                    </option>
+                    <option value="Commercial" className="bg-[#0b1322]">
+                      Commercial Plazas
+                    </option>
+                  </select>
+                </div>
+
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#f4c414] px-7 py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+                >
+                  <Search className="h-4 w-4" />
+                  <span>Find Properties</span>
+                </button>
+              </form>
+            </div>
+
             <Spotlight
               onView={() => navigatePage("projects")}
               onInquire={() => inquire(featured)}
@@ -2201,11 +2313,11 @@ export function Index() {
                   </span>
                   <h2 className="mt-3 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                     {showSaved
-                      ? "Your Saved Properties"
+                      ? `Your Saved Properties (${saved.length})`
                       : "Discover the Most Recommended Properties"}
                   </h2>
                   <p className="mt-3 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
-                    Search, compare, and contact verified owners or AYTO advisors directly — no login required to browse.
+                    Search, compare, save to wishlist, and contact verified owners or AYTO advisors directly.
                   </p>
                 </div>
 
@@ -2283,41 +2395,46 @@ export function Index() {
                     </div>
                   </div>
 
-                  {/* Active Filter Summary Bar */}
-                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-sky-300/10 pt-3 text-[11px] text-slate-400">
-                    <span>
-                      Showing{" "}
-                      <strong className="text-white">{list.length}</strong>{" "}
-                      {list.length === 1 ? "property" : "properties"}
-                      {typeFilter !== "All" && (
-                        <>
-                          {" "}
-                          in <strong className="text-[#f4c414]">{typeFilter}</strong>
-                        </>
-                      )}
-                      {purposeFilter !== "All" && (
-                        <>
-                          {" "}
-                          for{" "}
-                          <strong className="text-[#f4c414]">
-                            {purposeFilter === "Sale" ? "Buy" : "Rent"}
-                          </strong>
-                        </>
-                      )}
-                    </span>
+                  {/* Area Size Pills + Active Summary */}
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-sky-300/10 pt-3 text-[11px] text-slate-400">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="mr-1 font-semibold text-slate-300">Plot / Area Size:</span>
+                      {["All", "5 Marla", "10 Marla", "1 Kanal"].map((sz) => (
+                        <button
+                          key={sz}
+                          type="button"
+                          onClick={() => setAreaFilter(sz)}
+                          className={`rounded-full px-3 py-1 text-[11px] font-bold transition ${
+                            areaFilter === sz
+                              ? "bg-[#f4c414]/20 text-[#f4d06f] ring-1 ring-[#f4c414]"
+                              : "bg-[#080f1d] text-slate-300 hover:text-white"
+                          }`}
+                        >
+                          {sz}
+                        </button>
+                      ))}
+                    </div>
 
-                    {(searchQuery ||
-                      typeFilter !== "All" ||
-                      purposeFilter !== "All" ||
-                      showSaved) && (
-                      <button
-                        type="button"
-                        onClick={resetAllFilters}
-                        className="font-bold text-[#f4d06f] hover:underline"
-                      >
-                        Reset All Filters
-                      </button>
-                    )}
+                    <div className="flex items-center gap-3">
+                      <span>
+                        Showing <strong className="text-white">{list.length}</strong>{" "}
+                        {list.length === 1 ? "property" : "properties"}
+                      </span>
+
+                      {(searchQuery ||
+                        typeFilter !== "All" ||
+                        purposeFilter !== "All" ||
+                        areaFilter !== "All" ||
+                        showSaved) && (
+                        <button
+                          type="button"
+                          onClick={resetAllFilters}
+                          className="font-bold text-[#f4d06f] hover:underline"
+                        >
+                          Reset All Filters
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -2332,6 +2449,7 @@ export function Index() {
                       (p as { size?: string }).size;
                     const displayPrice = userPost?.customPriceText || priceLabel(p);
                     const isCompared = compareIds.includes(p.id);
+                    const isSaved = saved.includes(p.id);
 
                     return (
                       <div
@@ -2350,6 +2468,25 @@ export function Index() {
                             {displayPrice}
                           </span>
 
+                          {/* Save Wishlist Heart Button */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSaveProperty(p.id);
+                            }}
+                            title={isSaved ? "Remove from Saved" : "Save Property"}
+                            aria-label={isSaved ? "Remove from Saved" : "Save Property"}
+                            className={`absolute right-2.5 top-2.5 grid h-7 w-7 place-items-center rounded-full backdrop-blur-md transition ${
+                              isSaved
+                                ? "bg-rose-500 text-white shadow-md"
+                                : "bg-[#070b14]/80 text-white/90 hover:bg-rose-500 hover:text-white"
+                            }`}
+                          >
+                            <Heart className={`h-3.5 w-3.5 ${isSaved ? "fill-current" : ""}`} />
+                          </button>
+
+                          {/* Compare Badge */}
                           <button
                             type="button"
                             onClick={(e) => {
@@ -2357,7 +2494,7 @@ export function Index() {
                               toggleCompareProperty(p.id);
                             }}
                             title="Select to Compare"
-                            className={`absolute right-2.5 top-2.5 rounded-full px-2.5 py-1 text-[10px] font-bold transition ${
+                            className={`absolute bottom-2.5 right-2.5 rounded-full px-2.5 py-1 text-[10px] font-bold backdrop-blur-md transition ${
                               isCompared
                                 ? "bg-[#f4c414] text-[#070b14]"
                                 : "bg-[#070b14]/80 text-white/90 hover:bg-[#f4c414] hover:text-[#070b14]"
