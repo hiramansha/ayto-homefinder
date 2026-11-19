@@ -236,7 +236,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
               <Phone className="h-3.5 w-3.5 text-[#f4d06f]" /> 0331-4972426
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Mail className="h-3.5 w-3.5 text-[#f4d06f]" /> info2aytoproperties@gmail.com
+              <Mail className="h-3.5 w-3.5 text-[#f4d06f]" /> info@aytoproperties.com
             </span>
           </div>
         </form>

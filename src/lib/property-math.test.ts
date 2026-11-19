@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { areaInMarla, activeFilterCount, calcEmi, filterProperties, defaultFilters, formatAmount, priceLabel, validateContact, type PropertyBase } from "./property-math";
+import { areaInMarla, activeFilterCount, calcEmi, filterProperties, defaultFilters, formatAmount, priceLabel, showBeds, bedsLabel, validateContact, type PropertyBase } from "./property-math";
 
 const list: PropertyBase[] = [
   { id: 1, title: "Modern family house", city: "Lahore", type: "House", purpose: "Sale", crore: 8.5, beds: 5, baths: 5, area: "10 Marla", location: "DHA Phase 6", features: ["Parking", "Garden"], listedDaysAgo: 3 },
@@ -10,6 +10,8 @@ const list: PropertyBase[] = [
 describe("prices", () => {
   it("shows crore for 1 crore and above", () => expect(formatAmount(8.5)).toBe("8.5 Crore"));
   it("shows lakh below 1 crore", () => expect(formatAmount(0.12)).toBe("12 Lakh"));
+  it("shows decimal lakh for Askari 11 rent", () => expect(formatAmount(0.012)).toBe("1.2 Lakh"));
+  it("shows rupees below 1 lakh for Johar Town studio", () => expect(priceLabel({ crore: 0.0055, purpose: "Rent" })).toBe("PKR 55,000 / month"));
   it("adds per month for rentals", () => expect(priceLabel({ crore: 0.25, purpose: "Rent" })).toBe("PKR 25 Lakh / month"));
 });
 
@@ -54,4 +56,11 @@ describe("contact form", () => {
     expect(validateContact({ name: "Ali", phone: "0300 1234567", email: "a@b.pk", message: "Interested in DHA" })).toEqual({}));
   it("rejects a non-mobile number", () =>
     expect(validateContact({ name: "Ali", phone: "12345", email: "a@b.pk", message: "Interested in DHA" }).phone).toBeDefined());
+});
+
+describe("bedroom display", () => {
+  it("hides beds on plots", () => expect(showBeds({ beds: 0, type: "Plot" })).toBe(false));
+  it("hides beds on commercial", () => expect(showBeds({ beds: 2, type: "Commercial" })).toBe(false));
+  it("shows beds on houses", () => expect(showBeds({ beds: 3, type: "House" })).toBe(true));
+  it("says 1 Bed, not 1 Beds", () => expect(bedsLabel(1)).toBe("1 Bed"));
 });

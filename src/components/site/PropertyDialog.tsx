@@ -33,8 +33,8 @@ export function PropertyDialog({
               <div className="mt-6 grid grid-cols-3 gap-3">
                 {[
                   { i: Ruler, l: "Area", v: p.area },
-                  { i: BedDouble, l: "Bedrooms", v: p.beds || "–" },
-                  { i: Bath, l: "Bathrooms", v: p.baths || "–" },
+                  ...(p.beds > 0 && p.type !== "Plot" && p.type !== "Commercial" ? [{ i: BedDouble, l: "Bedrooms", v: p.beds }] : []),
+                  ...(p.baths > 0 ? [{ i: Bath, l: "Bathrooms", v: p.baths }] : []),
                 ].map(({ i: Icon, l, v }) => (
                   <div key={l} className="rounded-lg bg-muted p-4">
                     <Icon className="h-4 w-4 text-gold" />

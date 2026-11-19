@@ -38,7 +38,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { properties, type Property } from "@/data/properties";
-import { priceLabel } from "@/lib/property-math";
+import { bedsLabel, priceLabel, showBeds } from "@/lib/property-math";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Hero } from "@/components/site/Hero";
 import { PropertyDialog } from "@/components/site/PropertyDialog";
@@ -89,7 +89,7 @@ interface UserPostedProperty extends Property {
   ownerId: string;
   ownerName: string;
   ownerPhone: string;
-  ownerAgency?: string;
+  ownerAgency?: string | undefined;
   customPriceText: string;
   areaText: string;
   listingStatus?: "Available" | "Sold";
@@ -338,6 +338,7 @@ export function Index() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [purposeFilter, setPurposeFilter] = useState<"All" | "Sale" | "Rent">("All");
   const [compareIds, setCompareIds] = useState<number[]>([]);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
 
@@ -425,6 +426,7 @@ export function Index() {
       }, 40);
       return () => window.clearTimeout(t);
     }
+    return undefined;
   }, [activePage]);
 
   const navigatePage = (page: ActivePage, sectionId?: string, text = "") => {
@@ -703,7 +705,7 @@ export function Index() {
       image:
         propImageUrl.trim() ||
         propertySampleImages[propCategory] ||
-        propertySampleImages.House!,
+        propertySampleImages["House"]!,
       ownerId: currentUser.id,
       ownerName: currentUser.name,
       ownerPhone: currentUser.phone,
@@ -845,7 +847,9 @@ export function Index() {
       String((p as { type?: string; category?: string }).type || (p as { category?: string }).category || p.title)
         .toLowerCase()
         .includes(typeFilter.toLowerCase());
-    return matchesSearch && matchesType;
+    const matchesPurpose =
+      purposeFilter === "All" || (p as { purpose?: string }).purpose === purposeFilter;
+    return matchesSearch && matchesType && matchesPurpose;
   });
 
   const comparedItems = combinedProperties.filter((p) => compareIds.includes(p.id));
@@ -1314,9 +1318,9 @@ export function Index() {
                       onDragStart={(e) => e.preventDefault()}
                       onError={(e) => {
                         const img = e.currentTarget;
-                        const next = Number(img.dataset.idx || "0") + 1;
+                        const next = Number(img.dataset["idx"] || "0") + 1;
                         if (next < directorPhotos.length) {
-                          img.dataset.idx = String(next);
+                          img.dataset["idx"] = String(next);
                           img.src = directorPhotos[next]!;
                         } else {
                           img.src = fallbackAvatar;
@@ -1973,7 +1977,7 @@ export function Index() {
                 </a>
 
                 <a
-                  href="mailto:info2aytoproperties@gmail.com"
+                  href="mailto:info@aytoproperties.com"
                   className="flex min-h-[156px] items-center gap-5 rounded-2xl bg-[#f4c414] px-7 py-7 text-[#070b14] shadow-[0_18px_45px_-12px_rgba(244,196,20,0.45)] transition duration-300 hover:-translate-y-1.5 hover:brightness-105"
                 >
                   <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full border-2 border-[#070b14] bg-[#070b14]/5">
@@ -1982,7 +1986,7 @@ export function Index() {
                   <div className="min-w-0">
                     <h2 className="font-sans text-xl font-extrabold">Email Address</h2>
                     <p className="mt-1.5 break-all text-xs font-bold text-[#070b14]/95 sm:text-sm">
-                      info2aytoproperties@gmail.com
+                      info@aytoproperties.com
                     </p>
                   </div>
                 </a>
@@ -2132,6 +2136,21 @@ export function Index() {
                   </div>
 
                   <div className="flex flex-wrap items-center justify-center gap-2">
+                    <div className="mr-1 inline-flex rounded-full border border-sky-300/20 bg-[#080f1d]/80 p-0.5" role="group" aria-label="Buy or rent">
+                      {([["All", "All"], ["Sale", "Buy"], ["Rent", "Rent"]] as const).map(([v, l]) => (
+                        <button
+                          key={v}
+                          type="button"
+                          aria-pressed={purposeFilter === v}
+                          onClick={() => setPurposeFilter(v)}
+                          className={`rounded-full px-3.5 py-1 text-xs font-bold transition ${
+                            purposeFilter === v ? "bg-white text-[#070b14]" : "text-slate-200 hover:text-[#f4c414]"
+                          }`}
+                        >
+                          {l}
+                        </button>
+                      ))}
+                    </div>
                     {["All", "House", "Villa", "Apartment", "Plot", "Commercial"].map((cat) => (
                       <button
                         key={cat}
@@ -2200,11 +2219,11 @@ export function Index() {
                           </h3>
                           <p className="truncate text-[11px] text-slate-300/75">{p.title}</p>
 
-                          {(beds || area) && (
+                          {(showBeds(p) || area) && (
                             <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-300/80">
-                              {beds && (
+                              {showBeds(p) && (
                                 <span className="inline-flex items-center gap-1">
-                                  <BedDouble className="h-3.5 w-3.5 text-[#f4c414]" /> {beds} Beds
+                                  <BedDouble className="h-3.5 w-3.5 text-[#f4c414]" /> {bedsLabel(beds ?? 0)}
                                 </span>
                               )}
                               {area && (
@@ -2300,7 +2319,7 @@ export function Index() {
                 title="AYTO Properties Official Facebook"
                 className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
-                <span className="font-sans text-lg font-extrabold leading-none">f</span>
+                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.3A21 21 0 0 0 14.6 2C12.3 2 10.7 3.4 10.7 6v2.5H8V12h2.7v10H14V12h2.7l.4-3.5H14Z" /></svg>
               </a>
 
               <a
@@ -2326,9 +2345,9 @@ export function Index() {
                 rel="noopener noreferrer"
                 aria-label="Twitter"
                 title="Twitter"
-                className="grid h-10 w-10 place-items-center rounded-full bg-[#1DA1F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
+                className="grid h-10 w-10 place-items-center rounded-full bg-[#0f1419] text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
-                <span className="font-sans text-base font-extrabold leading-none">X</span>
+                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2.3h3.4l-7.4 8.4 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9L.9 2.3h7l4.8 6.4 5.5-6.4Zm-1.2 17.9h1.9L7.1 4.2H5.1l11.9 16Z" /></svg>
               </a>
 
               <button
@@ -2338,7 +2357,7 @@ export function Index() {
                 title="WhatsApp (+92 336-4785098)"
                 className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
-                <MessageCircle className="h-5 w-5 fill-current" />
+                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z" /></svg>
               </button>
             </div>
           </div>

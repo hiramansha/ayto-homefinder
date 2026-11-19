@@ -7,3 +7,8 @@
 - [x] Sharpen blurry photos + bring back cartoon cart images near the end
 - [x] Give user the full project as a ZIP download
 - [x] Add ads section: own AYTO offers + partner (others) ads + "Advertise with us"
+- [ ] Owner + others can post ads (others need owner approval) — waiting: home page was replaced and has no ads section now; confirm where ads go
+- [x] Hide 0 beds on plots/commercial, "1 Bed" singular
+- [x] Realistic Lahore rent prices (5 listings)
+- [x] All / Buy / Rent toggle next to category buttons
+- [x] Footer email info@aytoproperties.com + fix missing social icon

@@ -60,7 +60,7 @@ export function EmiCalculator() {
 
   const handlePreset = (idx: number) => {
     setPlotPreset(idx);
-    setCoveredSqft(PLOT_PRESETS[idx].coveredSqft);
+    setCoveredSqft(PLOT_PRESETS[idx]?.coveredSqft ?? 0);
   };
 
   return (

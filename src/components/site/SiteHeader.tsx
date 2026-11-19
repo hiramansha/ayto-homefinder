@@ -221,7 +221,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
             ].map(([id, label]) => (
               <button
                 key={id}
-                onClick={() => go(id)}
+                onClick={() => go(id ?? "")}
                 className="block w-full border-b border-white/10 py-2.5 text-left text-sm text-white/90 hover:text-[#f4d06f]"
               >
                 {label}

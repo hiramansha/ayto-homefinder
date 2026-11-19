@@ -58,14 +58,14 @@ export function PropertyCard({
           </p>
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-4 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">{p.type}</span>
-            {p.beds > 0 && (
+            {p.beds > 0 && p.type !== "Plot" && p.type !== "Commercial" && (
               <span className="flex items-center gap-1.5">
-                <BedDouble className="h-4 w-4" /> {p.beds} {p.beds === 1 ? "bed" : "beds"}
+                <BedDouble className="h-4 w-4" /> {p.beds} {p.beds === 1 ? "Bed" : "Beds"}
               </span>
             )}
             {p.baths > 0 && (
               <span className="flex items-center gap-1.5">
-                <Bath className="h-4 w-4" /> {p.baths} {p.baths === 1 ? "bath" : "baths"}
+                <Bath className="h-4 w-4" /> {p.baths} {p.baths === 1 ? "Bath" : "Baths"}
               </span>
             )}
             <span className="flex items-center gap-1.5">

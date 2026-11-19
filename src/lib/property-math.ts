@@ -45,7 +45,9 @@ export function areaInMarla(area: string): number {
 /** 1 crore and above shows as Crore, below shows as Lakh (1 crore = 100 lakh). */
 export function formatAmount(crore: number): string {
   if (crore >= 1) return `${crore % 1 ? crore.toFixed(1) : crore.toFixed(0)} Crore`;
-  return `${Math.round(crore * 100)} Lakh`;
+  const lakh = Math.round(crore * 1000) / 10;
+  if (lakh >= 1) return `${lakh % 1 ? lakh.toFixed(1) : lakh.toFixed(0)} Lakh`;
+  return Math.round(crore * 1e7).toLocaleString("en-US");
 }
 
 export function priceLabel(p: Pick<PropertyBase, "crore" | "purpose">): string {
@@ -173,4 +175,13 @@ export function validateContact(v: ContactInput): Partial<Record<keyof ContactIn
   if (!EMAIL.test(v.email.trim())) e.email = "Enter a valid email address.";
   if (v.message.trim().length < 10) e.message = "Write at least 10 characters.";
   return e;
+}
+
+/** Plots and commercial units never show bedrooms; homes only when they have at least one. */
+export function showBeds(p: { beds?: number; type?: string }): boolean {
+  return !!p.beds && p.beds > 0 && p.type !== "Plot" && p.type !== "Commercial";
+}
+
+export function bedsLabel(n: number): string {
+  return `${n} ${n === 1 ? "Bed" : "Beds"}`;
 }
