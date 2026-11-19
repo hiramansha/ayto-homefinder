@@ -482,10 +482,10 @@ export function Index() {
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
 
-    const replaceLegacyContactInfo = () => {
-      document.querySelectorAll("footer a, footer p, footer span, section a, section p").forEach((el) => {
-        if (el.children.length === 0 && el.textContent && el.textContent.includes("331-4972426")) {
-          el.textContent = el.textContent.replace(/331-4972426/g, "336-4785098");
+   const replaceLegacyContactInfo = () => {
+      document.querySelectorAll("footer a, footer p, footer span, section a, section p, section div, div[role='status'], p").forEach((el) => {
+        if (el.children.length === 0 && el.textContent && /0?331[-\s]?4972426/.test(el.textContent)) {
+          el.textContent = el.textContent.replace(/0?331[-\s]?4972426/g, "0336 4785098");
         }
         if (el instanceof HTMLAnchorElement) {
           if (el.href.includes("3314972426")) {
@@ -528,12 +528,12 @@ export function Index() {
     };
 
     replaceLegacyContactInfo();
-    const timer = window.setTimeout(replaceLegacyContactInfo, 400);
+    const timer = window.setInterval(replaceLegacyContactInfo, 300);
 
     return () => {
       window.open = originalWindowOpen;
       window.removeEventListener("popstate", syncFromUrl);
-      window.clearTimeout(timer);
+      window.clearInterval(timer);
     };
   }, [activePage]);
 
