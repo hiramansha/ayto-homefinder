@@ -34,7 +34,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
     const msg = encodeURIComponent(
       `Assalam-o-Alaikum AYTO Properties!\n*New Visit / Property Query*\n• Name: ${name}\n• Phone: ${phone}\n• Email: ${email}\n• Property Type: ${propertyType}\n• Location: ${locationPref}\n• Size: ${plotSize}\n• Purpose: ${purpose}\n• Budget: ${budgetFrom || "Any"} to ${budgetTo || "Any"}\n• Payment: ${paymentPref}\n• Details: ${details || "N/A"}`,
     );
-    window.open(`https://wa.me/923314972426?text=${msg}`, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/923364785098?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -99,7 +99,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
             <input
               required
               type="tel"
-              placeholder="Your Phone (e.g. 0331-4972426)*"
+              placeholder="Your Phone (e.g. 0336 4785098)*"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className={`${inputClass} pr-10`}
@@ -221,7 +221,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
           {submitted && (
             <div className="mt-3.5 flex items-center justify-center gap-2 rounded-full border border-[#f4d06f]/40 bg-[#f4d06f]/10 px-4 py-2 text-xs font-medium text-[#f4d06f]">
               <CheckCircle2 className="h-4 w-4" />
-              Thank you! Your visit request has been sent to AYTO Properties (0331-4972426).
+              Thank you! Your visit request has been sent to AYTO Properties (0336 4785098).
             </div>
           )}
 
@@ -233,7 +233,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
               <MapPin className="h-3.5 w-3.5 text-[#f4d06f]" /> E65 DHA Phase 12, Multan Road, Lahore
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Phone className="h-3.5 w-3.5 text-[#f4d06f]" /> 0331-4972426
+              <Phone className="h-3.5 w-3.5 text-[#f4d06f]" /> 0336 4785098
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Mail className="h-3.5 w-3.5 text-[#f4d06f]" /> info@aytoproperties.com
