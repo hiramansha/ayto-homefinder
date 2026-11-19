@@ -497,10 +497,41 @@ export function Index() {
         }
       });
     };
+
+    const originalWindowOpen = window.open;
+    window.open = function (url?: string | URL, target?: string, features?: string) {
+      let nextUrl = typeof url === "string" ? url : url?.toString() || "";
+      if (nextUrl.includes("923314972426") || nextUrl.includes("3314972426")) {
+        nextUrl = nextUrl.replace(/3314972426/g, "3364785098");
+        try {
+          const parsed = new URL(nextUrl);
+          const rawText = parsed.searchParams.get("text") || "";
+          const nameMatch = rawText.match(/Name:\s*([^\n•]+)/i);
+          const emailMatch = rawText.match(/Email:\s*([^\n•]+)/i);
+          const phoneMatch = rawText.match(/Phone:\s*([^\n•]+)/i);
+          fetch(`${SUPABASE_URL}/rest/v1/ayto_inquiries`, {
+            method: "POST",
+            headers: supabaseHeaders,
+            body: JSON.stringify({
+              name: nameMatch?.[1]?.trim() || "WhatsApp Query Visitor",
+              email: emailMatch?.[1]?.trim() || "whatsapp@aytoproperties.com",
+              phone: phoneMatch?.[1]?.trim() || null,
+              message: rawText.trim(),
+            }),
+          }).catch(() => {});
+        } catch {
+          /* ignore */
+        }
+        return originalWindowOpen.call(window, nextUrl, target, features);
+      }
+      return originalWindowOpen.call(window, url, target, features);
+    };
+
     replaceLegacyContactInfo();
     const timer = window.setTimeout(replaceLegacyContactInfo, 400);
 
     return () => {
+      window.open = originalWindowOpen;
       window.removeEventListener("popstate", syncFromUrl);
       window.clearTimeout(timer);
     };
