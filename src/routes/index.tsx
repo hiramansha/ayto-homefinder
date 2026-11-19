@@ -337,9 +337,7 @@ export function Index() {
 
   const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
 
-  // Filters & Quick Search
-  const [quickArea, setQuickArea] = useState("");
-  const [quickCategory, setQuickCategory] = useState("All");
+  // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [purposeFilter, setPurposeFilter] = useState<"All" | "Sale" | "Rent">("All");
@@ -502,14 +500,6 @@ export function Index() {
       toast(exists ? "Removed from saved properties" : "Saved to your wishlist!");
       return next;
     });
-  };
-
-  const handleHeroQuickSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowSaved(false);
-    setSearchQuery(quickArea);
-    setTypeFilter(quickCategory);
-    scrollToId("listings");
   };
 
   const openUserProfile = (ownerId: string, fallbackName?: string, fallbackPhone?: string) => {
@@ -997,9 +987,6 @@ export function Index() {
         header [role="menu"], header nav div[class*="absolute"] {
           display: none !important;
         }
-        header {
-          top: 34px !important;
-        }
         main section, footer {
           background-color: transparent !important;
         }
@@ -1045,64 +1032,6 @@ export function Index() {
       <RoyalArchitecturalBackdrop />
 
       <div className="relative z-10">
-        {/* Top Utility Strip (Zero Text Overlap) */}
-        <div className="fixed inset-x-0 top-0 z-50 flex h-[34px] items-center border-b border-sky-300/15 bg-[#050912]/95 px-4 text-[11px] backdrop-blur-xl md:px-8">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
-            <div className="flex items-center gap-4 text-slate-300/85">
-              <a
-                href="tel:+923364785098"
-                className="inline-flex items-center gap-1.5 font-medium transition hover:text-[#f4c414]"
-              >
-                <Phone className="h-3 w-3 text-[#f4c414]" />
-                <span>+92 336-4785098</span>
-              </a>
-              <span className="hidden items-center gap-1.5 text-slate-400 sm:inline-flex">
-                <MapPin className="h-3 w-3 text-[#f4c414]" />
-                <span>E65 DHA Phase 12, Lahore</span>
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {currentUser ? (
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => openUserProfile(currentUser.id)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-2.5 py-0.5 font-bold text-[#f4d06f] transition hover:bg-[#f4c414] hover:text-[#070b14]"
-                  >
-                    <UserCheck className="h-3 w-3" />
-                    <span>{currentUser.name}</span>
-                    <span className="rounded-full bg-[#f4c414] px-1.5 text-[9px] font-extrabold text-[#070b14]">
-                      {userListings.filter((l) => l.ownerId === currentUser.id).length}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    title="Logout"
-                    className="rounded-full p-1 text-slate-400 transition hover:bg-white/10 hover:text-white"
-                  >
-                    <LogOut className="h-3 w-3" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setOpenPostAfterAuth(false);
-                    setAuthTab("login");
-                    setAuthModalOpen(true);
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#f4c414]/40 bg-[#f4c414]/10 px-3 py-0.5 font-bold text-[#f4d06f] transition hover:bg-[#f4c414] hover:text-[#070b14]"
-                >
-                  <LogIn className="h-3 w-3" />
-                  <span>Seller Login</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
         <SiteHeader
           savedCount={saved.length}
           onShowSaved={() => {
@@ -1115,12 +1044,52 @@ export function Index() {
           }}
         />
 
+        {/* Compact Seller Login / Dashboard Pill */}
+        <div className="fixed right-4 top-[78px] z-40 flex items-center gap-2">
+          {currentUser ? (
+            <div className="flex items-center gap-1.5 rounded-full border border-[#f4c414]/45 bg-[#0b1322]/90 px-3 py-1.5 text-xs shadow-xl backdrop-blur-xl">
+              <button
+                type="button"
+                onClick={() => openUserProfile(currentUser.id)}
+                className="inline-flex items-center gap-1.5 font-bold text-[#f4d06f] hover:underline"
+              >
+                <UserCheck className="h-3.5 w-3.5" />
+                <span>{currentUser.name}</span>
+                <span className="rounded-full bg-[#f4c414] px-1.5 py-0.5 text-[10px] font-extrabold text-[#070b14]">
+                  {userListings.filter((l) => l.ownerId === currentUser.id).length}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                title="Logout"
+                className="ml-1 rounded-full p-1 text-slate-400 hover:bg-white/10 hover:text-white"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setOpenPostAfterAuth(false);
+                setAuthTab("login");
+                setAuthModalOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#f4c414]/40 bg-[#0b1322]/85 px-3.5 py-1.5 text-[11px] font-bold text-[#f4d06f] shadow-lg backdrop-blur-xl transition hover:border-[#f4c414] hover:bg-[#f4c414] hover:text-[#070b14]"
+            >
+              <LogIn className="h-3 w-3" />
+              <span>Seller Login</span>
+            </button>
+          )}
+        </div>
+
         {projectsMenuOpen && (
           <div
             data-projects-dropdown
             onMouseEnter={() => setProjectsMenuOpen(true)}
             onMouseLeave={() => setProjectsMenuOpen(false)}
-            className="fixed left-1/2 top-[102px] z-50 w-[310px] -translate-x-1/2 rounded-2xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl"
+            className="fixed left-1/2 top-[68px] z-50 w-[310px] -translate-x-1/2 rounded-2xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl"
           >
             <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#f4d06f]">
               AYTO Signature Projects
@@ -1152,7 +1121,7 @@ export function Index() {
         )}
 
         {activePage === "user-profile" && viewedProfileUser ? (
-          <main key="user-profile" className="ayto-page-enter relative isolate overflow-hidden pt-32 text-white">
+          <main key="user-profile" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
               <div className="flex items-center justify-between">
                 <button
@@ -1397,7 +1366,7 @@ export function Index() {
             </div>
           </main>
         ) : activePage === "query-form" ? (
-          <main key="query-form" className="ayto-page-enter pt-28">
+          <main key="query-form" className="ayto-page-enter pt-20">
             <div className="mx-auto max-w-2xl px-4 pt-3 md:px-6">
               <button
                 type="button"
@@ -1410,7 +1379,7 @@ export function Index() {
             <Contact prefill={prefill} />
           </main>
         ) : activePage === "about-us" ? (
-          <main key="about-us" className="ayto-page-enter relative isolate overflow-hidden pt-32 text-white">
+          <main key="about-us" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-5xl px-5 pb-20 pt-4 md:px-8">
               <section className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
                 <div className="rounded-3xl border border-sky-300/15 bg-[#0e172a]/80 p-7 shadow-2xl backdrop-blur-md sm:p-9">
@@ -1572,7 +1541,7 @@ export function Index() {
             </div>
           </main>
         ) : activePage === "our-offices" ? (
-          <main key="our-offices" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
+          <main key="our-offices" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
             <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
               <img
                 src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=80"
@@ -1665,7 +1634,7 @@ export function Index() {
             </div>
           </main>
         ) : activePage === "projects" ? (
-          <main key="projects" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
+          <main key="projects" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
             <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
               <img
                 src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80"
@@ -1689,7 +1658,7 @@ export function Index() {
                   <div
                     id={proj.id}
                     key={proj.title}
-                    className="group scroll-mt-32 overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
+                    className="group scroll-mt-28 overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
                   >
                     <div className="relative aspect-[16/10] w-full overflow-hidden">
                       <img
@@ -1740,7 +1709,7 @@ export function Index() {
             </div>
           </main>
         ) : activePage === "services" ? (
-          <main key="services" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
+          <main key="services" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
             <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
               <img
                 src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1800&q=80"
@@ -1967,7 +1936,7 @@ export function Index() {
             </div>
           </main>
         ) : activePage === "gallery" ? (
-          <main key="gallery" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
+          <main key="gallery" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
             <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
               <img
                 src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=80"
@@ -2061,7 +2030,7 @@ export function Index() {
             )}
           </main>
         ) : activePage === "contact-us" ? (
-          <main key="contact-us" className="ayto-page-enter relative isolate overflow-hidden pt-36 text-white">
+          <main key="contact-us" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
               <div className="text-center">
                 <div className="mx-auto mb-3 h-[2px] w-10 rounded-full bg-[#f4c414]" />
@@ -2223,79 +2192,8 @@ export function Index() {
             </div>
           </main>
         ) : (
-          <main key="home" className="ayto-page-enter pt-8">
+          <main key="home" className="ayto-page-enter">
             <Hero />
-
-            {/* Floating Hero Quick-Search Bar */}
-            <div className="relative z-20 mx-auto -mt-12 mb-8 max-w-5xl px-5 md:px-8">
-              <form
-                onSubmit={handleHeroQuickSearch}
-                className="grid gap-3 rounded-3xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-3.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl sm:grid-cols-[1.3fr_1fr_auto]"
-              >
-                <div className="flex items-center gap-2.5 rounded-2xl border border-sky-300/15 bg-[#070b14] px-4 py-2.5">
-                  <MapPin className="h-4 w-4 shrink-0 text-[#f4c414]" />
-                  <select
-                    value={quickArea}
-                    onChange={(e) => setQuickArea(e.target.value)}
-                    aria-label="Select Lahore Society"
-                    className="w-full bg-transparent text-xs font-semibold text-white focus:outline-none"
-                  >
-                    <option value="" className="bg-[#0b1322]">
-                      All Lahore Societies (DHA, Bahria...)
-                    </option>
-                    <option value="DHA" className="bg-[#0b1322]">
-                      DHA Lahore (All Phases)
-                    </option>
-                    <option value="Bahria" className="bg-[#0b1322]">
-                      Bahria Town Lahore
-                    </option>
-                    <option value="Gulberg" className="bg-[#0b1322]">
-                      Gulberg Lahore
-                    </option>
-                    <option value="Lake City" className="bg-[#0b1322]">
-                      Lake City Lahore
-                    </option>
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-2.5 rounded-2xl border border-sky-300/15 bg-[#070b14] px-4 py-2.5">
-                  <Home className="h-4 w-4 shrink-0 text-[#f4c414]" />
-                  <select
-                    value={quickCategory}
-                    onChange={(e) => setQuickCategory(e.target.value)}
-                    aria-label="Select Property Type"
-                    className="w-full bg-transparent text-xs font-semibold text-white focus:outline-none"
-                  >
-                    <option value="All" className="bg-[#0b1322]">
-                      All Property Types
-                    </option>
-                    <option value="House" className="bg-[#0b1322]">
-                      Houses
-                    </option>
-                    <option value="Villa" className="bg-[#0b1322]">
-                      Luxury Villas
-                    </option>
-                    <option value="Apartment" className="bg-[#0b1322]">
-                      Apartments
-                    </option>
-                    <option value="Plot" className="bg-[#0b1322]">
-                      Residential / Commercial Plots
-                    </option>
-                    <option value="Commercial" className="bg-[#0b1322]">
-                      Commercial Plazas
-                    </option>
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#f4c414] px-7 py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
-                >
-                  <Search className="h-4 w-4" />
-                  <span>Find Properties</span>
-                </button>
-              </form>
-            </div>
 
             <Spotlight
               onView={() => navigatePage("projects")}
