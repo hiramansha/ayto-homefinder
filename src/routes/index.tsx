@@ -482,8 +482,11 @@ export function Index() {
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
 
-   const replaceLegacyContactInfo = () => {
-      document.querySelectorAll("footer a, footer p, footer span, section a, section p, section div, div[role='status'], p").forEach((el) => {
+  const replaceLegacyContactInfo = () => {
+      document.querySelectorAll("*").forEach((el) => {
+        if (el instanceof HTMLInputElement && el.placeholder && /0?331[-\s]?4972426/.test(el.placeholder)) {
+          el.placeholder = el.placeholder.replace(/0?331[-\s]?4972426/g, "0336 4785098");
+        }
         if (el.children.length === 0 && el.textContent && /0?331[-\s]?4972426/.test(el.textContent)) {
           el.textContent = el.textContent.replace(/0?331[-\s]?4972426/g, "0336 4785098");
         }
