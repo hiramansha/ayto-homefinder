@@ -417,6 +417,7 @@ export function Index() {
               customPriceText: String(row["custom_price_text"] || ""),
               areaText: String(row["area_text"] || "10 Marla"),
               listingStatus: row["listing_status"] === "Sold" ? "Sold" : "Available",
+              isApproved: Boolean(row["is_approved"]),
               beds: Number(row["beds"] || 0),
             }));
             setUserListings(mapped);
