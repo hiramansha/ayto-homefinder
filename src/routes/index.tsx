@@ -482,7 +482,7 @@ export function Index() {
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
 
-  const replaceLegacyContactInfo = () => {
+  const replaceLegacyContactInfo = () => {       return;
       document.querySelectorAll("*").forEach((el) => {
         if (el instanceof HTMLInputElement && el.placeholder && /0?331[-\s]?4972426/.test(el.placeholder)) {
           el.placeholder = el.placeholder.replace(/0?331[-\s]?4972426/g, "0336 4785098");
