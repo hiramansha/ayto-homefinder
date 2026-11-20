@@ -12,6 +12,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
   const [budgetFrom, setBudgetFrom] = useState("");
   const [budgetTo, setBudgetTo] = useState("");
   const [paymentPref, setPaymentPref] = useState("Full Cash");
+  const [easyPaisaTrxId, setEasyPaisaTrxId] = useState("");
   const [details, setDetails] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -31,8 +32,12 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    const paymentInfo =
+      paymentPref === "EasyPaisa"
+        ? `EasyPaisa (Account: 03314972426${easyPaisaTrxId.trim() ? `, TID: ${easyPaisaTrxId.trim()}` : ""})`
+        : "Full Cash";
     const msg = encodeURIComponent(
-      `Assalam-o-Alaikum AYTO Properties!\n*New Visit / Property Query*\n• Name: ${name}\n• Phone: ${phone}\n• Email: ${email}\n• Property Type: ${propertyType}\n• Location: ${locationPref}\n• Size: ${plotSize}\n• Purpose: ${purpose}\n• Budget: ${budgetFrom || "Any"} to ${budgetTo || "Any"}\n• Payment: ${paymentPref}\n• Details: ${details || "N/A"}`,
+      `Assalam-o-Alaikum AYTO Properties!\n*New Visit / Property Query*\n• Name: ${name}\n• Phone: ${phone}\n• Email: ${email}\n• Property Type: ${propertyType}\n• Location: ${locationPref}\n• Size: ${plotSize}\n• Purpose: ${purpose}\n• Budget: ${budgetFrom || "Any"} to ${budgetTo || "Any"}\n• Payment: ${paymentInfo}\n• Details: ${details || "N/A"}`,
     );
     window.open(`https://wa.me/923364785098?text=${msg}`, "_blank", "noopener,noreferrer");
   };
@@ -132,7 +137,7 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
               >
                 <option>DHA Phase 12 (EME) Multan Road, Lahore</option>
                 <option>DHA Lahore (Phase 5, 6, 7, 8, 9)</option>
-                <option>Bahria Town & Bahria Orchard</option>
+                <option>Bahria Town &amp; Bahria Orchard</option>
                 <option>Lake City Lahore</option>
                 <option>Lahore Smart City</option>
                 <option>Etihad Town</option>
@@ -195,10 +200,25 @@ export function Contact({ prefill }: { prefill: { text: string; nonce: number } 
               onChange={(e) => setPaymentPref(e.target.value)}
               className={inputClass}
             >
-              <option>Full Cash</option>
-              <option>Easy Installment Plan</option>
-              <option>Home Loan / Bank Financing</option>
+              <option value="Full Cash">Full Cash</option>
+              <option value="EasyPaisa">EasyPaisa (03314972426)</option>
             </select>
+
+            {paymentPref === "EasyPaisa" && (
+              <div className="mt-3 rounded-2xl border border-[#f4d06f]/40 bg-[#f4d06f]/10 p-3.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-white/85">EasyPaisa Account:</span>
+                  <span className="font-mono text-sm font-bold text-[#f4d06f]">03314972426</span>
+                </div>
+                <input
+                  type="text"
+                  placeholder="EasyPaisa Transaction ID / TID (Optional)"
+                  value={easyPaisaTrxId}
+                  onChange={(e) => setEasyPaisaTrxId(e.target.value)}
+                  className="mt-2.5 h-10 w-full rounded-full border border-white/25 bg-[#141414]/80 px-4 text-xs text-white placeholder:text-white/50 outline-none focus:border-[#f4d06f]"
+                />
+              </div>
+            )}
           </div>
 
           <div className="mt-4">
