@@ -490,7 +490,14 @@ export function Index() {
     window.addEventListener("popstate", syncFromUrl);
 
     const replaceLegacyContactInfo = () => {
-      return;
+      document.querySelectorAll("footer *, header *").forEach((el) => {
+        if (el.children.length === 0 && el.textContent && /0?331[-\s]?4972426/.test(el.textContent)) {
+          el.textContent = el.textContent.replace(/0?331[-\s]?4972426/g, "0336-4785098");
+        }
+        if (el instanceof HTMLAnchorElement && el.href.includes("3314972426")) {
+          el.href = el.href.replace(/3314972426/g, "3364785098");
+        }
+      });
     };
 
     const originalWindowOpen = window.open;
