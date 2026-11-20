@@ -106,6 +106,7 @@ interface UserPostedProperty extends Property {
   customPriceText: string;
   areaText: string;
   listingStatus?: "Available" | "Sold";
+  isApproved?: boolean;
 }
 
 type ActivePage =
@@ -117,7 +118,8 @@ type ActivePage =
   | "gallery"
   | "contact-us"
   | "query-form"
-  | "user-profile";
+  | "user-profile"
+  | "admin";
 
 const partnerLogos = [
   "DHA LAHORE",
@@ -327,6 +329,9 @@ export function Index() {
   const [userListings, setUserListings] = useState<UserPostedProperty[]>([]);
   const [viewedProfileUser, setViewedProfileUser] = useState<AytoUser | null>(null);
 
+  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [adminPinInput, setAdminPinInput] = useState("");
+
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "signup">("login");
   const [openPostAfterAuth, setOpenPostAfterAuth] = useState(false);
@@ -478,28 +483,14 @@ export function Index() {
       else if (s.includes("page=contact-us")) setActivePage("contact-us");
       else if (s.includes("page=query-form")) setActivePage("query-form");
       else if (s.includes("page=user-profile")) setActivePage("user-profile");
+      else if (s.includes("page=admin")) setActivePage("admin");
       else setActivePage("home");
     };
     syncFromUrl();
     window.addEventListener("popstate", syncFromUrl);
 
-  const replaceLegacyContactInfo = () => {       return;
-      document.querySelectorAll("*").forEach((el) => {
-        if (el instanceof HTMLInputElement && el.placeholder && /0?331[-\s]?4972426/.test(el.placeholder)) {
-          el.placeholder = el.placeholder.replace(/0?331[-\s]?4972426/g, "0336 4785098");
-        }
-        if (el.children.length === 0 && el.textContent && /0?331[-\s]?4972426/.test(el.textContent)) {
-          el.textContent = el.textContent.replace(/0?331[-\s]?4972426/g, "0336 4785098");
-        }
-        if (el instanceof HTMLAnchorElement) {
-          if (el.href.includes("3314972426")) {
-            el.href = el.href.replace(/3314972426/g, "3364785098");
-          }
-          if (el.href.includes("facebook.com")) {
-            el.href = "https://www.facebook.com/profile.php?id=61596721197006";
-          }
-        }
-      });
+    const replaceLegacyContactInfo = () => {
+      return;
     };
 
     const originalWindowOpen = window.open;
@@ -553,6 +544,7 @@ export function Index() {
       "contact-us": "contact us",
       "query-form": "",
       "user-profile": "",
+      admin: "",
     };
 
     const targetLabel = pageToLabelMap[activePage];
@@ -942,6 +934,7 @@ export function Index() {
           owner_phone: currentUser.phone,
           owner_agency: currentUser.agency || "Direct Property Owner",
           listing_status: "Available",
+          is_approved: false,
         }),
       });
       if (res.ok) {
@@ -974,6 +967,7 @@ export function Index() {
       customPriceText: propDemand.trim(),
       areaText: finalArea,
       listingStatus: "Available",
+      isApproved: false,
       ...(finalBeds > 0 ? { beds: finalBeds } : {}),
     };
 
@@ -981,7 +975,7 @@ export function Index() {
     setUserListings(nextListings);
     localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
 
-    toast.success("Property published live to database and your profile!");
+    toast.success("Property submitted! Owner approval ke baad live website par show hogi.");
     setPropTitle("");
     setPropDemand("");
     setPropImageUrl("");
@@ -1105,7 +1099,25 @@ export function Index() {
     const updated = userListings.filter((item) => item.id !== listingId);
     setUserListings(updated);
     localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
-    toast.success("Listing removed from your profile.");
+    toast.success("Listing removed!");
+  };
+
+  const handleAdminApproveListing = async (listingId: number, approve: boolean) => {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/ayto_listings?id=eq.${listingId}`, {
+        method: "PATCH",
+        headers: supabaseHeaders,
+        body: JSON.stringify({ is_approved: approve }),
+      });
+    } catch {
+      /* ignore */
+    }
+    const updated = userListings.map((item) =>
+      item.id === listingId ? { ...item, isApproved: approve } : item,
+    );
+    setUserListings(updated);
+    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
+    toast.success(approve ? "✓ Post Approved & Live on Website!" : "Post Moved to Pending!");
   };
 
   const toggleCompareProperty = (id: number) => {
@@ -1157,7 +1169,7 @@ export function Index() {
     window.open(`https://wa.me/${phone}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
-const approvedUserListings = userListings.filter((item) => Boolean((item as { isApproved?: boolean }).isApproved));
+  const approvedUserListings = userListings.filter((item) => Boolean(item.isApproved));
   const combinedProperties: Array<Property | UserPostedProperty> = [
     ...approvedUserListings,
     ...properties,
@@ -1394,7 +1406,139 @@ const approvedUserListings = userListings.filter((item) => Boolean((item as { is
           </div>
         )}
 
-        {activePage === "user-profile" && viewedProfileUser ? (
+        {activePage === "admin" ? (
+          <main key="admin" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
+            <div className="mx-auto max-w-4xl px-5 pb-24 md:px-8">
+              {!adminUnlocked ? (
+                <div className="mx-auto max-w-md rounded-3xl border border-[#f4c414]/45 bg-[#0e172a]/95 p-8 text-center shadow-2xl">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3.5 py-1 text-[11px] font-bold text-[#f4d06f]">
+                    <Lock className="h-3.5 w-3.5" /> Owner Verification Portal
+                  </span>
+                  <h1 className="mt-3 font-sans text-2xl font-extrabold text-white">
+                    AYTO Admin Login
+                  </h1>
+                  <p className="mt-1.5 text-xs text-slate-300">
+                    Enter Owner PIN to approve or remove submitted property posts.
+                  </p>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (adminPinInput === "7860") {
+                        setAdminUnlocked(true);
+                        toast.success("Welcome Owner! Admin Panel Unlocked.");
+                      } else {
+                        toast.error("Galat PIN! Dobara koshish karein.");
+                      }
+                    }}
+                    className="mt-5 space-y-3"
+                  >
+                    <input
+                      type="password"
+                      required
+                      placeholder="Enter Owner PIN (7860)"
+                      value={adminPinInput}
+                      onChange={(e) => setAdminPinInput(e.target.value)}
+                      className="w-full rounded-xl border border-sky-300/25 bg-[#070b14] px-4 py-3 text-center text-sm tracking-widest text-white focus:border-[#f4c414] focus:outline-none"
+                    />
+                    <button
+                      type="submit"
+                      className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+                    >
+                      Open Admin Panel
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <span className="rounded-full bg-[#f4c414] px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#070b14]">
+                        1-Click Verification Dashboard
+                      </span>
+                      <h1 className="mt-2 font-sans text-2xl font-extrabold text-white sm:text-3xl">
+                        Pending &amp; Live Posts ({userListings.length})
+                      </h1>
+                      <p className="text-xs text-slate-300">
+                        EasyPaisa (03314972426) payment check karke 1 click se Approve karein.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => navigatePage("home", "listings")}
+                      className="rounded-full border border-sky-300/30 bg-[#0e172a] px-4 py-2 text-xs font-bold text-white hover:border-[#f4c414]"
+                    >
+                      View Live Website
+                    </button>
+                  </div>
+
+                  <div className="mt-8 space-y-4">
+                    {userListings.map((item) => {
+                      const approved = Boolean(item.isApproved);
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex flex-col justify-between gap-4 rounded-2xl border border-sky-300/20 bg-[#0e172a]/90 p-5 shadow-xl sm:flex-row sm:items-center"
+                        >
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="h-20 w-24 shrink-0 rounded-xl object-cover"
+                            />
+                            <div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span
+                                  className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                                    approved
+                                      ? "bg-emerald-500 text-[#070b14]"
+                                      : "bg-amber-400 text-[#070b14]"
+                                  }`}
+                                >
+                                  {approved ? "✓ LIVE ON SITE" : "⏳ PENDING"}
+                                </span>
+                                <span className="text-xs font-extrabold text-[#f4c414]">
+                                  {item.customPriceText}
+                                </span>
+                              </div>
+                              <h2 className="mt-1 text-base font-bold text-white">{item.title}</h2>
+                              <p className="text-xs text-slate-300">
+                                {item.location} • {item.areaText}
+                              </p>
+                              <p className="mt-1 text-[11px] text-[#f4d06f]">
+                                Seller: {item.ownerName} ({item.ownerPhone})
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex shrink-0 flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleAdminApproveListing(item.id, !approved)}
+                              className={`rounded-xl px-4 py-2.5 text-xs font-extrabold shadow-md transition hover:brightness-105 ${
+                                approved
+                                  ? "border border-amber-400/50 bg-amber-400/15 text-amber-300"
+                                  : "bg-emerald-500 text-[#070b14]"
+                              }`}
+                            >
+                              {approved ? "Unapprove" : "✓ Approve & Publish"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteUserListing(item.id)}
+                              className="rounded-xl border border-red-400/40 bg-red-500/15 px-3.5 py-2.5 text-xs font-bold text-red-300 hover:bg-red-500/30"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </main>
+        ) : activePage === "user-profile" && viewedProfileUser ? (
           <main key="user-profile" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
               <div className="flex items-center justify-between">
@@ -1569,12 +1713,14 @@ const approvedUserListings = userListings.filter((item) => Boolean((item as { is
                           </span>
                           <span
                             className={`absolute right-3.5 top-3.5 rounded-lg px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider ${
-                              item.listingStatus === "Sold"
+                              !item.isApproved
+                                ? "bg-amber-400 text-[#070b14]"
+                                : item.listingStatus === "Sold"
                                 ? "bg-red-500 text-white"
                                 : "bg-emerald-500 text-[#070b14]"
                             }`}
                           >
-                            {item.listingStatus || "Available"}
+                            {!item.isApproved ? "Pending Verification" : item.listingStatus || "Available"}
                           </span>
                           <span className="absolute bottom-3 left-3.5 inline-flex items-center gap-1 text-[11px] font-semibold text-white/90">
                             <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {item.areaText}
@@ -3179,7 +3325,7 @@ const approvedUserListings = userListings.filter((item) => Boolean((item as { is
                 type="submit"
                 className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
               >
-                Publish Property To My Profile
+                Submit Property For Verification
               </button>
             </form>
           </div>
