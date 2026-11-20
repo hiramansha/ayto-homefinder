@@ -1157,8 +1157,9 @@ export function Index() {
     window.open(`https://wa.me/${phone}?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
+const approvedUserListings = userListings.filter((item) => Boolean((item as { isApproved?: boolean }).isApproved));
   const combinedProperties: Array<Property | UserPostedProperty> = [
-    ...userListings,
+    ...approvedUserListings,
     ...properties,
   ];
   const baseList = showSaved
