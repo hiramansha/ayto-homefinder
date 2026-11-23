@@ -220,48 +220,72 @@ const galleryItems = [
   {
     title: "Modern Villa Exterior - DHA Phase 6",
     category: "Luxury Villas",
+    location: "Block H, DHA Phase 6, Lahore",
+    area: "10 Marla • 5 Beds",
+    details: "Contemporary elevation with imported Spanish travertine tiles, double-height glass entrance, landscaped front lawn, and automated gate.",
     image:
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80",
   },
   {
     title: "Double-Height Designer Living Lounge",
     category: "Interiors",
+    location: "DHA Phase 6, Lahore",
+    area: "Main Lounge • Custom Interior",
+    details: "Bespoke false ceiling with warm cove lighting, Italian marble flooring, custom walnut wall paneling, and floor-to-ceiling windows.",
     image:
       "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
   },
   {
     title: "AYTO Corporate Commercial Tower",
     category: "Commercial & High-Rise",
+    location: "Main Boulevard, DHA Phase 12 (EME), Lahore",
+    area: "G+6 Commercial Plaza",
+    details: "Double-glazed curtain wall facade, dedicated basement car parking, high-speed elevators, and executive corporate office floors.",
     image:
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
   },
   {
     title: "1 Kanal Contemporary Elevation - DHA Phase 8",
     category: "Luxury Villas",
+    location: "Broadway Vicinity, DHA Phase 8, Lahore",
+    area: "1 Kanal • 6 Master Suites",
+    details: "Ultra-luxury smart residence featuring swimming pool, rooftop terrace lounge, imported Grohe sanitary fittings, and solid ash wood doors.",
     image:
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=80",
   },
   {
     title: "Executive Master Bedroom Suite",
     category: "Interiors",
+    location: "DHA Phase 8, Lahore",
+    area: "Master Suite • Walk-in Closet",
+    details: "Acoustic upholstered feature wall, warm ambient pendant lighting, walk-in glass wardrobe, and private terrace balcony access.",
     image:
       "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1000&q=80",
   },
   {
     title: "Bespoke Modular Kitchen & Dining",
     category: "Interiors",
+    location: "Bahria Town Sector C, Lahore",
+    area: "Dirty & Show Kitchen",
+    details: "UV high-gloss cabinetry, quartz countertops, built-in European appliances, and breakfast island counter.",
     image:
       "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=80",
   },
   {
     title: "Glass Facade Corporate Plaza",
     category: "Commercial & High-Rise",
+    location: "Main Boulevard, Gulberg / DHA Link, Lahore",
+    area: "Retail & Corporate Suites",
+    details: "LDA-approved commercial development designed for flagship retail brands, banks, and IT corporate headquarters.",
     image:
       "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80",
   },
   {
     title: "Evening Architectural Lighting & Lawn",
     category: "Luxury Villas",
+    location: "Lake City, Raiwind Road, Lahore",
+    area: "1 Kanal Designer Villa",
+    details: "Warm architectural facade uplighting, manicured outdoor sitting deck, and serene family courtyard.",
     image:
       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80",
   },
@@ -1390,15 +1414,15 @@ export function Index() {
           background-color: #FAF8F5 !important;
           color: #0F172A !important;
         }
-        .ayto-light-mode .bg-\\[\\#070b14\\],
-        .ayto-light-mode .bg-\\[\\#050912\\]\\/90 {
+        .ayto-light-mode .bg-\[\#070b14\],
+        .ayto-light-mode .bg-\[\#050912\]\/90 {
           background-color: #FAF8F5 !important;
           color: #0F172A !important;
         }
-        .ayto-light-mode .bg-\\[\\#080f1d\\],
-        .ayto-light-mode .bg-\\[\\#0b1322\\],
-        .ayto-light-mode .bg-\\[\\#0e172a\\],
-        .ayto-light-mode .bg-\\[\\#0f192d\\],
+        .ayto-light-mode .bg-\[\#080f1d\],
+        .ayto-light-mode .bg-\[\#0b1322\],
+        .ayto-light-mode .bg-\[\#0e172a\],
+        .ayto-light-mode .bg-\[\#0f192d\],
         .ayto-light-mode [class*="bg-[#070b14]/"],
         .ayto-light-mode [class*="bg-[#080f1d]/"],
         .ayto-light-mode [class*="bg-[#0b1322]/"],
@@ -1416,26 +1440,42 @@ export function Index() {
         .ayto-light-mode .text-slate-200 {
           color: #0F172A !important;
         }
+        /* Keep Hero & Page Top Image Banners Crisp White in Light Mode */
+        .ayto-light-mode section.relative.flex h1,
+        .ayto-light-mode section.relative.flex p,
+        .ayto-light-mode .ayto-banner-overlay h1,
+        .ayto-light-mode .ayto-banner-overlay p {
+          color: #FFFFFF !important;
+          text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65) !important;
+        }
+        .ayto-light-mode .ayto-banner-overlay {
+          background: linear-gradient(to bottom, rgba(7, 11, 20, 0.72), rgba(7, 11, 20, 0.62), rgba(7, 11, 20, 0.85)) !important;
+        }
         .ayto-light-mode .text-slate-300,
         .ayto-light-mode .text-slate-400,
         .ayto-light-mode [class*="text-slate-200/"],
         .ayto-light-mode [class*="text-white/"] {
           color: #475569 !important;
         }
-        .ayto-light-mode .text-\\[\\#f4d06f\\],
-        .ayto-light-mode .text-\\[\\#f4c414\\] {
+        .ayto-light-mode .text-\[\#f4d06f\],
+        .ayto-light-mode .text-\[\#f4c414\] {
           color: #9A7414 !important;
         }
-        .ayto-light-mode .bg-\\[\\#f4c414\\],
+        .ayto-light-mode .bg-\[\#f4c414\],
         .ayto-light-mode .ayto-gold-btn {
           background-color: #C59B27 !important;
           color: #FFFFFF !important;
         }
         .ayto-light-mode header {
-          background-color: rgba(255, 255, 255, 0.9) !important;
-          backdrop-filter: blur(12px);
+          background-color: rgba(255, 255, 255, 0.96) !important;
+          backdrop-filter: blur(14px);
           border-bottom: 1px solid #E5E0D8 !important;
-          box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+          box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06) !important;
+        }
+        .ayto-light-mode header nav button,
+        .ayto-light-mode header nav a {
+          color: #0F172A !important;
+          font-weight: 600 !important;
         }
         .ayto-light-mode input,
         .ayto-light-mode select,
@@ -1451,7 +1491,6 @@ export function Index() {
           border-color: #C59B27 !important;
           box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.3) !important;
         }
-
         @keyframes aytoAuroraDrift1 {
           0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
           50% { transform: translate3d(40px, 28px, 0) scale(1.08); }
@@ -3003,20 +3042,23 @@ export function Index() {
           </main>
         ) : activePage === "gallery" ? (
           <main key="gallery" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
-            <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <section className="relative flex h-[300px] w-full items-center justify-center overflow-hidden sm:h-[380px]">
               <img
                 src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=80"
                 alt="AYTO Properties Architecture & Interior Gallery"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
-              <div className="relative z-10 px-4 text-center">
-                <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+              <div className="ayto-banner-overlay absolute inset-0 bg-gradient-to-b from-[#070b14]/80 via-[#070b14]/65 to-[#070b14]" />
+              <div className="ayto-banner-overlay relative z-10 px-4 text-center">
+                <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#f4d06f]">
                   <Sparkles className="h-3.5 w-3.5" /> Visual Portfolio
                 </p>
-                <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                <h1 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
                   Project &amp; Interior Gallery
                 </h1>
+                <p className="mx-auto mt-2 max-w-xl text-xs text-slate-200 sm:text-sm">
+                  Click any project photo to view full architectural details in high resolution.
+                </p>
               </div>
             </section>
 
@@ -3038,28 +3080,42 @@ export function Index() {
                 ))}
               </div>
 
-              <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredGallery.map((item) => (
                   <div
                     key={item.title}
                     onClick={() => setLightboxImg(item)}
-                    className="group cursor-pointer overflow-hidden rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
+                    className="group cursor-pointer overflow-hidden rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/60"
                   >
-                    <div className="aspect-[4/3] overflow-hidden">
+                    <div className="relative aspect-[4/3] overflow-hidden">
                       <img
                         src={item.image}
                         alt={item.title}
                         loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                    </div>
-                    <div className="p-4">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#f4d06f]">
-                        {item.category}
+                      <span className="absolute right-3 top-3 rounded-full bg-black/70 px-3 py-1 text-[10px] font-bold text-[#f4d06f] backdrop-blur-md">
+                        Click to Zoom
                       </span>
-                      <h2 className="mt-1 text-xs font-bold text-white sm:text-sm">
+                    </div>
+                    <div className="p-5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#f4d06f]">
+                          {item.category}
+                        </span>
+                        <span className="text-[11px] font-semibold text-slate-400">
+                          {item.area}
+                        </span>
+                      </div>
+                      <h2 className="mt-1.5 text-sm font-bold text-white sm:text-base">
                         {item.title}
                       </h2>
+                      <p className="mt-1 flex items-center gap-1 text-[11px] text-[#f4d06f]">
+                        <MapPin className="h-3 w-3 shrink-0" /> {item.location}
+                      </p>
+                      <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-slate-300/80">
+                        {item.details}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -3069,27 +3125,50 @@ export function Index() {
             {lightboxImg && (
               <div
                 onClick={() => setLightboxImg(null)}
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md"
               >
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-2xl border border-sky-300/25 bg-[#0b1322]"
+                  className="relative mx-auto w-full max-w-3xl overflow-hidden rounded-3xl border border-[#f4c414]/45 bg-[#0b1322] shadow-2xl"
                 >
                   <button
                     type="button"
                     onClick={() => setLightboxImg(null)}
                     aria-label="Close preview"
-                    className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/75 text-white hover:bg-[#f4c414] hover:text-[#070b14]"
+                    className="absolute right-4 top-4 z-10 grid h-9 w-9 place-items-center rounded-full bg-black/80 text-white transition hover:bg-[#f4c414] hover:text-[#070b14]"
                   >
                     <X className="h-5 w-5" />
                   </button>
-                  <img
-                    src={lightboxImg.image}
-                    alt={lightboxImg.title}
-                    className="max-h-[78vh] w-full object-contain"
-                  />
-                  <div className="px-5 py-3 text-center text-sm font-bold text-white">
-                    {lightboxImg.title}
+                  <div className="bg-black">
+                    <img
+                      src={lightboxImg.image}
+                      alt={lightboxImg.title}
+                      className="mx-auto max-h-[60vh] w-full object-contain"
+                    />
+                  </div>
+                  <div className="p-6 text-left">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="rounded-full bg-[#f4c414] px-3 py-0.5 text-[10px] font-extrabold uppercase text-[#070b14]">
+                        {(lightboxImg as { category?: string }).category || "AYTO Portfolio"}
+                      </span>
+                      <span className="text-xs font-bold text-[#f4d06f]">
+                        {(lightboxImg as { area?: string }).area || ""}
+                      </span>
+                    </div>
+                    <h3 className="mt-2 text-lg font-extrabold text-white sm:text-xl">
+                      {lightboxImg.title}
+                    </h3>
+                    {(lightboxImg as { location?: string }).location && (
+                      <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[#f4d06f]">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {(lightboxImg as { location?: string }).location}
+                      </p>
+                    )}
+                    {(lightboxImg as { details?: string }).details && (
+                      <p className="mt-3 text-xs leading-relaxed text-slate-300 sm:text-sm">
+                        {(lightboxImg as { details?: string }).details}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
