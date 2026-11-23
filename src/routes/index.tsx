@@ -49,6 +49,7 @@ import { Spotlight } from "@/components/site/Spotlight";
 import { Testimonials } from "@/components/site/Testimonials";
 import { Contact } from "@/components/site/Contact";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { AdsBoard } from "@/components/site/AdsBoard";
 import { scrollToId } from "@/components/site/utils";
 import fallbackAvatar from "@/assets/ayto-logo.jpg";
 
@@ -1042,7 +1043,7 @@ export function Index() {
     }
 
     const baseTemplate = properties[0]!;
-    const newListing: UserPostedProperty = {
+    const newListing = {
       ...baseTemplate,
       id: insertedId,
       title: propTitle.trim(),
@@ -1064,7 +1065,7 @@ export function Index() {
       listingStatus: "Available",
       isApproved: false,
       ...(finalBeds > 0 ? { beds: finalBeds } : {}),
-    };
+    } as unknown as UserPostedProperty;
 
     const nextListings = [newListing, ...userListings];
     setUserListings(nextListings);
@@ -1365,7 +1366,7 @@ export function Index() {
       id="top"
       className={`relative min-h-screen transition-colors duration-300 selection:bg-[#f4c414] selection:text-[#070b14] ${
         theme === "light"
-          ? "ayto-light-mode bg-slate-50 text-slate-900"
+          ? "ayto-light-mode bg-[#FAF8F5] text-slate-900"
           : "bg-[#070b14] text-white"
       }`}
     >
@@ -1381,52 +1382,74 @@ export function Index() {
         }
 
         /* Light Mode Overrides */
+        .ayto-light-mode, .ayto-light-mode * {
+          transition-property: color, background-color, border-color, box-shadow;
+          transition-duration: 300ms;
+        }
         .ayto-light-mode {
-          background-color: #f8fafc !important;
-          color: #0f172a !important;
+          background-color: #FAF8F5 !important;
+          color: #0F172A !important;
         }
         .ayto-light-mode .bg-\\[\\#070b14\\],
+        .ayto-light-mode .bg-\\[\\#050912\\]\\/90 {
+          background-color: #FAF8F5 !important;
+          color: #0F172A !important;
+        }
         .ayto-light-mode .bg-\\[\\#080f1d\\],
         .ayto-light-mode .bg-\\[\\#0b1322\\],
         .ayto-light-mode .bg-\\[\\#0e172a\\],
         .ayto-light-mode .bg-\\[\\#0f192d\\],
-        .ayto-light-mode .bg-\\[\\#050912\\]\\/90 {
-          background-color: #ffffff !important;
-          color: #0f172a !important;
-          border-color: rgba(15, 23, 42, 0.14) !important;
-        }
         .ayto-light-mode [class*="bg-[#070b14]/"],
         .ayto-light-mode [class*="bg-[#080f1d]/"],
         .ayto-light-mode [class*="bg-[#0b1322]/"],
         .ayto-light-mode [class*="bg-[#0e172a]/"],
         .ayto-light-mode [class*="bg-[#0f192d]/"] {
-          background-color: rgba(255, 255, 255, 0.95) !important;
-          color: #0f172a !important;
-          border-color: rgba(15, 23, 42, 0.12) !important;
+          background-color: #FFFFFF !important;
+          color: #0F172A !important;
+          border-color: #E5E0D8 !important;
+          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06) !important;
         }
+        .ayto-light-mode [class*="border-sky-300"] { border-color: #E5E0D8 !important; }
+        .ayto-light-mode h1, .ayto-light-mode h2, .ayto-light-mode h3,
         .ayto-light-mode .text-white,
         .ayto-light-mode .text-slate-100,
-        .ayto-light-mode .text-slate-200,
-        .ayto-light-mode .text-slate-300 {
-          color: #0f172a !important;
+        .ayto-light-mode .text-slate-200 {
+          color: #0F172A !important;
         }
-        .ayto-light-mode .text-slate-400 {
+        .ayto-light-mode .text-slate-300,
+        .ayto-light-mode .text-slate-400,
+        .ayto-light-mode [class*="text-slate-200/"],
+        .ayto-light-mode [class*="text-white/"] {
           color: #475569 !important;
         }
-        .ayto-light-mode .text-\\[\\#f4d06f\\] {
-          color: #b45309 !important;
+        .ayto-light-mode .text-\\[\\#f4d06f\\],
+        .ayto-light-mode .text-\\[\\#f4c414\\] {
+          color: #9A7414 !important;
+        }
+        .ayto-light-mode .bg-\\[\\#f4c414\\],
+        .ayto-light-mode .ayto-gold-btn {
+          background-color: #C59B27 !important;
+          color: #FFFFFF !important;
         }
         .ayto-light-mode header {
-          background-color: rgba(255, 255, 255, 0.94) !important;
-          border-bottom: 1px solid rgba(15, 23, 42, 0.1) !important;
-          box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06) !important;
+          background-color: rgba(255, 255, 255, 0.9) !important;
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid #E5E0D8 !important;
+          box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
         }
         .ayto-light-mode input,
         .ayto-light-mode select,
         .ayto-light-mode textarea {
-          background-color: #f1f5f9 !important;
-          color: #0f172a !important;
-          border-color: rgba(15, 23, 42, 0.2) !important;
+          background-color: #F8FAFC !important;
+          color: #0F172A !important;
+          border-color: #CBD5E1 !important;
+        }
+        .ayto-light-mode input:focus,
+        .ayto-light-mode select:focus,
+        .ayto-light-mode textarea:focus {
+          outline: none !important;
+          border-color: #C59B27 !important;
+          box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.3) !important;
         }
 
         @keyframes aytoAuroraDrift1 {
@@ -3566,6 +3589,7 @@ export function Index() {
                 )}
               </div>
             </section>
+            <AdsBoard onContact={(text) => navigatePage("query-form", undefined, text)} />
 
             <Testimonials />
           </main>
