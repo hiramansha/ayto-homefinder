@@ -159,7 +159,7 @@ export function SiteFooter({
               <Facebook className="h-3.5 w-3.5" />
             </a>
             <a
-              href="https://wa.me/923314972426"
+              href="https://www.instagram.com/aytoproperties/?hl=en"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
