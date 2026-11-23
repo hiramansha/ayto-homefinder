@@ -276,7 +276,7 @@ const propertySampleImages: Record<string, string> = {
 };
 
 // Urgent Sale Plot Listing (DHA Lahore Phase 6 - Near Raya Golf)
-const urgentRayaPlotListing: UserPostedProperty = {
+const urgentRayaPlotListing = {
   ...(properties[0] as Property),
   id: 99061045,
   title: "Urgent Sale Plot - Near Raya Golf (K-1045-1055 Series)",
@@ -301,7 +301,7 @@ const urgentRayaPlotListing: UserPostedProperty = {
   areaText: "1 Kanal Plot",
   listingStatus: "Available",
   isApproved: true,
-};
+} as unknown as UserPostedProperty;
 
 function RoyalArchitecturalBackdrop() {
   return (
