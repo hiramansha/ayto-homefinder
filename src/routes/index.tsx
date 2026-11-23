@@ -463,6 +463,7 @@ export function Index() {
   const [downPaymentPct, setDownPaymentPct] = useState(25);
   const [installmentMonths, setInstallmentMonths] = useState(36);
 
+ const [projectFilter, setProjectFilter] = useState("All");
   const [galleryFilter, setGalleryFilter] = useState("All");
   const [lightboxImg, setLightboxImg] = useState<{ title: string; image: string } | null>(null);
 
@@ -2653,8 +2654,8 @@ export function Index() {
                 alt="AYTO Properties Head Office & Branches"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
-              <div className="relative z-10 px-4 text-center">
+              <div className="ayto-banner-overlay absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
+              <div className="ayto-banner-overlay relative z-10 px-4 text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   Visit Us In Lahore
                 </p>
@@ -2746,8 +2747,8 @@ export function Index() {
                 alt="AYTO Properties Signature Projects"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
-              <div className="relative z-10 px-4 text-center">
+              <div className="ayto-banner-overlay absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
+              <div className="ayto-banner-overlay relative z-10 px-4 text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   Developments &amp; Ventures
                 </p>
@@ -2757,59 +2758,78 @@ export function Index() {
               </div>
             </section>
 
-            <div className="mx-auto max-w-6xl px-5 py-20 md:px-8">
-              <div className="grid gap-10 md:grid-cols-2">
-                {projectsList.map((proj) => (
-                  <div
-                    id={proj.id}
-                    key={proj.title}
-                    className="group scroll-mt-28 overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
+            <div className="mx-auto max-w-6xl px-5 py-16 md:px-8">
+              <div className="mb-10 flex flex-wrap items-center justify-center gap-2.5">
+                {["All", "FLAGSHIP PROJECT", "COMMERCIAL TOWER", "LUXURY VILLAS", "RESIDENTIAL COMMUNITY"].map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setProjectFilter(tag)}
+                    className={`rounded-full px-4 py-2 text-xs font-bold transition ${
+                      projectFilter === tag
+                        ? "bg-[#f4c414] text-[#070b14] shadow-lg"
+                        : "border border-sky-300/20 bg-[#0e172a]/85 text-white/85 hover:border-[#f4c414]"
+                    }`}
                   >
-                    <div className="relative aspect-[16/10] w-full overflow-hidden">
-                      <img
-                        src={proj.image}
-                        alt={proj.title}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <span className="absolute left-4 top-4 rounded-full bg-[#070b14]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f]">
-                        {proj.tag}
-                      </span>
-                      <span className="absolute bottom-4 right-4 rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#070b14]">
-                        {proj.status}
-                      </span>
-                    </div>
+                    {tag === "All" ? "All Projects" : tag}
+                  </button>
+                ))}
+              </div>
 
-                    <div className="p-6 sm:p-8">
-                      <h2 className="font-sans text-xl font-bold text-white sm:text-2xl">
-                        {proj.title}
-                      </h2>
-                      <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-[#f4d06f]">
-                        <MapPin className="h-3.5 w-3.5 shrink-0" />
-                        <span>{proj.location}</span>
-                      </p>
-                      <p className="mt-4 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
-                        {proj.desc}
-                      </p>
+              <div className="grid gap-10 md:grid-cols-2">
+                {projectsList
+                  .filter((p) => projectFilter === "All" || p.tag === projectFilter)
+                  .map((proj) => (
+                    <div
+                      id={proj.id}
+                      key={proj.title}
+                      className="group scroll-mt-28 overflow-hidden rounded-3xl border border-sky-300/15 bg-[#0e172a]/85 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/55"
+                    >
+                      <div className="relative aspect-[16/10] w-full overflow-hidden">
+                        <img
+                          src={proj.image}
+                          alt={proj.title}
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <span className="absolute left-4 top-4 rounded-full bg-[#070b14]/85 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#f4d06f]">
+                          {proj.tag}
+                        </span>
+                        <span className="absolute bottom-4 right-4 rounded-full bg-[#f4c414] px-3.5 py-1 text-[11px] font-bold text-[#070b14]">
+                          {proj.status}
+                        </span>
+                      </div>
 
-                      <div className="mt-6">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            navigatePage(
-                              "contact-us",
-                              undefined,
-                              `Hello AYTO Properties, I would like details for "${proj.title}".`,
-                            )
-                          }
-                          className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-bold text-[#070b14] transition hover:brightness-105"
-                        >
-                          Request Project Details
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </button>
+                      <div className="p-6 sm:p-8">
+                        <h2 className="font-sans text-xl font-bold text-white sm:text-2xl">
+                          {proj.title}
+                        </h2>
+                        <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-[#f4d06f]">
+                          <MapPin className="h-3.5 w-3.5 shrink-0" />
+                          <span>{proj.location}</span>
+                        </p>
+                        <p className="mt-4 text-xs leading-relaxed text-slate-200/80 sm:text-sm">
+                          {proj.desc}
+                        </p>
+
+                        <div className="mt-6">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigatePage(
+                                "contact-us",
+                                undefined,
+                                `Hello AYTO Properties, I would like details for "${proj.title}".`,
+                              )
+                            }
+                            className="inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-bold text-[#070b14] transition hover:brightness-105"
+                          >
+                            Request Project Details
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           </main>
@@ -2821,8 +2841,8 @@ export function Index() {
                 alt="AYTO Properties Real Estate & Construction Services"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
-              <div className="relative z-10 px-4 text-center">
+              <div className="ayto-banner-overlay absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
+              <div className="ayto-banner-overlay relative z-10 px-4 text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   What We Offer
                 </p>
