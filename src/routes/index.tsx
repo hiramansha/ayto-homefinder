@@ -119,6 +119,7 @@ type ActivePage =
   | "contact-us"
   | "query-form"
   | "user-profile"
+  | "post-property"
   | "admin";
 
 const partnerLogos = [
@@ -363,14 +364,27 @@ export function Index() {
   const [compareIds, setCompareIds] = useState<number[]>([]);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
 
-  const [postModalOpen, setPostModalOpen] = useState(false);
+  // Detailed Post Property States
+  const [propPurpose, setPropPurpose] = useState<"Sale" | "Rent">("Sale");
   const [propTitle, setPropTitle] = useState("");
   const [propCategory, setPropCategory] = useState("House");
-  const [propLocation, setPropLocation] = useState("DHA Phase 6, Lahore");
-  const [propArea, setPropArea] = useState("10 Marla");
+  const [propCity, setPropCity] = useState("Lahore");
+  const [propLocation, setPropLocation] = useState("DHA Phase 6");
+  const [propAreaSize, setPropAreaSize] = useState("10");
+  const [propAreaUnit, setPropAreaUnit] = useState("Marla");
+  const [propPriceValue, setPropPriceValue] = useState("");
+  const [propPriceUnit, setPropPriceUnit] = useState("Crore");
   const [propBeds, setPropBeds] = useState("5");
-  const [propDemand, setPropDemand] = useState("");
-  const [propImageUrl, setPropImageUrl] = useState("");
+  const [propBaths, setPropBaths] = useState("6");
+  const [propKitchens, setPropKitchens] = useState("2");
+  const [propParking, setPropParking] = useState("2 Cars");
+  const [propCondition, setPropCondition] = useState("Brand New");
+  const [propFeatures, setPropFeatures] = useState<string[]>([
+    "Sui Gas",
+    "Electricity Backup",
+  ]);
+  const [propDescription, setPropDescription] = useState("");
+  const [propImages, setPropImages] = useState<string[]>([]);
 
   const [plotMarla, setPlotMarla] = useState<5 | 10 | 20>(10);
   const [buildQuality, setBuildQuality] = useState<"grey" | "luxury">("luxury");
@@ -483,6 +497,7 @@ export function Index() {
       else if (s.includes("page=contact-us")) setActivePage("contact-us");
       else if (s.includes("page=query-form")) setActivePage("query-form");
       else if (s.includes("page=user-profile")) setActivePage("user-profile");
+      else if (s.includes("page=post-property")) setActivePage("post-property");
       else if (s.includes("page=admin")) setActivePage("admin");
       else setActivePage("home");
     };
@@ -551,6 +566,7 @@ export function Index() {
       "contact-us": "contact us",
       "query-form": "",
       "user-profile": "",
+      "post-property": "",
       admin: "",
     };
 
@@ -648,7 +664,7 @@ export function Index() {
       toast("Please login or create an account to post your property.");
       return;
     }
-    setPostModalOpen(true);
+    navigatePage("post-property");
   };
 
   useEffect(() => {
@@ -868,7 +884,7 @@ export function Index() {
 
     if (openPostAfterAuth) {
       setOpenPostAfterAuth(false);
-      setPostModalOpen(true);
+      navigatePage("post-property");
     }
   };
 
@@ -876,49 +892,74 @@ export function Index() {
     setCurrentUser(null);
     localStorage.removeItem(SESSION_KEY);
     toast.success("Logged out successfully.");
-    if (activePage === "user-profile") {
+    if (activePage === "user-profile" || activePage === "post-property") {
       navigatePage("home", "top");
     }
   };
 
+  const toggleFeature = (feat: string) => {
+    setPropFeatures((prev) =>
+      prev.includes(feat) ? prev.filter((f) => f !== feat) : [...prev, feat],
+    );
+  };
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 2.5 * 1024 * 1024) {
-      toast.error("Please select an image smaller than 2.5 MB.");
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    if (propImages.length + files.length > 6) {
+      toast.error("Maximum 6 photos allowed per listing.");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setPropImageUrl(reader.result);
-        toast.success("Photo attached!");
+
+    files.forEach((file) => {
+      if (file.size > 2.5 * 1024 * 1024) {
+        toast.error(`${file.name} is larger than 2.5 MB.`);
+        return;
       }
-    };
-    reader.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setPropImages((prev) => [...prev, reader.result as string]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    toast.success("Photo(s) added!");
   };
 
   const handleCreatePropertyListing = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) {
-      setPostModalOpen(false);
       setAuthModalOpen(true);
       return;
     }
-    if (!propTitle.trim() || !propLocation.trim() || !propDemand.trim()) {
-      toast.error("Please enter Property Title, Location, and Demand.");
+    if (!propTitle.trim() || !propLocation.trim() || !propPriceValue.trim()) {
+      toast.error("Please fill in Property Title, Society/Location, and Demand Price.");
       return;
     }
 
     const finalImage =
-      propImageUrl.trim() ||
+      propImages[0] ||
       propertySampleImages[propCategory] ||
       propertySampleImages["House"]!;
-    const finalArea = propArea.trim() || "10 Marla";
-    const finalBeds =
-      propCategory === "House" || propCategory === "Villa"
-        ? Number(propBeds) || 4
-        : 0;
+
+    const formattedArea = `${propAreaSize.trim() || "10"} ${propAreaUnit}`;
+    const formattedPrice = `PKR ${propPriceValue.trim()} ${propPriceUnit}`;
+    const fullLocation = `${propLocation.trim()}, ${propCity}`;
+    const isResidentialBuilding = ["House", "Villa", "Apartment"].includes(propCategory);
+    const finalBeds = isResidentialBuilding ? Number(propBeds) || 0 : 0;
+
+    const richSummary = [
+      propDescription.trim(),
+      `Purpose: For ${propPurpose} | Condition: ${propCondition}`,
+      isResidentialBuilding
+        ? `Specs: ${propBeds} Beds, ${propBaths} Baths, ${propKitchens} Kitchens, Parking: ${propParking}`
+        : `Parking: ${propParking}`,
+      propFeatures.length > 0 ? `Features: ${propFeatures.join(", ")}` : "",
+    ]
+      .filter(Boolean)
+      .join(" • ");
 
     let insertedId = Date.now();
     try {
@@ -931,10 +972,10 @@ export function Index() {
         body: JSON.stringify({
           title: propTitle.trim(),
           category: propCategory,
-          location: propLocation.trim(),
-          area_text: finalArea,
+          location: fullLocation,
+          area_text: formattedArea,
           beds: finalBeds,
-          custom_price_text: propDemand.trim(),
+          custom_price_text: formattedPrice,
           image: finalImage,
           owner_id: currentUser.id,
           owner_name: currentUser.name,
@@ -959,20 +1000,21 @@ export function Index() {
       ...baseTemplate,
       id: insertedId,
       title: propTitle.trim(),
-      location: propLocation.trim(),
-      city: "Lahore",
+      location: fullLocation,
+      city: propCity,
+      ...(richSummary ? { description: richSummary } : {}),
       ...({
         type: propCategory,
         category: propCategory,
-        purpose: "Sale",
+        purpose: propPurpose,
       }),
       image: finalImage,
       ownerId: currentUser.id,
       ownerName: currentUser.name,
       ownerPhone: currentUser.phone,
       ownerAgency: currentUser.agency,
-      customPriceText: propDemand.trim(),
-      areaText: finalArea,
+      customPriceText: formattedPrice,
+      areaText: formattedArea,
       listingStatus: "Available",
       isApproved: false,
       ...(finalBeds > 0 ? { beds: finalBeds } : {}),
@@ -982,11 +1024,11 @@ export function Index() {
     setUserListings(nextListings);
     localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
 
-    toast.success("Property submitted! Owner approval ke baad live website par show hogi.");
+    toast.success("Property submitted! Owner verification ke baad live website par show hogi.");
     setPropTitle("");
-    setPropDemand("");
-    setPropImageUrl("");
-    setPostModalOpen(false);
+    setPropPriceValue("");
+    setPropDescription("");
+    setPropImages([]);
     setViewedProfileUser(currentUser);
     navigatePage("user-profile");
   };
@@ -1413,7 +1455,457 @@ export function Index() {
           </div>
         )}
 
-        {activePage === "admin" ? (
+        {activePage === "post-property" ? (
+          <main key="post-property" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
+            <div className="mx-auto max-w-4xl px-5 pb-24 md:px-8">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    currentUser
+                      ? openUserProfile(currentUser.id)
+                      : navigatePage("home", "top")
+                  }
+                  className="inline-flex items-center gap-1.5 rounded-full border border-sky-300/25 bg-[#0f192d]/80 px-4 py-1.5 text-xs font-medium text-white/85 backdrop-blur-md transition hover:border-[#f4d06f] hover:text-[#f4d06f]"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />{" "}
+                  {currentUser ? "Back to Seller Dashboard" : "Back to Home"}
+                </button>
+
+                {currentUser && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f4c414]/40 bg-[#f4c414]/15 px-3.5 py-1 text-xs font-bold text-[#f4d06f]">
+                    <UserCheck className="h-3.5 w-3.5" /> Seller: {currentUser.name}
+                  </span>
+                )}
+              </div>
+
+              {!currentUser ? (
+                <div className="mt-8 rounded-3xl border border-[#f4c414]/40 bg-[#0e172a]/95 p-10 text-center shadow-2xl">
+                  <Lock className="mx-auto h-10 w-10 text-[#f4c414]" />
+                  <h1 className="mt-3 font-sans text-2xl font-extrabold text-white">
+                    Sign In Required to Post Property
+                  </h1>
+                  <p className="mx-auto mt-2 max-w-md text-xs text-slate-300">
+                    Apni property list karne ke liye pehle apna seller account login ya sign up karein.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenPostAfterAuth(true);
+                      setAuthTab("login");
+                      setAuthModalOpen(true);
+                    }}
+                    className="mt-5 rounded-full bg-[#f4c414] px-7 py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+                  >
+                    Login / Create Seller Account
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-6 overflow-hidden rounded-3xl border border-[#f4c414]/35 bg-[#0e172a]/95 shadow-2xl backdrop-blur-md">
+                  <div className="border-b border-[#f4c414]/20 bg-gradient-to-r from-[#13264a] via-[#182f59] to-[#2e2611] px-6 py-6 sm:px-9">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-[#070b14]">
+                      AYTO Property Listing Portal
+                    </span>
+                    <h1 className="mt-2 font-sans text-2xl font-extrabold text-white sm:text-3xl">
+                      List Your Property With Complete Details
+                    </h1>
+                    <p className="mt-1 text-xs text-slate-300">
+                      Accurate details aur clear photos add karne se buyers ka trust barhta hai aur deal jaldi close hoti hai.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleCreatePropertyListing} className="space-y-8 p-6 sm:p-9">
+                    {/* SECTION 1: Purpose & Property Category */}
+                    <div>
+                      <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
+                        1. Purpose &amp; Property Type
+                      </h2>
+                      <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                        <div>
+                          <label className="mb-2 block text-xs font-bold text-slate-300">
+                            Listing Purpose *
+                          </label>
+                          <div className="grid grid-cols-2 gap-2.5 rounded-xl border border-sky-300/20 bg-[#070b14] p-1.5">
+                            {(["Sale", "Rent"] as const).map((p) => (
+                              <button
+                                key={p}
+                                type="button"
+                                onClick={() => setPropPurpose(p)}
+                                className={`rounded-lg py-2.5 text-xs font-extrabold transition ${
+                                  propPurpose === p
+                                    ? "bg-[#f4c414] text-[#070b14]"
+                                    : "text-slate-300 hover:text-white"
+                                }`}
+                              >
+                                For {p}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="mb-2 block text-xs font-bold text-slate-300">
+                            Property Category *
+                          </label>
+                          <select
+                            value={propCategory}
+                            onChange={(e) => setPropCategory(e.target.value)}
+                            className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs font-semibold text-white focus:border-[#f4c414] focus:outline-none"
+                          >
+                            <option value="House">Residential House</option>
+                            <option value="Villa">Luxury Designer Villa</option>
+                            <option value="Apartment">Apartment / Flat</option>
+                            <option value="Plot">Residential / Commercial Plot</option>
+                            <option value="Commercial">Commercial Plaza / Shop / Office</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* SECTION 2: Location & Area */}
+                    <div className="border-t border-sky-300/15 pt-7">
+                      <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
+                        2. Location &amp; Plot / Covered Area
+                      </h2>
+                      <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                        <div>
+                          <label className="mb-2 block text-xs font-bold text-slate-300">
+                            City *
+                          </label>
+                          <select
+                            value={propCity}
+                            onChange={(e) => setPropCity(e.target.value)}
+                            className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs font-semibold text-white focus:border-[#f4c414] focus:outline-none"
+                          >
+                            <option value="Lahore">Lahore</option>
+                            <option value="Islamabad">Islamabad</option>
+                            <option value="Rawalpindi">Rawalpindi</option>
+                            <option value="Karachi">Karachi</option>
+                            <option value="Multan">Multan</option>
+                            <option value="Faisalabad">Faisalabad</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="mb-2 block text-xs font-bold text-slate-300">
+                            Society / Phase / Block *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g., DHA Phase 6, Block H"
+                            value={propLocation}
+                            onChange={(e) => setPropLocation(e.target.value)}
+                            className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="mb-2 block text-xs font-bold text-slate-300">
+                            Area Size &amp; Unit *
+                          </label>
+                          <div className="grid grid-cols-[1.2fr_1fr] gap-2.5">
+                            <input
+                              type="number"
+                              step="any"
+                              min="1"
+                              required
+                              placeholder="e.g., 10"
+                              value={propAreaSize}
+                              onChange={(e) => setPropAreaSize(e.target.value)}
+                              className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
+                            />
+                            <select
+                              value={propAreaUnit}
+                              onChange={(e) => setPropAreaUnit(e.target.value)}
+                              className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3 py-3 text-xs font-semibold text-white focus:border-[#f4c414] focus:outline-none"
+                            >
+                              <option value="Marla">Marla</option>
+                              <option value="Kanal">Kanal</option>
+                              <option value="Sq. Ft.">Sq. Ft.</option>
+                              <option value="Sq. Yds.">Sq. Yds.</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="mb-2 block text-xs font-bold text-slate-300">
+                            Total Demand / Price (PKR) *
+                          </label>
+                          <div className="grid grid-cols-[1.2fr_1fr] gap-2.5">
+                            <input
+                              type="number"
+                              step="any"
+                              min="0.1"
+                              required
+                              placeholder="e.g., 4.5"
+                              value={propPriceValue}
+                              onChange={(e) => setPropPriceValue(e.target.value)}
+                              className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
+                            />
+                            <select
+                              value={propPriceUnit}
+                              onChange={(e) => setPropPriceUnit(e.target.value)}
+                              className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3 py-3 text-xs font-semibold text-white focus:border-[#f4c414] focus:outline-none"
+                            >
+                              <option value="Crore">Crore</option>
+                              <option value="Lac">Lac</option>
+                              <option value="Thousand">Thousand</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* SECTION 3: Specifications */}
+                    <div className="border-t border-sky-300/15 pt-7">
+                      <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
+                        3. Property Specifications
+                      </h2>
+                      <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-5">
+                        {["House", "Villa", "Apartment"].includes(propCategory) && (
+                          <>
+                            <div>
+                              <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
+                                Bedrooms
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="20"
+                                value={propBeds}
+                                onChange={(e) => setPropBeds(e.target.value)}
+                                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3.5 py-2.5 text-xs text-white focus:border-[#f4c414] focus:outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
+                                Bathrooms
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="20"
+                                value={propBaths}
+                                onChange={(e) => setPropBaths(e.target.value)}
+                                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3.5 py-2.5 text-xs text-white focus:border-[#f4c414] focus:outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
+                                Kitchens
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                max="10"
+                                value={propKitchens}
+                                onChange={(e) => setPropKitchens(e.target.value)}
+                                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3.5 py-2.5 text-xs text-white focus:border-[#f4c414] focus:outline-none"
+                              />
+                            </div>
+                          </>
+                        )}
+
+                        <div>
+                          <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
+                            Car Parking
+                          </label>
+                          <select
+                            value={propParking}
+                            onChange={(e) => setPropParking(e.target.value)}
+                            className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3 py-2.5 text-xs text-white focus:border-[#f4c414] focus:outline-none"
+                          >
+                            <option value="1 Car">1 Car</option>
+                            <option value="2 Cars">2 Cars</option>
+                            <option value="3+ Cars">3+ Cars</option>
+                            <option value="Street / Open">Street / Open</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
+                            Condition
+                          </label>
+                          <select
+                            value={propCondition}
+                            onChange={(e) => setPropCondition(e.target.value)}
+                            className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3 py-2.5 text-xs text-white focus:border-[#f4c414] focus:outline-none"
+                          >
+                            <option value="Brand New">Brand New</option>
+                            <option value="Slightly Used">Slightly Used</option>
+                            <option value="Grey Structure">Grey Structure</option>
+                            <option value="Possession Plot">Possession Plot</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* SECTION 4: Amenities & Features */}
+                    <div className="border-t border-sky-300/15 pt-7">
+                      <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
+                        4. Key Features &amp; Amenities
+                      </h2>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {[
+                          "Sui Gas",
+                          "Electricity Backup",
+                          "Corner Property",
+                          "Park Facing",
+                          "Main Boulevard",
+                          "Servant Quarter",
+                          "Drawing & Dining",
+                          "Imported Fittings",
+                          "CCTV & Security",
+                          "LDA / Society Approved",
+                        ].map((feat) => {
+                          const active = propFeatures.includes(feat);
+                          return (
+                            <button
+                              key={feat}
+                              type="button"
+                              onClick={() => toggleFeature(feat)}
+                              className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+                                active
+                                  ? "bg-[#f4c414] text-[#070b14]"
+                                  : "border border-sky-300/20 bg-[#070b14] text-slate-300 hover:border-[#f4c414]"
+                              }`}
+                            >
+                              {active ? `✓ ${feat}` : `+ ${feat}`}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* SECTION 5: Title & Description */}
+                    <div className="border-t border-sky-300/15 pt-7 space-y-4">
+                      <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
+                        5. Title &amp; Complete Description
+                      </h2>
+                      <div>
+                        <label className="mb-2 block text-xs font-bold text-slate-300">
+                          Property Headline / Title *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g., 10 Marla Brand New Spanish Designer House in DHA Phase 6"
+                          value={propTitle}
+                          onChange={(e) => setPropTitle(e.target.value)}
+                          className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-2 block text-xs font-bold text-slate-300">
+                          Detailed Property Description
+                        </label>
+                        <textarea
+                          rows={4}
+                          placeholder="Write complete details about construction quality, nearby landmarks (mosque, park, commercial market), floor plan, etc..."
+                          value={propDescription}
+                          onChange={(e) => setPropDescription(e.target.value)}
+                          className="w-full rounded-2xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* SECTION 6: Multiple Photos Upload */}
+                    <div className="border-t border-sky-300/15 pt-7">
+                      <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
+                        6. Property Gallery Photos (Up to 6 Photos)
+                      </h2>
+                      <div className="mt-3 rounded-2xl border-2 border-dashed border-[#f4c414]/45 bg-[#070b14] p-6 text-center">
+                        <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-md transition hover:brightness-105">
+                          <ImagePlus className="h-4 w-4" />
+                          <span>Select Property Photos From Device</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handlePhotoUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        <p className="mt-2 text-[11px] text-slate-400">
+                          Front elevation, lounge, bedrooms aur kitchen ki clear tasveerein upload karein (Max 2.5MB each).
+                        </p>
+
+                        {propImages.length > 0 && (
+                          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                            {propImages.map((imgSrc, idx) => (
+                              <div
+                                key={idx}
+                                className="group relative overflow-hidden rounded-xl border border-sky-300/20"
+                              >
+                                <img
+                                  src={imgSrc}
+                                  alt={`Property preview ${idx + 1}`}
+                                  className="h-32 w-full object-cover"
+                                />
+                                {idx === 0 && (
+                                  <span className="absolute left-2 top-2 rounded bg-[#f4c414] px-2 py-0.5 text-[10px] font-extrabold text-[#070b14]">
+                                    Cover Photo
+                                  </span>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setPropImages((prev) => prev.filter((_, i) => i !== idx))
+                                  }
+                                  className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-black/80 text-white hover:bg-red-500"
+                                  title="Remove Photo"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* SECTION 7: Seller Contact Info */}
+                    <div className="rounded-2xl border border-sky-300/15 bg-[#080f1d] p-4">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        Listing Contact Information
+                      </p>
+                      <div className="mt-2 flex flex-wrap items-center gap-6 text-xs text-white">
+                        <span>
+                          <strong>Name:</strong> {currentUser.name}
+                        </span>
+                        <span>
+                          <strong>Phone / WhatsApp:</strong> {currentUser.phone}
+                        </span>
+                        <span>
+                          <strong>Role:</strong> {currentUser.agency || "Direct Owner"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Submit Actions */}
+                    <div className="flex flex-wrap items-center justify-end gap-3 border-t border-sky-300/15 pt-6">
+                      <button
+                        type="button"
+                        onClick={() => navigatePage("user-profile")}
+                        className="rounded-full border border-sky-300/25 px-6 py-3 text-xs font-bold text-slate-300 hover:border-white hover:text-white"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="rounded-full bg-[#f4c414] px-8 py-3.5 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+                      >
+                        Submit Property For Verification
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </div>
+          </main>
+        ) : activePage === "admin" ? (
           <main key="admin" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-4xl px-5 pb-24 md:px-8">
               {!adminUnlocked ? (
@@ -1622,7 +2114,7 @@ export function Index() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => setPostModalOpen(true)}
+                            onClick={() => navigatePage("post-property")}
                             className="inline-flex items-center gap-2 rounded-xl bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
                           >
                             <PlusCircle className="h-4 w-4" /> Post New Property
@@ -1693,7 +2185,7 @@ export function Index() {
                     {currentUser?.id === viewedProfileUser.id && (
                       <button
                         type="button"
-                        onClick={() => setPostModalOpen(true)}
+                        onClick={() => navigatePage("post-property")}
                         className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-6 py-2.5 text-xs font-extrabold text-[#070b14]"
                       >
                         <PlusCircle className="h-4 w-4" /> Post Your First Property
@@ -3215,124 +3707,6 @@ export function Index() {
                 className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
               >
                 {authTab === "login" ? "Login & Continue" : "Create Profile & Continue"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {postModalOpen && currentUser && (
-        <div
-          onClick={() => setPostModalOpen(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-3xl border border-[#f4c414]/40 bg-[#0b1322] p-7 text-white shadow-2xl"
-          >
-            <button
-              type="button"
-              onClick={() => setPostModalOpen(false)}
-              aria-label="Close Post Property Modal"
-              className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white hover:bg-[#f4c414] hover:text-[#070b14]"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4c414]/15 px-3 py-1 text-[11px] font-bold text-[#f4d06f]">
-              <UserCheck className="h-3.5 w-3.5" /> Posting as {currentUser.name}
-            </span>
-            <h2 className="mt-2 font-sans text-2xl font-extrabold text-white">
-              Post New Property
-            </h2>
-
-            <form onSubmit={handleCreatePropertyListing} className="mt-5 space-y-3.5">
-              <input
-                type="text"
-                required
-                placeholder="Property Title (e.g., 10 Marla Brand New Designer House)*"
-                value={propTitle}
-                onChange={(e) => setPropTitle(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
-
-              <div className="grid grid-cols-2 gap-3">
-                <select
-                  value={propCategory}
-                  onChange={(e) => setPropCategory(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3 py-3 text-xs text-white focus:border-[#f4c414] focus:outline-none"
-                >
-                  <option value="House">House</option>
-                  <option value="Villa">Villa</option>
-                  <option value="Plot">Plot</option>
-                  <option value="Commercial">Commercial</option>
-                  <option value="Apartment">Apartment</option>
-                </select>
-
-                <input
-                  type="text"
-                  required
-                  placeholder="Area (e.g., 10 Marla / 1 Kanal)"
-                  value={propArea}
-                  onChange={(e) => setPropArea(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                />
-              </div>
-
-              <input
-                type="text"
-                required
-                placeholder="Location (e.g., DHA Phase 6, Lahore)*"
-                value={propLocation}
-                onChange={(e) => setPropLocation(e.target.value)}
-                className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-              />
-
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  required
-                  placeholder="Demand (e.g., PKR 4.5 Crore)*"
-                  value={propDemand}
-                  onChange={(e) => setPropDemand(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="15"
-                  placeholder="Bedrooms (e.g., 5)"
-                  value={propBeds}
-                  onChange={(e) => setPropBeds(e.target.value)}
-                  className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-400 focus:border-[#f4c414] focus:outline-none"
-                />
-              </div>
-
-              <div className="rounded-xl border border-dashed border-[#f4c414]/45 bg-[#070b14] p-3.5 text-center">
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#f4c414]/15 px-4 py-2 text-xs font-bold text-[#f4d06f] transition hover:bg-[#f4c414] hover:text-[#070b14]">
-                  <ImagePlus className="h-4 w-4" />
-                  <span>Upload Photo From Device</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoUpload}
-                    className="hidden"
-                  />
-                </label>
-                {propImageUrl && (
-                  <img
-                    src={propImageUrl}
-                    alt="Preview"
-                    className="mx-auto mt-3 h-28 w-full rounded-lg object-cover"
-                  />
-                )}
-              </div>
-
-              <button
-                type="submit"
-                className="w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
-              >
-                Submit Property For Verification
               </button>
             </form>
           </div>
