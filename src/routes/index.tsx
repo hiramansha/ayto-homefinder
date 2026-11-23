@@ -54,9 +54,9 @@ import { scrollToId } from "@/components/site/utils";
 import fallbackAvatar from "@/assets/ayto-logo.jpg";
 
 const SUPABASE_URL =
-  import.meta.env.VITE_SUPABASE_URL || "https://wlrtzoujipxsgcxspzln.supabase.co";
+  import.meta.env["VITE_SUPABASE_URL"] || "https://wlrtzoujipxsgcxspzln.supabase.co";
 const SUPABASE_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  import.meta.env["VITE_SUPABASE_ANON_KEY"] ||
   "sb_publishable_EO83cjlTZNE3ZGLmEAi5TQ_Rf8zy3rS";
 
 const supabaseHeaders = {
@@ -287,7 +287,7 @@ const urgentRayaPlotListing: UserPostedProperty = {
     category: "Plot",
     purpose: "Sale",
   }),
-  price: 82500000,
+  crore: 8.25,
   beds: 0,
   image:
     "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80",
@@ -464,7 +464,7 @@ export function Index() {
           const rows = await listingsRes.json();
           if (Array.isArray(rows)) {
             const baseTemplate = properties[0]!;
-            const mapped: UserPostedProperty[] = rows.map((row: Record<string, unknown>) => ({
+            const mapped = rows.map((row: Record<string, unknown>) => ({
               ...baseTemplate,
               id: Number(row["id"]),
               title: String(row["title"] || ""),
@@ -485,7 +485,7 @@ export function Index() {
               listingStatus: row["listing_status"] === "Sold" ? "Sold" : "Available",
               isApproved: Boolean(row["is_approved"]),
               beds: Number(row["beds"] || 0),
-            }));
+            })) as unknown as UserPostedProperty[];
             setUserListings(mapped);
             localStorage.setItem(USER_POSTS_KEY, JSON.stringify(mapped));
           }

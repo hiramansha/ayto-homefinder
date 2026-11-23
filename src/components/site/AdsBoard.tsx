@@ -45,20 +45,20 @@ export function AdsBoard({ onContact }: { onContact: (text: string) => void }) {
   }, [load, loadUser]);
 
   const signIn = async (mode: "in" | "up") => {
-    if (!email || password.length < 6) return toast.error("Email and a 6+ character password are required");
+    if (!email || password.length < 6) { toast.error("Email and a 6+ character password are required"); return; }
     const res = mode === "in"
       ? await supabase.auth.signInWithPassword({ email, password })
       : await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
-    if (res.error) return toast.error(res.error.message);
+    if (res.error) { toast.error(res.error.message); return; }
     if (mode === "up" && !res.data.session) toast.success("Check your email to confirm your account, then sign in.");
   };
 
   const submit = async () => {
-    if (!form.brand.trim() || !form.title.trim()) return toast.error("Business name and ad title are required");
+    if (!form.brand.trim() || !form.title.trim()) { toast.error("Business name and ad title are required"); return; }
     const { error } = await supabase.from("ads").insert({
       ...form, owner_id: userId!, is_own: isAdmin, status: isAdmin ? "approved" : "pending",
     });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(isAdmin ? "Your ad is live" : "Ad submitted — it will appear after approval");
     setForm({ brand: "", title: "", body: "", offer: "", phone: "", image_url: "" });
     setOpen(false);
