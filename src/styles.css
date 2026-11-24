@@ -199,48 +199,40 @@
 }
 
 /* =========================================================
-   GLOBAL AMBIENT BACKGROUND ANIMATIONS (ALL PAGES: DARK & LIGHT MODE)
+   SUBTLE DIAGONAL DIAMOND GOLDEN LINES ANIMATION (ALL PAGES)
+   Matches Home Page Dark Theme Diamond Lines — Clean & Non-Intrusive in Both Themes
    ========================================================= */
 main {
   position: relative;
-  isolation: isolate;
 }
 
-/* Animated Architectural Golden Lines Layer on ALL Pages (Dark Mode) */
+/* Dark Theme: Subtle Moving Diagonal Diamond Golden Lines across all pages */
 html.dark main::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   background-image:
-    linear-gradient(to right, rgba(244, 208, 111, 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(244, 208, 111, 0.045) 1px, transparent 1px),
-    radial-gradient(circle at 18% 28%, rgba(244, 208, 111, 0.11), transparent 42%),
-    radial-gradient(circle at 82% 72%, rgba(201, 151, 44, 0.09), transparent 45%);
-  background-size: 96px 96px, 96px 96px, 100% 100%, 100% 100%;
-  animation: golden-grid-drift 22s linear infinite;
+    repeating-linear-gradient(
+      45deg,
+      rgba(244, 208, 111, 0.045) 0px,
+      rgba(244, 208, 111, 0.045) 1px,
+      transparent 1px,
+      transparent 76px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(244, 208, 111, 0.045) 0px,
+      rgba(244, 208, 111, 0.045) 1px,
+      transparent 1px,
+      transparent 76px
+    );
+  background-size: 108px 108px;
+  animation: diamond-lines-drift 26s linear infinite;
 }
 
-/* Subtle Sweeping Golden Light Beam Across All Pages (Dark Mode) */
-html.dark main::after {
-  content: "";
-  position: fixed;
-  inset: -20%;
-  pointer-events: none;
-  z-index: 0;
-  background: linear-gradient(
-    115deg,
-    transparent 35%,
-    rgba(244, 208, 111, 0.05) 48%,
-    rgba(244, 208, 111, 0.09) 50%,
-    rgba(244, 208, 111, 0.05) 52%,
-    transparent 65%
-  );
-  animation: golden-beam-sweep 11s ease-in-out infinite alternate;
-}
-
-/* Animated Warm Champagne & Sunlit Gold Architectural Lines on ALL Pages (Light Mode) */
+/* Light Theme: Pure Light Background + Very Subtle Warm Gold Diagonal Diamond Lines (Zero Dark Overlay) */
 html:not(.dark) main::before {
   content: "";
   position: fixed;
@@ -248,33 +240,25 @@ html:not(.dark) main::before {
   pointer-events: none;
   z-index: 1;
   background-image:
-    linear-gradient(to right, rgba(184, 134, 27, 0.065) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(184, 134, 27, 0.055) 1px, transparent 1px),
-    radial-gradient(circle at 20% 22%, rgba(229, 189, 83, 0.14), transparent 44%),
-    radial-gradient(circle at 80% 76%, rgba(184, 134, 27, 0.1), transparent 46%);
-  background-size: 96px 96px, 96px 96px, 100% 100%, 100% 100%;
-  animation: golden-grid-drift 24s linear infinite;
+    repeating-linear-gradient(
+      45deg,
+      rgba(184, 134, 27, 0.042) 0px,
+      rgba(184, 134, 27, 0.042) 1px,
+      transparent 1px,
+      transparent 76px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(184, 134, 27, 0.042) 0px,
+      rgba(184, 134, 27, 0.042) 1px,
+      transparent 1px,
+      transparent 76px
+    );
+  background-size: 108px 108px;
+  animation: diamond-lines-drift 28s linear infinite;
 }
 
-/* Soft Sunlit Silk Shimmer Across All Pages (Light Mode) */
-html:not(.dark) main::after {
-  content: "";
-  position: fixed;
-  inset: -20%;
-  pointer-events: none;
-  z-index: 1;
-  background: linear-gradient(
-    115deg,
-    transparent 36%,
-    rgba(229, 189, 83, 0.07) 48%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(229, 189, 83, 0.07) 52%,
-    transparent 64%
-  );
-  animation: golden-beam-sweep 12s ease-in-out infinite alternate;
-}
-
-/* Smooth Luxury Hover Lift & Golden Glow on Cards Across All Pages */
+/* Smooth Luxury Hover Lift & Golden Border Glow on Cards Across All Pages */
 main article,
 main div[class*="rounded-2xl"],
 main div[class*="rounded-3xl"] {
@@ -294,7 +278,7 @@ html:not(.dark) main div[class*="rounded-2xl"]:hover,
 html:not(.dark) main div[class*="rounded-3xl"]:hover {
   transform: translateY(-4px);
   border-color: rgba(184, 134, 27, 0.42) !important;
-  box-shadow: 0 18px 38px -14px rgba(184, 134, 27, 0.18) !important;
+  box-shadow: 0 18px 38px -14px rgba(184, 134, 27, 0.16) !important;
 }
 
 /* =========================================================
@@ -657,23 +641,12 @@ html:not(.dark) footer a[href*="whatsapp"] svg {
   stroke: #ffffff !important;
 }
 
-@keyframes golden-grid-drift {
+@keyframes diamond-lines-drift {
   0% {
-    background-position: 0 0, 0 0, 0 0, 0 0;
+    background-position: 0 0, 0 0;
   }
   100% {
-    background-position: 96px 96px, 96px 96px, 0 0, 0 0;
-  }
-}
-
-@keyframes golden-beam-sweep {
-  0% {
-    transform: translate3d(-12%, -6%, 0) rotate(0deg);
-    opacity: 0.65;
-  }
-  100% {
-    transform: translate3d(12%, 6%, 0) rotate(2deg);
-    opacity: 1;
+    background-position: 108px 108px, -108px 108px;
   }
 }
 
