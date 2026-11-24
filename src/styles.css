@@ -152,7 +152,7 @@
     scroll-padding-top: 80px;
   }
   body {
-    background-color: var(--color-background);
+    background-color: #070b14;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -172,23 +172,43 @@
   }
 }
 
-/* Light Theme Luxury Readability & Contrast Polish */
-html:not(.dark) header {
-  background-color: rgba(253, 251, 247, 0.94) !important;
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(180, 140, 50, 0.22) !important;
-  box-shadow: 0 4px 24px -10px rgba(15, 28, 22, 0.1);
+/* Full-Width Royal Dark Header & Light-Golden Navbar Links */
+html,
+body,
+#top,
+#top > div:has(header),
+header,
+header > div {
+  background-color: #070b14 !important;
+  background: #070b14 !important;
 }
 
-html:not(.dark) header nav button,
-html:not(.dark) header nav a {
-  color: #16261f !important;
-  font-weight: 600;
+header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  box-shadow: -50vw 0 0 #070b14, 50vw 0 0 #070b14 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
-html:not(.dark) header nav button:hover,
-html:not(.dark) header nav a:hover {
-  color: #a87918 !important;
+header nav button,
+header nav a,
+header nav span,
+header nav svg {
+  color: #f4d06f !important;
+  -webkit-text-fill-color: #f4d06f !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
+}
+
+header nav button:hover,
+header nav a:hover {
+  color: #ffe89e !important;
+  -webkit-text-fill-color: #ffe89e !important;
 }
 
 /* Keep dark image banners & hero sections crisp white text in Light Mode */
