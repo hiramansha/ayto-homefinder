@@ -200,10 +200,11 @@
 
 /* =========================================================
    SUBTLE DIAGONAL DIAMOND GOLDEN LINES ANIMATION (ALL PAGES)
-   Matches Home Page Dark Theme Diamond Lines — Clean & Non-Intrusive in Both Themes
+   pointer-events: none + z-index: 0 so clicks are NEVER blocked
    ========================================================= */
 main {
   position: relative;
+  z-index: 1;
 }
 
 /* Dark Theme: Subtle Moving Diagonal Diamond Golden Lines across all pages */
@@ -211,8 +212,8 @@ html.dark main::before {
   content: "";
   position: fixed;
   inset: 0;
-  pointer-events: none;
-  z-index: 1;
+  pointer-events: none !important;
+  z-index: 0;
   background-image:
     repeating-linear-gradient(
       45deg,
@@ -232,13 +233,13 @@ html.dark main::before {
   animation: diamond-lines-drift 26s linear infinite;
 }
 
-/* Light Theme: Pure Light Background + Very Subtle Warm Gold Diagonal Diamond Lines (Zero Dark Overlay) */
+/* Light Theme: Pure Light Background + Very Subtle Warm Gold Diagonal Diamond Lines */
 html:not(.dark) main::before {
   content: "";
   position: fixed;
   inset: 0;
-  pointer-events: none;
-  z-index: 1;
+  pointer-events: none !important;
+  z-index: 0;
   background-image:
     repeating-linear-gradient(
       45deg,
@@ -282,7 +283,7 @@ html:not(.dark) main div[class*="rounded-3xl"]:hover {
 }
 
 /* =========================================================
-   HEADER: Dark Mode (Obsidian + Gold) & Light Mode (Crisp White + Antique Gold)
+   HEADER: Always Top Layer (z-index: 9999) + Instant Dropdown Clickability
    ========================================================= */
 html.dark #top > div:has(header),
 html.dark header,
@@ -296,6 +297,7 @@ html.dark header {
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
+  z-index: 9999 !important;
   width: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
@@ -331,6 +333,7 @@ html:not(.dark) header {
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
+  z-index: 9999 !important;
   width: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
@@ -379,7 +382,9 @@ html:not(.dark) header button[aria-label*="mode"] svg {
   stroke: #b8861b !important;
 }
 
-/* Light Mode Projects Dropdown Menu */
+/* Light Mode Projects Dropdown Menu: Instant White (No Dark Flash) + 100% Clickable Items */
+html:not(.dark) header nav div[class*="absolute"],
+html:not(.dark) header nav div[class*="fixed"],
 html:not(.dark) header nav div[class*="bg-[#"],
 html:not(.dark) header nav div[class*="bg-slate-"],
 html:not(.dark) header nav div[class*="bg-zinc-"],
@@ -390,19 +395,32 @@ html:not(.dark) header nav div[class*="rounded-"] {
   background: #ffffff !important;
   border: 1px solid #e5dec9 !important;
   box-shadow: 0 20px 45px -15px rgba(20, 24, 33, 0.14) !important;
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+  transition: none !important;
 }
 
 html:not(.dark) header nav div[class*="rounded-"] a,
 html:not(.dark) header nav div[class*="rounded-"] button,
 html:not(.dark) header nav div[class*="rounded-"] p,
-html:not(.dark) header nav div[class*="rounded-"] span {
+html:not(.dark) header nav div[class*="rounded-"] span,
+html:not(.dark) header nav div[class*="absolute"] a,
+html:not(.dark) header nav div[class*="absolute"] button {
   color: #141821 !important;
   -webkit-text-fill-color: #141821 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 10001 !important;
 }
 
 html:not(.dark) header nav div[class*="rounded-"] a:hover,
-html:not(.dark) header nav div[class*="rounded-"] button:hover {
-  background-color: #faf8f4 !important;
+html:not(.dark) header nav div[class*="rounded-"] button:hover,
+html:not(.dark) header nav div[class*="absolute"] a:hover,
+html:not(.dark) header nav div[class*="absolute"] button:hover {
+  background-color: #f6efe0 !important;
+  color: #9e6f10 !important;
+  -webkit-text-fill-color: #9e6f10 !important;
 }
 
 html:not(.dark) header nav div[class*="rounded-"] span[class*="text-[#f4d06f]"],
