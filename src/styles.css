@@ -305,33 +305,42 @@ html:not(.dark) main {
   color: #141821 !important;
 }
 
+/* Convert EVERY dark section & gradient background (except top Hero/Page Banner) to Alabaster / White */
+html:not(.dark) main section:not(:first-of-type),
+html:not(.dark) main section:not(:first-of-type) > div[class*="bg-gradient"],
+html:not(.dark) main section:not(:first-of-type) > div[style*="background"] {
+  background-color: #faf8f4 !important;
+  background-image: none !important;
+}
+
 html:not(.dark) main > section:nth-of-type(even) {
   background-color: #ffffff !important;
 }
 
-html:not(.dark) main > section:nth-of-type(odd):not(:first-of-type) {
-  background-color: #faf8f4 !important;
-}
-
-/* Convert EVERY dark card background (any dark hex or dark slate/zinc/gray/neutral) to crisp white */
+/* Convert EVERY dark card surface (Offices, Spotlight, About, Contact, etc.) to Crisp White */
 html:not(.dark) main section:not(:first-of-type) [class*="bg-[#0"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-[#1"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-[#2"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-[#3"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-slate-9"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-slate-8"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-slate-7"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-zinc-9"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-zinc-8"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-gray-9"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-gray-8"],
 html:not(.dark) main section:not(:first-of-type) [class*="bg-neutral-9"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-neutral-8"] {
+html:not(.dark) main section:not(:first-of-type) [class*="bg-neutral-8"],
+html:not(.dark) main section:not(:first-of-type) [class*="from-[#"],
+html:not(.dark) main section:not(:first-of-type) [class*="from-slate"],
+html:not(.dark) main section:not(:first-of-type) [class*="from-zinc"] {
   background-color: #ffffff !important;
   background-image: none !important;
   border-color: #e5dec9 !important;
   box-shadow: 0 12px 32px -14px rgba(20, 24, 33, 0.09) !important;
 }
 
-/* Keep Page Header Banner sections (About, Offices, Projects, Services, Gallery) dark photo overlays */
+/* Keep Top Hero / Page Header Banner dark photo overlay */
 html:not(.dark) main > section:first-of-type {
   background-color: #070b14 !important;
 }
@@ -349,8 +358,18 @@ html:not(.dark) main > section:first-of-type [class*="text-white"] {
   color: #ffffff !important;
 }
 
-/* Make ALL light/white text inside content sections dark & readable */
-html:not(.dark) main section:not(:first-of-type) [class*="text-white"],
+/* Make ALL white/light headings & body text in content sections dark & crisp */
+html:not(.dark) main section:not(:first-of-type) h1,
+html:not(.dark) main section:not(:first-of-type) h2,
+html:not(.dark) main section:not(:first-of-type) h3,
+html:not(.dark) main section:not(:first-of-type) h4,
+html:not(.dark) main section:not(:first-of-type) [class*="text-white"] {
+  color: #141821 !important;
+}
+
+html:not(.dark) main section:not(:first-of-type) p,
+html:not(.dark) main section:not(:first-of-type) li,
+html:not(.dark) main section:not(:first-of-type) [class*="text-white/"],
 html:not(.dark) main section:not(:first-of-type) [class*="text-slate-1"],
 html:not(.dark) main section:not(:first-of-type) [class*="text-slate-2"],
 html:not(.dark) main section:not(:first-of-type) [class*="text-slate-3"],
@@ -361,13 +380,6 @@ html:not(.dark) main section:not(:first-of-type) [class*="text-gray-1"],
 html:not(.dark) main section:not(:first-of-type) [class*="text-gray-2"],
 html:not(.dark) main section:not(:first-of-type) [class*="text-gray-3"] {
   color: #374151 !important;
-}
-
-html:not(.dark) main section:not(:first-of-type) h1,
-html:not(.dark) main section:not(:first-of-type) h2,
-html:not(.dark) main section:not(:first-of-type) h3,
-html:not(.dark) main section:not(:first-of-type) h4 {
-  color: #141821 !important;
 }
 
 /* Keep badges on top of images readable */
@@ -394,7 +406,7 @@ html:not(.dark) main textarea {
   border-color: #dfd6be !important;
 }
 
-/* Keep Royal Luxury Dark Footer in BOTH Light & Dark Mode so every link & text is 100% crisp */
+/* Keep Royal Luxury Dark Footer in BOTH Light & Dark Mode */
 html:not(.dark) footer,
 html:not(.dark) footer > div,
 html:not(.dark) footer [class*="bg-"] {
