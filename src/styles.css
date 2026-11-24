@@ -259,6 +259,7 @@ html:not(.dark) header nav button,
 html:not(.dark) header nav a,
 html:not(.dark) header nav span,
 html:not(.dark) header nav svg {
+  background-color: transparent !important;
   color: #1e2430 !important;
   -webkit-text-fill-color: #1e2430 !important;
   font-weight: 600 !important;
@@ -284,8 +285,20 @@ html:not(.dark) header button[class*="bg-[#0b1322]"] {
   color: #1e2430 !important;
 }
 
+/* Header Sun/Moon Toggle Icon Visible in Light Mode */
+html:not(.dark) header button[aria-label*="mode"] {
+  background-color: #faf8f4 !important;
+  border: 1px solid #d6c8a5 !important;
+  color: #141821 !important;
+}
+
+html:not(.dark) header button[aria-label*="mode"] svg {
+  color: #b8861b !important;
+  stroke: #b8861b !important;
+}
+
 /* =========================================================
-   LIGHT MODE: Clean Alabaster Sections & Crisp White Cards
+   LIGHT MODE: 100% Uniform Alabaster Surfaces, White Cards & Royal Dark Footer
    ========================================================= */
 html:not(.dark) main {
   background-color: #faf8f4 !important;
@@ -300,45 +313,76 @@ html:not(.dark) main > section:nth-of-type(odd):not(:first-of-type) {
   background-color: #faf8f4 !important;
 }
 
-/* Only convert dark card surfaces (#070b14 / #0b1322 / #0e1525 / #141414 / #191919) to crisp white */
-html:not(.dark) main .bg-\[\#070b14\],
-html:not(.dark) main .bg-\[\#0b1322\],
-html:not(.dark) main .bg-\[\#0e1525\],
-html:not(.dark) main .bg-\[\#141414\],
-html:not(.dark) main .bg-\[\#191919\] {
+/* Convert EVERY dark card background (any dark hex or dark slate/zinc/gray/neutral) to crisp white */
+html:not(.dark) main section:not(:first-of-type) [class*="bg-[#0"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-[#1"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-[#2"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-slate-9"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-slate-8"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-zinc-9"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-zinc-8"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-gray-9"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-gray-8"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-neutral-9"],
+html:not(.dark) main section:not(:first-of-type) [class*="bg-neutral-8"] {
   background-color: #ffffff !important;
+  background-image: none !important;
   border-color: #e5dec9 !important;
-  box-shadow: 0 12px 32px -14px rgba(20, 24, 33, 0.1) !important;
+  box-shadow: 0 12px 32px -14px rgba(20, 24, 33, 0.09) !important;
 }
 
-/* Only convert pure white body/heading text outside photo overlays to dark charcoal */
-html:not(.dark) main section:not(:first-of-type) .text-white {
-  color: #141821 !important;
+/* Keep Page Header Banner sections (About, Offices, Projects, Services, Gallery) dark photo overlays */
+html:not(.dark) main > section:first-of-type {
+  background-color: #070b14 !important;
 }
 
-html:not(.dark) main section:not(:first-of-type) .text-white\/70,
-html:not(.dark) main section:not(:first-of-type) .text-white\/75,
-html:not(.dark) main section:not(:first-of-type) .text-white\/80,
-html:not(.dark) main section:not(:first-of-type) .text-white\/85 {
-  color: #4b5563 !important;
+html:not(.dark) main > section:first-of-type [class*="bg-"] {
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
-html:not(.dark) main section:not(:first-of-type) .text-white\/50,
-html:not(.dark) main section:not(:first-of-type) .text-white\/60 {
-  color: #6b7280 !important;
-}
-
-/* Keep Photo Overlay Cards (Gallery, Property Cards, Hero) Crisp White Text */
-html:not(.dark) main .bg-gradient-to-t .text-white,
-html:not(.dark) main .bg-card-fade .text-white,
-html:not(.dark) main [class*="from-black"] .text-white,
-html:not(.dark) main [class*="bg-black"] .text-white {
+html:not(.dark) main > section:first-of-type,
+html:not(.dark) main > section:first-of-type h1,
+html:not(.dark) main > section:first-of-type h2,
+html:not(.dark) main > section:first-of-type p,
+html:not(.dark) main > section:first-of-type [class*="text-white"] {
   color: #ffffff !important;
 }
 
-/* Gold text becomes deeper readable antique gold on light surfaces */
+/* Make ALL light/white text inside content sections dark & readable */
+html:not(.dark) main section:not(:first-of-type) [class*="text-white"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-slate-1"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-slate-2"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-slate-3"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-zinc-1"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-zinc-2"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-zinc-3"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-gray-1"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-gray-2"],
+html:not(.dark) main section:not(:first-of-type) [class*="text-gray-3"] {
+  color: #374151 !important;
+}
+
+html:not(.dark) main section:not(:first-of-type) h1,
+html:not(.dark) main section:not(:first-of-type) h2,
+html:not(.dark) main section:not(:first-of-type) h3,
+html:not(.dark) main section:not(:first-of-type) h4 {
+  color: #141821 !important;
+}
+
+/* Keep badges on top of images readable */
+html:not(.dark) main [class*="bg-black"] {
+  background-color: rgba(20, 24, 33, 0.85) !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) main [class*="bg-black"] * {
+  color: #ffffff !important;
+}
+
+/* Antique Gold text on light surfaces */
 html:not(.dark) main .text-\[\#f4d06f\] {
-  color: #a37412 !important;
+  color: #9e6f10 !important;
 }
 
 /* Form inputs & selects in Light Mode */
@@ -348,6 +392,33 @@ html:not(.dark) main textarea {
   background-color: #ffffff !important;
   color: #141821 !important;
   border-color: #dfd6be !important;
+}
+
+/* Keep Royal Luxury Dark Footer in BOTH Light & Dark Mode so every link & text is 100% crisp */
+html:not(.dark) footer,
+html:not(.dark) footer > div,
+html:not(.dark) footer [class*="bg-"] {
+  background-color: #070b14 !important;
+  color: #f8f5ec !important;
+}
+
+html:not(.dark) footer h1,
+html:not(.dark) footer h2,
+html:not(.dark) footer h3,
+html:not(.dark) footer h4,
+html:not(.dark) footer .text-white {
+  color: #ffffff !important;
+}
+
+html:not(.dark) footer p,
+html:not(.dark) footer a,
+html:not(.dark) footer li,
+html:not(.dark) footer span:not([class*="text-[#f4d06f]"]) {
+  color: #d1d5db !important;
+}
+
+html:not(.dark) footer [class*="text-[#f4d06f]"] {
+  color: #f4d06f !important;
 }
 
 @keyframes ken-burns {
