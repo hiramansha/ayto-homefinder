@@ -309,3 +309,55 @@ html:not(.dark) [class*="banner"] h1 {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+
+/* Light Mode Overrides for Hardcoded Dark Sections & Cards (Header stays dark) */
+html[data-theme="light"] main,
+html:not(.dark) main {
+  background-color: #fdfbf7 !important;
+  color: #16261f !important;
+}
+
+html[data-theme="light"] main section,
+html:not(.dark) main section,
+html[data-theme="light"] main div[class*="bg-[#0"],
+html:not(.dark) main div[class*="bg-[#0"],
+html[data-theme="light"] main div[class*="bg-[#1"],
+html:not(.dark) main div[class*="bg-[#1"],
+html[data-theme="light"] main article[class*="bg-[#0"],
+html:not(.dark) main article[class*="bg-[#0"],
+html[data-theme="light"] main article[class*="bg-[#1"],
+html:not(.dark) main article[class*="bg-[#1"] {
+  background-color: #ffffff !important;
+  color: #16261f !important;
+  border-color: rgba(22, 38, 31, 0.14) !important;
+}
+
+html[data-theme="light"] main h1,
+html:not(.dark) main h1,
+html[data-theme="light"] main h2,
+html:not(.dark) main h2,
+html[data-theme="light"] main h3,
+html:not(.dark) main h3,
+html[data-theme="light"] main p,
+html:not(.dark) main p,
+html[data-theme="light"] main span:not([class*="bg-[#f4d06f"]),
+html:not(.dark) main span:not([class*="bg-[#f4d06f"]) {
+  color: #16261f !important;
+}
+
+/* Keep Hero Banner Overlay & White Hero Text Readable in Light Mode */
+html[data-theme="light"] main section:first-of-type,
+html:not(.dark) main section:first-of-type,
+html[data-theme="light"] main section:first-of-type div[class*="bg-"],
+html:not(.dark) main section:first-of-type div[class*="bg-"] {
+  background-color: transparent !important;
+}
+
+html[data-theme="light"] main section:first-of-type h1,
+html:not(.dark) main section:first-of-type h1,
+html[data-theme="light"] main section:first-of-type p,
+html:not(.dark) main section:first-of-type p,
+html[data-theme="light"] main section:first-of-type span,
+html:not(.dark) main section:first-of-type span {
+  color: #ffffff !important;
+}
