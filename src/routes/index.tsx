@@ -1374,11 +1374,14 @@ export function Index() {
       className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
 <style>{`
-        /* 1. Full-Width Edge-to-Edge Royal Black Header */
-        #top > div:has(header),
+        /* 1. Full-Width Edge-to-Edge Royal Black Header (No Cream Sides) */
+        html, body, #top {
+          background-color: #070b14 !important;
+        }
         header,
-        header > div:first-child,
-        header nav {
+        header > div,
+        header nav,
+        header > div > div {
           background: #070b14 !important;
           background-color: #070b14 !important;
           background-image: none !important;
@@ -1386,51 +1389,42 @@ export function Index() {
         header {
           left: 0 !important;
           right: 0 !important;
-          width: 100% !important;
+          width: 100vw !important;
+          max-width: 100% !important;
           border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-          color: #ffffff !important;
         }
         /* 2. Prominent AYTO Logo */
-        header a:first-child,
-        header button:first-child {
-          opacity: 1 !important;
-        }
-        header a:first-child span:first-of-type,
-        header button:first-child span:first-of-type {
+        header a:first-child span:first-of-type {
           color: #f4d06f !important;
           font-weight: 800 !important;
           opacity: 1 !important;
         }
-        header a:first-child span:last-of-type,
-        header button:first-child span:last-of-type {
+        header a:first-child span:last-of-type {
           color: #e2e8f0 !important;
           letter-spacing: 0.28em !important;
           opacity: 1 !important;
         }
-/* 3. Exact AYTO Light-Golden Color (#f4d06f) on ALL Navbar Links */
-        header a:not(:first-child),
-        header a:not(:first-child) *,
-        header button:not(:first-child):not(:has(svg.lucide-heart)),
-        header button:not(:first-child):not(:has(svg.lucide-heart)) * {
-          color: #f4d06f !important;
-          opacity: 1 !important;
-          visibility: visible !important;
-        }
+        /* 3. ALL Navbar Links (Home, About Us, Our Offices, Projects, Services, Gallery, Contact Us) */
+        header nav a,
         header nav button,
-        header nav a {
+        header nav span,
+        header div > a:not(:first-child),
+        header div > button:not(:has(svg.lucide-plus-circle)):not(:has(svg.lucide-plus)):not(:has(svg.lucide-heart)) {
+          color: #f4d06f !important;
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
+          opacity: 1 !important;
+          visibility: visible !important;
           font-weight: 600 !important;
         }
-        header nav button:hover,
         header nav a:hover,
-        header nav button:hover *,
-        header nav a:hover * {
-          color: #f4c414 !important;
+        header nav button:hover,
+        header div > button:hover {
+          color: #ffe89e !important;
         }
-        /* Post Property Pill (Dark with Gold Border & Gold Text) */
+        /* 4. Post Property Pill (Dark with Gold Border & Gold Text) */
         header button:has(svg.lucide-plus-circle),
         header button:has(svg.lucide-plus) {
           background-color: #0b1322 !important;
@@ -1442,11 +1436,20 @@ export function Index() {
           background-color: #f4c414 !important;
           color: #070b14 !important;
         }
-        /* Wishlist Heart Circle */
+        /* 5. Wishlist Heart Circle */
         header button:has(svg.lucide-heart) {
           background-color: #0b1322 !important;
           border: 1px solid rgba(255, 255, 255, 0.22) !important;
           color: #ffffff !important;
+        }
+        /* 6. Get a Quote Button (Solid Gold Pill with Dark Black Text) */
+        header a[href*="quote"],
+        header button:last-of-type,
+        header > div > div:last-child > button:last-child,
+        header > div > div:last-child > a:last-child {
+          background-color: #f4c414 !important;
+          color: #070b14 !important;
+          font-weight: 800 !important;
         }
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
