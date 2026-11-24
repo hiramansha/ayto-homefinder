@@ -1373,40 +1373,64 @@ export function Index() {
       id="top"
       className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
-      <style>{`
-        /* Force Original Royal Dark Header Bar */
-        header {
-          background: rgba(7, 11, 20, 0.94) !important;
+    <style>{`
+        /* Force Original Royal Dark Black Header Bar */
+        header,
+        header > div,
+        header nav {
+          background-color: #070b14 !important;
           background-image: none !important;
+        }
+        header {
           border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-          backdrop-filter: blur(18px) !important;
-          -webkit-backdrop-filter: blur(18px) !important;
           color: #ffffff !important;
         }
+        /* Prominent AYTO Logo */
+        header a:first-child span,
+        header button:first-child span {
+          opacity: 1 !important;
+        }
+        header a:first-child span:first-of-type {
+          color: #f4d06f !important;
+          font-weight: 800 !important;
+        }
+        header a:first-child span:last-of-type {
+          color: #cbd5e1 !important;
+          letter-spacing: 0.28em !important;
+        }
+        /* Clean Transparent Navigation Links (No Yellow Boxes) */
         header nav button,
         header nav a {
+          background: transparent !important;
+          background-color: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
           color: rgba(255, 255, 255, 0.88) !important;
+          padding-left: 0.5rem !important;
+          padding-right: 0.5rem !important;
         }
         header nav button:hover,
         header nav a:hover {
-          color: #f4c414 !important;
+          color: #f4d06f !important;
+          background: transparent !important;
         }
-        header button,
-        header a {
-          color: #ffffff;
-        }
-        header button[class*="border-"],
-        header a[class*="border-"] {
-          background-color: rgba(11, 19, 34, 0.85) !important;
-          border-color: rgba(244, 196, 20, 0.45) !important;
+        /* Post Property Pill (Dark with Gold Border & Gold Text) */
+        header button:has(svg.lucide-plus-circle),
+        header button:has(svg.lucide-plus) {
+          background-color: #0b1322 !important;
+          border: 1px solid rgba(244, 208, 111, 0.45) !important;
           color: #f4d06f !important;
         }
-        header button[class*="bg-[#f4"],
-        header a[class*="bg-[#f4"],
-        header button[class*="bg-amber"],
-        header button[class*="bg-yellow"] {
+        header button:has(svg.lucide-plus-circle):hover,
+        header button:has(svg.lucide-plus):hover {
           background-color: #f4c414 !important;
           color: #070b14 !important;
+        }
+        /* Wishlist Heart Circle */
+        header button:has(svg.lucide-heart) {
+          background-color: #0b1322 !important;
+          border: 1px solid rgba(255, 255, 255, 0.18) !important;
+          color: #ffffff !important;
         }
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
@@ -1455,7 +1479,6 @@ export function Index() {
         .ayto-beam-right-soft { animation: aytoBeamSweepRight 7.5s ease-in-out 2s infinite; }
         .ayto-page-enter { animation: aytoPageFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
       `}</style>
-
       <RoyalArchitecturalBackdrop />
 
       <div className="relative z-10">
