@@ -379,6 +379,47 @@ html:not(.dark) header button[aria-label*="mode"] svg {
   stroke: #b8861b !important;
 }
 
+/* Light Mode Projects Dropdown Menu */
+html:not(.dark) header nav div[class*="bg-[#"],
+html:not(.dark) header nav div[class*="bg-slate-"],
+html:not(.dark) header nav div[class*="bg-zinc-"],
+html:not(.dark) header nav div[class*="bg-gray-"],
+html:not(.dark) header div[role="menu"],
+html:not(.dark) header nav div[class*="rounded-"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid #e5dec9 !important;
+  box-shadow: 0 20px 45px -15px rgba(20, 24, 33, 0.14) !important;
+}
+
+html:not(.dark) header nav div[class*="rounded-"] a,
+html:not(.dark) header nav div[class*="rounded-"] button,
+html:not(.dark) header nav div[class*="rounded-"] p,
+html:not(.dark) header nav div[class*="rounded-"] span {
+  color: #141821 !important;
+  -webkit-text-fill-color: #141821 !important;
+}
+
+html:not(.dark) header nav div[class*="rounded-"] a:hover,
+html:not(.dark) header nav div[class*="rounded-"] button:hover {
+  background-color: #faf8f4 !important;
+}
+
+html:not(.dark) header nav div[class*="rounded-"] span[class*="text-[#f4d06f]"],
+html:not(.dark) header nav div[class*="rounded-"] svg {
+  color: #b8861b !important;
+  -webkit-text-fill-color: #b8861b !important;
+}
+
+/* Keep "View All Projects" button golden inside Light Dropdown */
+html:not(.dark) header nav div[class*="rounded-"] a[class*="bg-[#f4d06f]"],
+html:not(.dark) header nav div[class*="rounded-"] button[class*="bg-[#f4d06f]"],
+html:not(.dark) header nav div[class*="rounded-"] .bg-gradient-gold {
+  background: linear-gradient(135deg, #e5bd53, #b8861b) !important;
+  color: #141821 !important;
+  -webkit-text-fill-color: #141821 !important;
+}
+
 /* =========================================================
    LIGHT MODE: Crisp White Property-Style Cards & Light Footer
    ========================================================= */
