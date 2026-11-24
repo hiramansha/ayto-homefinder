@@ -23,6 +23,10 @@ export interface PropertyBase {
   crore: number;
   beds: number;
   baths: number;
+  kitchens?: number;
+  amenities?: string[];
+  description?: string;
+  images?: string[];
   area: string;
   location: string;
   features?: Feature[];

@@ -70,7 +70,7 @@ export function Hero() {
   const active = slides[current] ?? slides[0]!;
 
   return (
-    <section className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-forest-deep pb-36 pt-28 md:pb-44 md:pt-32">
+    <section data-image-banner className="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-forest-deep pb-36 pt-28 md:pb-44 md:pt-32">
       {slides.map((slide, index) => (
         <div
           key={`${slide.title}-${index}`}

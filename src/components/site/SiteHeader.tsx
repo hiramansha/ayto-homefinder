@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, Heart, Menu, PlusCircle, X } from "lucide-react";
+import { ChevronDown, Heart, Menu, PlusCircle, Sun, Moon, X } from "lucide-react";
 import logo from "@/assets/ayto-logo.jpg";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,6 +31,21 @@ const FEATURES_LIST = [
 
 export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; onShowSaved: () => void }) {
   const [scrolled, setScrolled] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  useEffect(() => {
+    const stored = localStorage.getItem("ayto-theme");
+    const next = stored === "light" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.dataset["theme"] = next;
+    document.documentElement.classList.toggle("dark", next === "dark");
+  }, []);
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.dataset["theme"] = next;
+    document.documentElement.classList.toggle("dark", next === "dark");
+    localStorage.setItem("ayto-theme", next);
+  };
   const [open, setOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
@@ -168,6 +183,9 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
 
           {/* Right Actions: Post Property + Saved + Get a Quote */}
           <div className="flex items-center gap-2.5">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"} title={theme === "dark" ? "Light mode" : "Dark mode"} className="rounded-full border border-royal-gold/40 bg-royal text-royal-gold hover:bg-royal-gold/10 hover:text-royal-gold">
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </Button>
             <button
               type="button"
               onClick={() => setShowPostModal(true)}

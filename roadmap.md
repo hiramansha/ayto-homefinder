@@ -13,3 +13,9 @@
 - [x] All / Buy / Rent toggle next to category buttons
 - [x] Footer email info@aytoproperties.com + fix missing social icon
 - [x] Warm luxury Light Mode (ivory bg, white cards, navy text, gold accents, inputs, smooth transitions)
+- [ ] Add 500ms property/project search feedback
+- [ ] Upgrade review carousel and seller login presentation
+- [ ] Add persistent theme toggle without changing royal header
+- [ ] Preserve and display complete submitted property details
+- [ ] Add project filters and centered gallery lightbox navigation
+- [ ] Verify updated desktop/mobile flows

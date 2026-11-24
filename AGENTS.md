@@ -32,3 +32,6 @@ use the editor.
 ## Project rules
 - Site is a single landing page (`src/routes/index.tsx`) composed from sections in `src/components/site/`; keep new sections there so the page stays readable.
 - Listing data lives in `src/data/properties.ts`; pricing, filtering, EMI and contact validation are pure functions in `src/lib/property-math.ts` with tests beside them, so rules stay testable without the UI.
+- Keep search settling in the reusable cancellation-safe hook and project matching in pure tested functions, so rapid filter changes cannot render stale results.
+- Render gallery and seller dialogs through the shared portal-based Dialog component outside animated page containers, so overlays stay centered and keyboard accessible.
+- Theme legacy page surfaces through a scoped CSS compatibility layer that excludes the header and photo banners; use semantic tokens for new sections.
