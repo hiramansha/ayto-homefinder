@@ -314,7 +314,7 @@ html:not(.dark) main > section:nth-of-type(even) {
   background-color: #ffffff !important;
 }
 
-/* Convert EVERY dark card or dark container (inline style OR Tailwind class) to Crisp White */
+/* Convert EVERY dark card or dark container to Crisp White */
 html:not(.dark) main section div[style*="background"],
 html:not(.dark) main section article[style*="background"],
 html:not(.dark) main section [class*="bg-[#0"],
@@ -336,7 +336,7 @@ html:not(.dark) main section [class*="from-zinc"] {
   box-shadow: 0 12px 32px -14px rgba(20, 24, 33, 0.09) !important;
 }
 
-/* Make ALL headings & text dark charcoal across normal light sections (fixes Contact heading & Let's Build banner) */
+/* Make ALL headings & text prominent dark charcoal across light sections (fixes Contact Us heading) */
 html:not(.dark) main section h1,
 html:not(.dark) main section h2,
 html:not(.dark) main section h3,
@@ -344,6 +344,7 @@ html:not(.dark) main section h4,
 html:not(.dark) main section [style*="color"],
 html:not(.dark) main section [class*="text-white"] {
   color: #141821 !important;
+  -webkit-text-fill-color: #141821 !important;
 }
 
 html:not(.dark) main section p,
@@ -355,29 +356,36 @@ html:not(.dark) main section [class*="text-gray-1"],
 html:not(.dark) main section [class*="text-gray-2"],
 html:not(.dark) main section [class*="text-gray-3"] {
   color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
 }
 
-/* ONLY sections that actually have a full-bleed Hero / Banner photo keep white overlay text */
-html:not(.dark) main section:has(> img),
-html:not(.dark) main section:has(.bg-hero-overlay) {
+/* ONLY Hero Slider & Full-Bleed Page Banners keep crisp white overlay text (fixes Turnkey Construction hero) */
+html:not(.dark) main section:has(.animate-ken-burns),
+html:not(.dark) main section:has(.bg-hero-overlay),
+html:not(.dark) main > section:first-of-type:has(img) {
   background-color: #070b14 !important;
 }
 
-html:not(.dark) main section:has(> img) [class*="bg-"],
-html:not(.dark) main section:has(.bg-hero-overlay) [class*="bg-"] {
+html:not(.dark) main section:has(.animate-ken-burns) [class*="bg-"],
+html:not(.dark) main section:has(.bg-hero-overlay) [class*="bg-"],
+html:not(.dark) main > section:first-of-type:has(img) [class*="bg-"] {
   background-color: transparent !important;
   box-shadow: none !important;
 }
 
-html:not(.dark) main section:has(> img) h1,
-html:not(.dark) main section:has(> img) h2,
-html:not(.dark) main section:has(> img) p,
-html:not(.dark) main section:has(> img) [class*="text-white"],
+html:not(.dark) main section:has(.animate-ken-burns) h1,
+html:not(.dark) main section:has(.animate-ken-burns) h2,
+html:not(.dark) main section:has(.animate-ken-burns) p,
+html:not(.dark) main section:has(.animate-ken-burns) span,
 html:not(.dark) main section:has(.bg-hero-overlay) h1,
 html:not(.dark) main section:has(.bg-hero-overlay) h2,
 html:not(.dark) main section:has(.bg-hero-overlay) p,
-html:not(.dark) main section:has(.bg-hero-overlay) [class*="text-white"] {
+html:not(.dark) main section:has(.bg-hero-overlay) span,
+html:not(.dark) main > section:first-of-type:has(img) h1,
+html:not(.dark) main > section:first-of-type:has(img) h2,
+html:not(.dark) main > section:first-of-type:has(img) p {
   color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 /* Keep photo card gradient captions & dark image badges white */
@@ -387,10 +395,12 @@ html:not(.dark) main [class*="from-black"] *,
 html:not(.dark) main [class*="bg-black"] {
   background-color: rgba(20, 24, 33, 0.85) !important;
   color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 html:not(.dark) main [class*="bg-black"] * {
   color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 /* Keep HEAD OFFICE / golden badges & buttons crisp */
@@ -400,13 +410,16 @@ html:not(.dark) main section [class*="bg-yellow-"],
 html:not(.dark) main section .bg-gradient-gold {
   background: linear-gradient(135deg, #e5bd53, #b8861b) !important;
   color: #141821 !important;
+  -webkit-text-fill-color: #141821 !important;
 }
 
-/* Antique Gold text on light surfaces */
+/* Antique Gold eyebrow & accent text on light surfaces */
 html:not(.dark) main .text-\[\#f4d06f\],
 html:not(.dark) main [style*="#f4d06f"],
-html:not(.dark) main [style*="244, 208, 111"] {
+html:not(.dark) main [style*="244, 208, 111"],
+html:not(.dark) main .eyebrow {
   color: #9e6f10 !important;
+  -webkit-text-fill-color: #9e6f10 !important;
 }
 
 /* Form inputs & selects in Light Mode */
@@ -415,6 +428,7 @@ html:not(.dark) main select,
 html:not(.dark) main textarea {
   background-color: #ffffff !important;
   color: #141821 !important;
+  -webkit-text-fill-color: #141821 !important;
   border-color: #dfd6be !important;
 }
 
@@ -433,6 +447,7 @@ html:not(.dark) footer h3,
 html:not(.dark) footer h4,
 html:not(.dark) footer .text-white {
   color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 html:not(.dark) footer p,
@@ -440,10 +455,12 @@ html:not(.dark) footer a,
 html:not(.dark) footer li,
 html:not(.dark) footer span:not([class*="text-[#f4d06f]"]) {
   color: #d1d5db !important;
+  -webkit-text-fill-color: #d1d5db !important;
 }
 
 html:not(.dark) footer [class*="text-[#f4d06f]"] {
   color: #f4d06f !important;
+  -webkit-text-fill-color: #f4d06f !important;
 }
 
 @keyframes ken-burns {
