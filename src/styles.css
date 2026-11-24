@@ -283,7 +283,7 @@ html:not(.dark) main div[class*="rounded-3xl"]:hover {
 }
 
 /* =========================================================
-   HEADER: Always Top Layer (z-index: 9999) + Clean Single Dropdown
+   HEADER: Always Top Layer (z-index: 9999) + Crisp Light Dropdown
    ========================================================= */
 html.dark #top > div:has(header),
 html.dark header,
@@ -382,7 +382,7 @@ html:not(.dark) header button[aria-label*="mode"] svg {
   stroke: #b8861b !important;
 }
 
-/* Light Mode Projects Dropdown Menu: Convert ONLY the dark dropdown card to Crisp White without touching visibility/opacity */
+/* Light Mode Projects Dropdown Menu: Crisp White Panel with Clickable Links */
 html:not(.dark) header [class*="bg-[#0"],
 html:not(.dark) header [class*="bg-[#1"],
 html:not(.dark) header [class*="bg-[#2"],
