@@ -1407,9 +1407,12 @@ export function Index() {
           letter-spacing: 0.28em !important;
           opacity: 1 !important;
         }
-        /* 3. Clear Light-Golden Navbar Options (Home, About Us, Projects, etc.) */
-        header nav * {
-          color: #f5e6b3 !important;
+/* 3. Exact AYTO Light-Golden Color (#f4d06f) on ALL Navbar Links */
+        header a:not(:first-child),
+        header a:not(:first-child) *,
+        header button:not(:first-child):not(:has(svg.lucide-heart)),
+        header button:not(:first-child):not(:has(svg.lucide-heart)) * {
+          color: #f4d06f !important;
           opacity: 1 !important;
           visibility: visible !important;
         }
