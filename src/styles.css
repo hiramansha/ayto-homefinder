@@ -305,10 +305,7 @@ html:not(.dark) main {
   color: #141821 !important;
 }
 
-/* Convert EVERY dark section & gradient background (except top Hero/Page Banner) to Alabaster / White */
-html:not(.dark) main section:not(:first-of-type),
-html:not(.dark) main section:not(:first-of-type) > div[class*="bg-gradient"],
-html:not(.dark) main section:not(:first-of-type) > div[style*="background"] {
+html:not(.dark) main section {
   background-color: #faf8f4 !important;
   background-image: none !important;
 }
@@ -317,72 +314,76 @@ html:not(.dark) main > section:nth-of-type(even) {
   background-color: #ffffff !important;
 }
 
-/* Convert EVERY dark card surface (Offices, Spotlight, About, Contact, etc.) to Crisp White */
-html:not(.dark) main section:not(:first-of-type) [class*="bg-[#0"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-[#1"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-[#2"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-[#3"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-slate-9"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-slate-8"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-slate-7"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-zinc-9"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-zinc-8"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-gray-9"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-gray-8"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-neutral-9"],
-html:not(.dark) main section:not(:first-of-type) [class*="bg-neutral-8"],
-html:not(.dark) main section:not(:first-of-type) [class*="from-[#"],
-html:not(.dark) main section:not(:first-of-type) [class*="from-slate"],
-html:not(.dark) main section:not(:first-of-type) [class*="from-zinc"] {
+/* Convert EVERY dark card or dark container (inline style OR Tailwind class) to Crisp White */
+html:not(.dark) main section div[style*="background"],
+html:not(.dark) main section article[style*="background"],
+html:not(.dark) main section [class*="bg-[#0"],
+html:not(.dark) main section [class*="bg-[#1"],
+html:not(.dark) main section [class*="bg-[#2"],
+html:not(.dark) main section [class*="bg-[#3"],
+html:not(.dark) main section [class*="bg-slate-"],
+html:not(.dark) main section [class*="bg-zinc-"],
+html:not(.dark) main section [class*="bg-gray-9"],
+html:not(.dark) main section [class*="bg-gray-8"],
+html:not(.dark) main section [class*="bg-neutral-9"],
+html:not(.dark) main section [class*="bg-neutral-8"],
+html:not(.dark) main section [class*="from-[#"],
+html:not(.dark) main section [class*="from-slate"],
+html:not(.dark) main section [class*="from-zinc"] {
   background-color: #ffffff !important;
-  background-image: none !important;
+  background: #ffffff !important;
   border-color: #e5dec9 !important;
   box-shadow: 0 12px 32px -14px rgba(20, 24, 33, 0.09) !important;
 }
 
-/* Keep Top Hero / Page Header Banner dark photo overlay */
-html:not(.dark) main > section:first-of-type {
+/* Make ALL headings & text dark charcoal across normal light sections (fixes Contact heading & Let's Build banner) */
+html:not(.dark) main section h1,
+html:not(.dark) main section h2,
+html:not(.dark) main section h3,
+html:not(.dark) main section h4,
+html:not(.dark) main section [style*="color"],
+html:not(.dark) main section [class*="text-white"] {
+  color: #141821 !important;
+}
+
+html:not(.dark) main section p,
+html:not(.dark) main section li,
+html:not(.dark) main section [class*="text-white/"],
+html:not(.dark) main section [class*="text-slate-"],
+html:not(.dark) main section [class*="text-zinc-"],
+html:not(.dark) main section [class*="text-gray-1"],
+html:not(.dark) main section [class*="text-gray-2"],
+html:not(.dark) main section [class*="text-gray-3"] {
+  color: #374151 !important;
+}
+
+/* ONLY sections that actually have a full-bleed Hero / Banner photo keep white overlay text */
+html:not(.dark) main section:has(> img),
+html:not(.dark) main section:has(.bg-hero-overlay) {
   background-color: #070b14 !important;
 }
 
-html:not(.dark) main > section:first-of-type [class*="bg-"] {
+html:not(.dark) main section:has(> img) [class*="bg-"],
+html:not(.dark) main section:has(.bg-hero-overlay) [class*="bg-"] {
   background-color: transparent !important;
   box-shadow: none !important;
 }
 
-html:not(.dark) main > section:first-of-type,
-html:not(.dark) main > section:first-of-type h1,
-html:not(.dark) main > section:first-of-type h2,
-html:not(.dark) main > section:first-of-type p,
-html:not(.dark) main > section:first-of-type [class*="text-white"] {
+html:not(.dark) main section:has(> img) h1,
+html:not(.dark) main section:has(> img) h2,
+html:not(.dark) main section:has(> img) p,
+html:not(.dark) main section:has(> img) [class*="text-white"],
+html:not(.dark) main section:has(.bg-hero-overlay) h1,
+html:not(.dark) main section:has(.bg-hero-overlay) h2,
+html:not(.dark) main section:has(.bg-hero-overlay) p,
+html:not(.dark) main section:has(.bg-hero-overlay) [class*="text-white"] {
   color: #ffffff !important;
 }
 
-/* Make ALL white/light headings & body text in content sections dark & crisp */
-html:not(.dark) main section:not(:first-of-type) h1,
-html:not(.dark) main section:not(:first-of-type) h2,
-html:not(.dark) main section:not(:first-of-type) h3,
-html:not(.dark) main section:not(:first-of-type) h4,
-html:not(.dark) main section:not(:first-of-type) [class*="text-white"] {
-  color: #141821 !important;
-}
-
-html:not(.dark) main section:not(:first-of-type) p,
-html:not(.dark) main section:not(:first-of-type) li,
-html:not(.dark) main section:not(:first-of-type) [class*="text-white/"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-slate-1"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-slate-2"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-slate-3"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-zinc-1"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-zinc-2"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-zinc-3"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-gray-1"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-gray-2"],
-html:not(.dark) main section:not(:first-of-type) [class*="text-gray-3"] {
-  color: #374151 !important;
-}
-
-/* Keep badges on top of images readable */
+/* Keep photo card gradient captions & dark image badges white */
+html:not(.dark) main .bg-gradient-to-t *,
+html:not(.dark) main .bg-card-fade *,
+html:not(.dark) main [class*="from-black"] *,
 html:not(.dark) main [class*="bg-black"] {
   background-color: rgba(20, 24, 33, 0.85) !important;
   color: #ffffff !important;
@@ -392,8 +393,19 @@ html:not(.dark) main [class*="bg-black"] * {
   color: #ffffff !important;
 }
 
+/* Keep HEAD OFFICE / golden badges & buttons crisp */
+html:not(.dark) main section [class*="bg-[#f4d06f]"],
+html:not(.dark) main section [class*="bg-amber-"],
+html:not(.dark) main section [class*="bg-yellow-"],
+html:not(.dark) main section .bg-gradient-gold {
+  background: linear-gradient(135deg, #e5bd53, #b8861b) !important;
+  color: #141821 !important;
+}
+
 /* Antique Gold text on light surfaces */
-html:not(.dark) main .text-\[\#f4d06f\] {
+html:not(.dark) main .text-\[\#f4d06f\],
+html:not(.dark) main [style*="#f4d06f"],
+html:not(.dark) main [style*="244, 208, 111"] {
   color: #9e6f10 !important;
 }
 
@@ -411,6 +423,7 @@ html:not(.dark) footer,
 html:not(.dark) footer > div,
 html:not(.dark) footer [class*="bg-"] {
   background-color: #070b14 !important;
+  background: #070b14 !important;
   color: #f8f5ec !important;
 }
 
