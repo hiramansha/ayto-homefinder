@@ -1374,6 +1374,40 @@ export function Index() {
       className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
       <style>{`
+        /* Force Original Royal Dark Header Bar */
+        header {
+          background: rgba(7, 11, 20, 0.94) !important;
+          background-image: none !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+          backdrop-filter: blur(18px) !important;
+          -webkit-backdrop-filter: blur(18px) !important;
+          color: #ffffff !important;
+        }
+        header nav button,
+        header nav a {
+          color: rgba(255, 255, 255, 0.88) !important;
+        }
+        header nav button:hover,
+        header nav a:hover {
+          color: #f4c414 !important;
+        }
+        header button,
+        header a {
+          color: #ffffff;
+        }
+        header button[class*="border-"],
+        header a[class*="border-"] {
+          background-color: rgba(11, 19, 34, 0.85) !important;
+          border-color: rgba(244, 196, 20, 0.45) !important;
+          color: #f4d06f !important;
+        }
+        header button[class*="bg-[#f4"],
+        header a[class*="bg-[#f4"],
+        header button[class*="bg-amber"],
+        header button[class*="bg-yellow"] {
+          background-color: #f4c414 !important;
+          color: #070b14 !important;
+        }
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
         }
