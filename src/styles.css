@@ -310,7 +310,7 @@ html:not(.dark) main > div {
   background-image: none !important;
 }
 
-/* Convert ALL dark cards (Offices, Projects, Services, Gallery, Contact Form & Office Card) to Crisp White */
+/* Convert ALL dark & uneven Contact/Office/Project cards to uniform 1st-SS Crisp White */
 html:not(.dark) main div[class*="bg-[#"],
 html:not(.dark) main article[class*="bg-[#"],
 html:not(.dark) main section div[style*="background"],
@@ -324,12 +324,30 @@ html:not(.dark) main [class*="bg-neutral-9"],
 html:not(.dark) main [class*="bg-neutral-8"],
 html:not(.dark) main [class*="from-[#"],
 html:not(.dark) main [class*="from-slate"],
-html:not(.dark) main [class*="from-zinc"] {
+html:not(.dark) main [class*="from-zinc"],
+html:not(.dark) main a[class*="bg-[#"],
+html:not(.dark) main a[class*="bg-amber-"],
+html:not(.dark) main a[class*="bg-yellow-"] {
   background-color: #ffffff !important;
   background: #ffffff !important;
   border: 1px solid #e5dec9 !important;
   border-radius: 1.25rem !important;
   box-shadow: 0 10px 28px -12px rgba(20, 24, 33, 0.08) !important;
+}
+
+/* Make ALL icon badges inside Contact/Service/Office cards warm gold-tinted with crisp dark gold icons */
+html:not(.dark) main div[class*="rounded-"] svg,
+html:not(.dark) main a[class*="rounded-"] svg {
+  color: #b8861b !important;
+  stroke: #b8861b !important;
+}
+
+html:not(.dark) main div[class*="h-12"][class*="w-12"],
+html:not(.dark) main div[class*="h-14"][class*="w-14"],
+html:not(.dark) main div[class*="h-11"][class*="w-11"] {
+  background-color: #f6efe0 !important;
+  background: #f6efe0 !important;
+  border: 1px solid #e5d5ad !important;
 }
 
 /* Filter pills & inner calculator boxes in Light Mode */
@@ -418,10 +436,12 @@ html:not(.dark) main [class*="bg-black"] * {
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Keep Golden Buttons & HEAD OFFICE / Active Filter Pills Gold */
-html:not(.dark) main [class*="bg-[#f4d06f]"],
-html:not(.dark) main [class*="bg-amber-"],
-html:not(.dark) main [class*="bg-yellow-"],
+/* Keep Golden Action Buttons & HEAD OFFICE / Active Filter Pills Gold */
+html:not(.dark) main button[class*="bg-[#f4d06f]"],
+html:not(.dark) main button[class*="bg-amber-"],
+html:not(.dark) main button[class*="bg-yellow-"],
+html:not(.dark) main button.bg-gradient-gold,
+html:not(.dark) main span[class*="bg-[#f4d06f]"],
 html:not(.dark) main .bg-gradient-gold {
   background: linear-gradient(135deg, #e5bd53, #b8861b) !important;
   color: #141821 !important;
@@ -429,9 +449,8 @@ html:not(.dark) main .bg-gradient-gold {
   border: none !important;
 }
 
-html:not(.dark) main [class*="bg-[#f4d06f]"] *,
-html:not(.dark) main [class*="bg-amber-"] *,
-html:not(.dark) main [class*="bg-yellow-"] *,
+html:not(.dark) main button[class*="bg-[#f4d06f]"] *,
+html:not(.dark) main button.bg-gradient-gold *,
 html:not(.dark) main .bg-gradient-gold * {
   color: #141821 !important;
   -webkit-text-fill-color: #141821 !important;
