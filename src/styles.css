@@ -283,7 +283,7 @@ html:not(.dark) main div[class*="rounded-3xl"]:hover {
 }
 
 /* =========================================================
-   HEADER: Always Top Layer (z-index: 9999) + Instant Dropdown Clickability
+   HEADER: Always Top Layer (z-index: 9999) + Clean Single Dropdown
    ========================================================= */
 html.dark #top > div:has(header),
 html.dark header,
@@ -382,57 +382,53 @@ html:not(.dark) header button[aria-label*="mode"] svg {
   stroke: #b8861b !important;
 }
 
-/* Light Mode Projects Dropdown Menu: Instant White (No Dark Flash) + 100% Clickable Items */
-html:not(.dark) header nav div[class*="absolute"],
-html:not(.dark) header nav div[class*="fixed"],
-html:not(.dark) header nav div[class*="bg-[#"],
-html:not(.dark) header nav div[class*="bg-slate-"],
-html:not(.dark) header nav div[class*="bg-zinc-"],
-html:not(.dark) header nav div[class*="bg-gray-"],
-html:not(.dark) header div[role="menu"],
-html:not(.dark) header nav div[class*="rounded-"] {
+/* Light Mode Projects Dropdown Menu: Convert ONLY the dark dropdown card to Crisp White without touching visibility/opacity */
+html:not(.dark) header [class*="bg-[#0"],
+html:not(.dark) header [class*="bg-[#1"],
+html:not(.dark) header [class*="bg-[#2"],
+html:not(.dark) header [class*="bg-slate-9"],
+html:not(.dark) header [class*="bg-slate-8"],
+html:not(.dark) header [class*="bg-gray-9"],
+html:not(.dark) header [class*="bg-zinc-9"] {
   background-color: #ffffff !important;
   background: #ffffff !important;
   border: 1px solid #e5dec9 !important;
   box-shadow: 0 20px 45px -15px rgba(20, 24, 33, 0.14) !important;
-  z-index: 10000 !important;
-  pointer-events: auto !important;
-  transition: none !important;
 }
 
-html:not(.dark) header nav div[class*="rounded-"] a,
-html:not(.dark) header nav div[class*="rounded-"] button,
-html:not(.dark) header nav div[class*="rounded-"] p,
-html:not(.dark) header nav div[class*="rounded-"] span,
-html:not(.dark) header nav div[class*="absolute"] a,
-html:not(.dark) header nav div[class*="absolute"] button {
+html:not(.dark) header [class*="bg-[#0"] *,
+html:not(.dark) header [class*="bg-[#1"] *,
+html:not(.dark) header [class*="bg-[#2"] *,
+html:not(.dark) header [class*="bg-slate-9"] *,
+html:not(.dark) header [class*="bg-slate-8"] *,
+html:not(.dark) header [class*="bg-gray-9"] *,
+html:not(.dark) header [class*="bg-zinc-9"] * {
   color: #141821 !important;
   -webkit-text-fill-color: #141821 !important;
-  pointer-events: auto !important;
-  cursor: pointer !important;
-  position: relative !important;
-  z-index: 10001 !important;
 }
 
-html:not(.dark) header nav div[class*="rounded-"] a:hover,
-html:not(.dark) header nav div[class*="rounded-"] button:hover,
-html:not(.dark) header nav div[class*="absolute"] a:hover,
-html:not(.dark) header nav div[class*="absolute"] button:hover {
+html:not(.dark) header [class*="bg-[#0"] a:hover,
+html:not(.dark) header [class*="bg-[#1"] a:hover,
+html:not(.dark) header [class*="bg-[#0"] button:hover,
+html:not(.dark) header [class*="bg-[#1"] button:hover {
   background-color: #f6efe0 !important;
   color: #9e6f10 !important;
   -webkit-text-fill-color: #9e6f10 !important;
 }
 
-html:not(.dark) header nav div[class*="rounded-"] span[class*="text-[#f4d06f]"],
-html:not(.dark) header nav div[class*="rounded-"] svg {
+html:not(.dark) header [class*="bg-[#0"] [class*="text-[#f4d06f]"],
+html:not(.dark) header [class*="bg-[#1"] [class*="text-[#f4d06f]"],
+html:not(.dark) header [class*="bg-[#0"] svg,
+html:not(.dark) header [class*="bg-[#1"] svg {
   color: #b8861b !important;
   -webkit-text-fill-color: #b8861b !important;
 }
 
 /* Keep "View All Projects" button golden inside Light Dropdown */
-html:not(.dark) header nav div[class*="rounded-"] a[class*="bg-[#f4d06f]"],
-html:not(.dark) header nav div[class*="rounded-"] button[class*="bg-[#f4d06f]"],
-html:not(.dark) header nav div[class*="rounded-"] .bg-gradient-gold {
+html:not(.dark) header [class*="bg-[#0"] [class*="bg-[#f4d06f]"],
+html:not(.dark) header [class*="bg-[#1"] [class*="bg-[#f4d06f]"],
+html:not(.dark) header [class*="bg-[#0"] .bg-gradient-gold,
+html:not(.dark) header [class*="bg-[#1"] .bg-gradient-gold {
   background: linear-gradient(135deg, #e5bd53, #b8861b) !important;
   color: #141821 !important;
   -webkit-text-fill-color: #141821 !important;
