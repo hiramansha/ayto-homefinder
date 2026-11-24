@@ -63,51 +63,51 @@
 :root {
   --radius: 0.75rem;
 
-  /* AYTO brand: luxury ivory, rich charcoal-emerald text, warm antique gold */
-  --background: oklch(0.982 0.008 88);
-  --foreground: oklch(0.18 0.035 162);
-  --card: oklch(0.998 0.003 88);
-  --card-foreground: oklch(0.18 0.035 162);
-  --popover: oklch(0.998 0.003 88);
-  --popover-foreground: oklch(0.18 0.035 162);
-  --primary: oklch(0.26 0.065 160);
-  --primary-foreground: oklch(0.985 0.01 88);
-  --secondary: oklch(0.945 0.016 88);
-  --secondary-foreground: oklch(0.22 0.05 160);
-  --muted: oklch(0.945 0.014 88);
-  --muted-foreground: oklch(0.38 0.03 160);
-  --accent: oklch(0.93 0.04 85);
-  --accent-foreground: oklch(0.22 0.05 160);
-  --destructive: oklch(0.577 0.2 27);
-  --destructive-foreground: oklch(0.98 0.01 88);
-  --border: oklch(0.87 0.02 88);
-  --input: oklch(0.86 0.022 88);
-  --ring: oklch(0.68 0.13 80);
+  /* Light Mode: Crisp White & Emerald Green (Zameen.com style) */
+  --background: #f8faf9;
+  --foreground: #14281d;
+  --card: #ffffff;
+  --card-foreground: #14281d;
+  --popover: #ffffff;
+  --popover-foreground: #14281d;
+  --primary: #008c44;
+  --primary-foreground: #ffffff;
+  --secondary: #eef5f0;
+  --secondary-foreground: #0b5e34;
+  --muted: #f1f5f3;
+  --muted-foreground: #4b6356;
+  --accent: #e6f4ec;
+  --accent-foreground: #007a3b;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #dce6e0;
+  --input: #d2dfd8;
+  --ring: #008c44;
 
-  --gold: oklch(0.72 0.13 78);
-  --gold-soft: oklch(0.88 0.09 86);
-  --forest: oklch(0.2 0.045 160);
-  --forest-deep: oklch(0.14 0.035 160);
-  --forest-foreground: oklch(0.97 0.02 90);
-  --forest-muted: oklch(0.78 0.03 150);
+  --gold: #008c44;
+  --gold-soft: #d9efe3;
+  --forest: #0b5e34;
+  --forest-deep: #074224;
+  --forest-foreground: #ffffff;
+  --forest-muted: #5c7568;
 
-  --gradient-gold: linear-gradient(135deg, #f3d06b, #c9972c);
+  --gradient-gold: linear-gradient(135deg, #00a651, #007a3b);
   --gradient-hero: linear-gradient(
       90deg,
-      rgba(10, 20, 16, 0.9) 0%,
-      rgba(10, 20, 16, 0.68) 45%,
-      rgba(10, 20, 16, 0.28) 100%
+      rgba(7, 36, 20, 0.88) 0%,
+      rgba(7, 36, 20, 0.65) 45%,
+      rgba(7, 36, 20, 0.25) 100%
     ),
-    linear-gradient(0deg, rgba(10, 20, 16, 0.82) 0%, transparent 45%);
-  --gradient-card-fade: linear-gradient(transparent, rgba(10, 20, 16, 0.9));
-  --shadow-luxe: 0 24px 60px -24px rgba(18, 36, 28, 0.28);
-  --shadow-gold: 0 12px 30px -10px rgba(201, 151, 44, 0.45);
+    linear-gradient(0deg, rgba(7, 36, 20, 0.8) 0%, transparent 45%);
+  --gradient-card-fade: linear-gradient(transparent, rgba(7, 36, 20, 0.88));
+  --shadow-luxe: 0 20px 50px -20px rgba(11, 94, 52, 0.14);
+  --shadow-gold: 0 10px 26px -8px rgba(0, 140, 68, 0.35);
 
   --chart-1: var(--primary);
   --chart-2: var(--gold);
-  --chart-3: oklch(0.6 0.08 160);
-  --chart-4: oklch(0.82 0.09 88);
-  --chart-5: oklch(0.45 0.05 160);
+  --chart-3: #10b981;
+  --chart-4: #6ee7b7;
+  --chart-5: #047857;
   --sidebar: var(--card);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
@@ -119,6 +119,7 @@
 }
 
 .dark {
+  /* Dark Mode: Royal Black & Golden */
   --background: #070b14;
   --foreground: #f8f5ec;
   --card: #0e1525;
@@ -136,6 +137,10 @@
   --border: rgba(255, 255, 255, 0.14);
   --input: rgba(255, 255, 255, 0.16);
   --ring: #f4d06f;
+
+  --gold: #f4d06f;
+  --gold-soft: rgba(244, 208, 111, 0.25);
+  --gradient-gold: linear-gradient(135deg, #f3d06b, #c9972c);
 }
 
 @utility font-display {
@@ -193,15 +198,17 @@
   }
 }
 
-/* Full-Width Royal Dark Header & Light-Golden Navbar Links */
-#top > div:has(header),
-header,
-header > div {
+/* =========================================================
+   DARK MODE: Royal Black (#070b14) + Golden (#f4d06f) Header
+   ========================================================= */
+html.dark #top > div:has(header),
+html.dark header,
+html.dark header > div {
   background-color: #070b14 !important;
   background: #070b14 !important;
 }
 
-header {
+html.dark header {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -213,31 +220,164 @@ header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
-header nav button,
-header nav a,
-header nav span,
-header nav svg {
+html.dark header nav button,
+html.dark header nav a,
+html.dark header nav span,
+html.dark header nav svg {
   color: #f4d06f !important;
   -webkit-text-fill-color: #f4d06f !important;
   font-weight: 600 !important;
-  opacity: 1 !important;
 }
 
-header nav button:hover,
-header nav a:hover {
+html.dark header nav button:hover,
+html.dark header nav a:hover {
   color: #ffe89e !important;
   -webkit-text-fill-color: #ffe89e !important;
 }
 
-/* Keep dark image banners & hero sections crisp white text in Light Mode */
-html:not(.dark) section[class*="bg-[#0"] h1,
-html:not(.dark) section[class*="bg-[#0"] h2,
-html:not(.dark) section[class*="bg-black"] h1,
-html:not(.dark) section[class*="bg-black"] h2,
-html:not(.dark) [class*="hero"] h1,
-html:not(.dark) [class*="banner"] h1 {
+/* =========================================================
+   LIGHT MODE: Crisp White + Emerald Green (Zameen.com style)
+   ========================================================= */
+html:not(.dark) #top > div:has(header),
+html:not(.dark) header,
+html:not(.dark) header > div {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+html:not(.dark) header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  box-shadow: -50vw 0 0 #ffffff, 50vw 0 0 #ffffff, 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+  border-bottom: 1px solid #e2ece7 !important;
+}
+
+html:not(.dark) header nav button,
+html:not(.dark) header nav a,
+html:not(.dark) header nav span,
+html:not(.dark) header nav svg {
+  color: #0b5e34 !important;
+  -webkit-text-fill-color: #0b5e34 !important;
+  font-weight: 600 !important;
+}
+
+html:not(.dark) header nav button:hover,
+html:not(.dark) header nav a:hover {
+  color: #00a651 !important;
+  -webkit-text-fill-color: #00a651 !important;
+}
+
+/* Header buttons in Light Mode (White & Emerald Green) */
+html:not(.dark) header button[class*="bg-[#0b1322]"] {
+  background-color: #eef7f2 !important;
+  border-color: #008c44 !important;
+  color: #007a3b !important;
+}
+
+html:not(.dark) header button[class*="bg-[#f4d06f]"] {
+  background-color: #008c44 !important;
   color: #ffffff !important;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 6px 18px -4px rgba(0, 140, 68, 0.45) !important;
+}
+
+html:not(.dark) header button[class*="bg-[#f4d06f]"]:hover {
+  background-color: #007036 !important;
+}
+
+html:not(.dark) header span[class*="text-white"] {
+  color: #4b6356 !important;
+}
+
+html:not(.dark) header span[class*="text-[#f4d06f]"] {
+  color: #007a3b !important;
+}
+
+/* Main Page Light Mode: White Cards + Emerald Green Accents */
+html:not(.dark) main {
+  background-color: #f8faf9 !important;
+  color: #14281d !important;
+}
+
+html:not(.dark) main > section:nth-of-type(even) {
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) main > section:nth-of-type(odd):not(:first-of-type) {
+  background-color: #f3f7f5 !important;
+}
+
+/* Cards in Light Mode */
+html:not(.dark) main div[class*="bg-[#0"],
+html:not(.dark) main div[class*="bg-[#1"],
+html:not(.dark) main article[class*="bg-[#0"],
+html:not(.dark) main article[class*="bg-[#1"] {
+  background-color: #ffffff !important;
+  border-color: #dce6e0 !important;
+  box-shadow: 0 10px 28px -10px rgba(11, 94, 52, 0.1) !important;
+}
+
+/* Headings & Text in Light Mode */
+html:not(.dark) main section:not(:first-of-type) h1,
+html:not(.dark) main section:not(:first-of-type) h2,
+html:not(.dark) main section:not(:first-of-type) h3 {
+  color: #14281d !important;
+}
+
+html:not(.dark) main section:not(:first-of-type) p {
+  color: #4b6356 !important;
+}
+
+/* Convert Golden Accents & Buttons to Zameen Emerald Green in Light Mode */
+html:not(.dark) main [class*="text-[#f4d06f]"] {
+  color: #008c44 !important;
+}
+
+html:not(.dark) main button[class*="bg-[#f4d06f]"],
+html:not(.dark) main span[class*="bg-[#f4d06f]"] {
+  background-color: #008c44 !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) main button[class*="bg-[#f4d06f]"]:hover {
+  background-color: #007036 !important;
+}
+
+html:not(.dark) main [class*="border-[#f4d06f]"] {
+  border-color: #008c44 !important;
+}
+
+/* Inputs & Selects in Light Mode */
+html:not(.dark) main input,
+html:not(.dark) main select,
+html:not(.dark) main textarea {
+  background-color: #ffffff !important;
+  color: #14281d !important;
+  border-color: #cfe0d7 !important;
+}
+
+/* Keep Hero Banner Overlay & Crisp White Text in Light Mode */
+html:not(.dark) main section:first-of-type {
+  background-color: #071e12 !important;
+}
+
+html:not(.dark) main section:first-of-type div[class*="bg-"] {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html:not(.dark) main section:first-of-type h1,
+html:not(.dark) main section:first-of-type p {
+  color: #ffffff !important;
+}
+
+html:not(.dark) main section:first-of-type button[class*="bg-[#f4d06f]"] {
+  background-color: #00a651 !important;
+  color: #ffffff !important;
 }
 
 @keyframes ken-burns {
@@ -308,56 +448,4 @@ html:not(.dark) [class*="banner"] h1 {
 .reveal.is-in {
   opacity: 1;
   transform: translateY(0) scale(1);
-}
-
-/* Light Mode Overrides for Hardcoded Dark Sections & Cards (Header stays dark) */
-html[data-theme="light"] main,
-html:not(.dark) main {
-  background-color: #fdfbf7 !important;
-  color: #16261f !important;
-}
-
-html[data-theme="light"] main section,
-html:not(.dark) main section,
-html[data-theme="light"] main div[class*="bg-[#0"],
-html:not(.dark) main div[class*="bg-[#0"],
-html[data-theme="light"] main div[class*="bg-[#1"],
-html:not(.dark) main div[class*="bg-[#1"],
-html[data-theme="light"] main article[class*="bg-[#0"],
-html:not(.dark) main article[class*="bg-[#0"],
-html[data-theme="light"] main article[class*="bg-[#1"],
-html:not(.dark) main article[class*="bg-[#1"] {
-  background-color: #ffffff !important;
-  color: #16261f !important;
-  border-color: rgba(22, 38, 31, 0.14) !important;
-}
-
-html[data-theme="light"] main h1,
-html:not(.dark) main h1,
-html[data-theme="light"] main h2,
-html:not(.dark) main h2,
-html[data-theme="light"] main h3,
-html:not(.dark) main h3,
-html[data-theme="light"] main p,
-html:not(.dark) main p,
-html[data-theme="light"] main span:not([class*="bg-[#f4d06f"]),
-html:not(.dark) main span:not([class*="bg-[#f4d06f"]) {
-  color: #16261f !important;
-}
-
-/* Keep Hero Banner Overlay & White Hero Text Readable in Light Mode */
-html[data-theme="light"] main section:first-of-type,
-html:not(.dark) main section:first-of-type,
-html[data-theme="light"] main section:first-of-type div[class*="bg-"],
-html:not(.dark) main section:first-of-type div[class*="bg-"] {
-  background-color: transparent !important;
-}
-
-html[data-theme="light"] main section:first-of-type h1,
-html:not(.dark) main section:first-of-type h1,
-html[data-theme="light"] main section:first-of-type p,
-html:not(.dark) main section:first-of-type p,
-html[data-theme="light"] main section:first-of-type span,
-html:not(.dark) main section:first-of-type span {
-  color: #ffffff !important;
 }
