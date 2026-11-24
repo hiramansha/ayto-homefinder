@@ -297,7 +297,7 @@ html:not(.dark) header button[aria-label*="mode"] svg {
 }
 
 /* =========================================================
-   LIGHT MODE: Crisp White Property-Style Cards & Light Footer (Matches 1st Screenshot)
+   LIGHT MODE: Crisp White Property-Style Cards & Light Footer
    ========================================================= */
 html:not(.dark) main {
   background-color: #faf8f4 !important;
@@ -310,7 +310,7 @@ html:not(.dark) main > div {
   background-image: none !important;
 }
 
-/* Convert ALL dark cards (Offices, Projects, Services, Gallery, Contact Form & Office Card) to 1st-SS Crisp White */
+/* Convert ALL dark cards (Offices, Projects, Services, Gallery, Contact Form & Office Card) to Crisp White */
 html:not(.dark) main div[class*="bg-[#"],
 html:not(.dark) main article[class*="bg-[#"],
 html:not(.dark) main section div[style*="background"],
@@ -364,6 +364,15 @@ html:not(.dark) main [class*="text-gray-2"],
 html:not(.dark) main [class*="text-gray-3"] {
   color: #4b5563 !important;
   -webkit-text-fill-color: #4b5563 !important;
+}
+
+/* Keep decorative background watermark text ("TESTIMONIALS", etc.) subtle behind headings */
+html:not(.dark) main [aria-hidden="true"],
+html:not(.dark) main span.pointer-events-none,
+html:not(.dark) main div.pointer-events-none,
+html:not(.dark) main [class*="select-none"][class*="tracking-"] {
+  color: rgba(20, 24, 33, 0.06) !important;
+  -webkit-text-fill-color: rgba(20, 24, 33, 0.06) !important;
 }
 
 /* ONLY Hero Slider & Full-Bleed Page Banners keep crisp white overlay text */
