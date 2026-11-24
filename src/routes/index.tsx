@@ -1373,52 +1373,65 @@ export function Index() {
       id="top"
       className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
-    <style>{`
-        /* Force Original Royal Dark Black Header Bar */
+<style>{`
+        /* 1. Full-Width Edge-to-Edge Royal Black Header */
+        #top > div:has(header),
         header,
-        header > div,
+        header > div:first-child,
         header nav {
+          background: #070b14 !important;
           background-color: #070b14 !important;
           background-image: none !important;
         }
         header {
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100% !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
           color: #ffffff !important;
         }
-        /* Prominent AYTO Logo */
-        header a:first-child span,
-        header button:first-child span {
+        /* 2. Prominent AYTO Logo */
+        header a:first-child,
+        header button:first-child {
           opacity: 1 !important;
         }
-        header a:first-child span:first-of-type {
+        header a:first-child span:first-of-type,
+        header button:first-child span:first-of-type {
           color: #f4d06f !important;
           font-weight: 800 !important;
+          opacity: 1 !important;
         }
-        header a:first-child span:last-of-type {
-          color: #cbd5e1 !important;
+        header a:first-child span:last-of-type,
+        header button:first-child span:last-of-type {
+          color: #e2e8f0 !important;
           letter-spacing: 0.28em !important;
+          opacity: 1 !important;
         }
-        /* Clean Transparent Navigation Links (No Yellow Boxes) */
+        /* 3. Clear Light-Golden Navbar Options (Home, About Us, Projects, etc.) */
+        header nav * {
+          color: #f5e6b3 !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
         header nav button,
         header nav a {
           background: transparent !important;
           background-color: transparent !important;
           border: none !important;
           box-shadow: none !important;
-          color: rgba(255, 255, 255, 0.88) !important;
-          padding-left: 0.5rem !important;
-          padding-right: 0.5rem !important;
+          font-weight: 600 !important;
         }
         header nav button:hover,
-        header nav a:hover {
-          color: #f4d06f !important;
-          background: transparent !important;
+        header nav a:hover,
+        header nav button:hover *,
+        header nav a:hover * {
+          color: #f4c414 !important;
         }
         /* Post Property Pill (Dark with Gold Border & Gold Text) */
         header button:has(svg.lucide-plus-circle),
         header button:has(svg.lucide-plus) {
           background-color: #0b1322 !important;
-          border: 1px solid rgba(244, 208, 111, 0.45) !important;
+          border: 1px solid rgba(244, 208, 111, 0.55) !important;
           color: #f4d06f !important;
         }
         header button:has(svg.lucide-plus-circle):hover,
@@ -1429,7 +1442,7 @@ export function Index() {
         /* Wishlist Heart Circle */
         header button:has(svg.lucide-heart) {
           background-color: #0b1322 !important;
-          border: 1px solid rgba(255, 255, 255, 0.18) !important;
+          border: 1px solid rgba(255, 255, 255, 0.22) !important;
           color: #ffffff !important;
         }
         footer a[aria-label], footer > div:last-child a {
