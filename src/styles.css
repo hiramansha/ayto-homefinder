@@ -63,7 +63,7 @@
 :root {
   --radius: 0.75rem;
 
-  /* AYTO Luxury Light Mode: Warm Alabaster + Royal Charcoal + Antique Gold */
+  /* AYTO Luxury Light Mode: Warm Alabaster + Crisp White Cards + Antique Gold */
   --background: #faf8f4;
   --foreground: #141821;
   --card: #ffffff;
@@ -285,7 +285,6 @@ html:not(.dark) header button[class*="bg-[#0b1322]"] {
   color: #1e2430 !important;
 }
 
-/* Header Sun/Moon Toggle Icon Visible in Light Mode */
 html:not(.dark) header button[aria-label*="mode"] {
   background-color: #faf8f4 !important;
   border: 1px solid #d6c8a5 !important;
@@ -298,42 +297,49 @@ html:not(.dark) header button[aria-label*="mode"] svg {
 }
 
 /* =========================================================
-   LIGHT MODE: 100% Uniform Alabaster Surfaces, White Cards & Royal Dark Footer
+   LIGHT MODE: Crisp White Property-Style Cards & Light Footer (Matches 1st Screenshot)
    ========================================================= */
 html:not(.dark) main {
   background-color: #faf8f4 !important;
   color: #141821 !important;
 }
 
-html:not(.dark) main section {
+html:not(.dark) main section,
+html:not(.dark) main > div {
   background-color: #faf8f4 !important;
   background-image: none !important;
 }
 
-html:not(.dark) main > section:nth-of-type(even) {
-  background-color: #ffffff !important;
-}
-
-/* Convert EVERY dark card or dark container to Crisp White */
+/* Convert ALL dark cards (Offices, Projects, Services, Gallery, Contact Form & Office Card) to 1st-SS Crisp White */
+html:not(.dark) main div[class*="bg-[#"],
+html:not(.dark) main article[class*="bg-[#"],
 html:not(.dark) main section div[style*="background"],
 html:not(.dark) main section article[style*="background"],
-html:not(.dark) main section [class*="bg-[#0"],
-html:not(.dark) main section [class*="bg-[#1"],
-html:not(.dark) main section [class*="bg-[#2"],
-html:not(.dark) main section [class*="bg-[#3"],
-html:not(.dark) main section [class*="bg-slate-"],
-html:not(.dark) main section [class*="bg-zinc-"],
-html:not(.dark) main section [class*="bg-gray-9"],
-html:not(.dark) main section [class*="bg-gray-8"],
-html:not(.dark) main section [class*="bg-neutral-9"],
-html:not(.dark) main section [class*="bg-neutral-8"],
-html:not(.dark) main section [class*="from-[#"],
-html:not(.dark) main section [class*="from-slate"],
-html:not(.dark) main section [class*="from-zinc"] {
+html:not(.dark) main [class*="bg-slate-"],
+html:not(.dark) main [class*="bg-zinc-"],
+html:not(.dark) main [class*="bg-gray-9"],
+html:not(.dark) main [class*="bg-gray-8"],
+html:not(.dark) main [class*="bg-gray-7"],
+html:not(.dark) main [class*="bg-neutral-9"],
+html:not(.dark) main [class*="bg-neutral-8"],
+html:not(.dark) main [class*="from-[#"],
+html:not(.dark) main [class*="from-slate"],
+html:not(.dark) main [class*="from-zinc"] {
   background-color: #ffffff !important;
   background: #ffffff !important;
-  border-color: #e5dec9 !important;
-  box-shadow: 0 12px 32px -14px rgba(20, 24, 33, 0.09) !important;
+  border: 1px solid #e5dec9 !important;
+  border-radius: 1.25rem !important;
+  box-shadow: 0 10px 28px -12px rgba(20, 24, 33, 0.08) !important;
+}
+
+/* Filter pills & inner calculator boxes in Light Mode */
+html:not(.dark) main button[class*="bg-[#"],
+html:not(.dark) main button[class*="bg-slate-"],
+html:not(.dark) main button[class*="bg-gray-"] {
+  background-color: #f4efe4 !important;
+  color: #141821 !important;
+  -webkit-text-fill-color: #141821 !important;
+  border: 1px solid #dfd6be !important;
 }
 
 /* Make ALL headings & text prominent dark charcoal across EVERY div & section in Light Mode */
@@ -349,14 +355,15 @@ html:not(.dark) main [class*="text-white"] {
 
 html:not(.dark) main p,
 html:not(.dark) main li,
+html:not(.dark) main span,
 html:not(.dark) main [class*="text-white/"],
 html:not(.dark) main [class*="text-slate-"],
 html:not(.dark) main [class*="text-zinc-"],
 html:not(.dark) main [class*="text-gray-1"],
 html:not(.dark) main [class*="text-gray-2"],
 html:not(.dark) main [class*="text-gray-3"] {
-  color: #374151 !important;
-  -webkit-text-fill-color: #374151 !important;
+  color: #4b5563 !important;
+  -webkit-text-fill-color: #4b5563 !important;
 }
 
 /* ONLY Hero Slider & Full-Bleed Page Banners keep crisp white overlay text */
@@ -370,6 +377,7 @@ html:not(.dark) main section:has(.animate-ken-burns) [class*="bg-"],
 html:not(.dark) main section:has(.bg-hero-overlay) [class*="bg-"],
 html:not(.dark) main > section:first-of-type:has(img) [class*="bg-"] {
   background-color: transparent !important;
+  border: none !important;
   box-shadow: none !important;
 }
 
@@ -383,17 +391,15 @@ html:not(.dark) main section:has(.bg-hero-overlay) p,
 html:not(.dark) main section:has(.bg-hero-overlay) span,
 html:not(.dark) main > section:first-of-type:has(img) h1,
 html:not(.dark) main > section:first-of-type:has(img) h2,
-html:not(.dark) main > section:first-of-type:has(img) p {
+html:not(.dark) main > section:first-of-type:has(img) p,
+html:not(.dark) main > section:first-of-type:has(img) span {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Keep photo card gradient captions & dark image badges white */
-html:not(.dark) main .bg-gradient-to-t *,
-html:not(.dark) main .bg-card-fade *,
-html:not(.dark) main [class*="from-black"] *,
+/* Keep small image badges (FLAGSHIP PROJECT, COMMERCIAL TOWER, etc.) dark pill with white text */
 html:not(.dark) main [class*="bg-black"] {
-  background-color: rgba(20, 24, 33, 0.85) !important;
+  background-color: rgba(20, 24, 33, 0.88) !important;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
@@ -403,12 +409,21 @@ html:not(.dark) main [class*="bg-black"] * {
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Keep HEAD OFFICE / golden badges & buttons crisp */
-html:not(.dark) main section [class*="bg-[#f4d06f]"],
-html:not(.dark) main section [class*="bg-amber-"],
-html:not(.dark) main section [class*="bg-yellow-"],
-html:not(.dark) main section .bg-gradient-gold {
+/* Keep Golden Buttons & HEAD OFFICE / Active Filter Pills Gold */
+html:not(.dark) main [class*="bg-[#f4d06f]"],
+html:not(.dark) main [class*="bg-amber-"],
+html:not(.dark) main [class*="bg-yellow-"],
+html:not(.dark) main .bg-gradient-gold {
   background: linear-gradient(135deg, #e5bd53, #b8861b) !important;
+  color: #141821 !important;
+  -webkit-text-fill-color: #141821 !important;
+  border: none !important;
+}
+
+html:not(.dark) main [class*="bg-[#f4d06f]"] *,
+html:not(.dark) main [class*="bg-amber-"] *,
+html:not(.dark) main [class*="bg-yellow-"] *,
+html:not(.dark) main .bg-gradient-gold * {
   color: #141821 !important;
   -webkit-text-fill-color: #141821 !important;
 }
@@ -426,19 +441,22 @@ html:not(.dark) main .eyebrow {
 html:not(.dark) main input,
 html:not(.dark) main select,
 html:not(.dark) main textarea {
-  background-color: #ffffff !important;
+  background-color: #faf8f4 !important;
   color: #141821 !important;
   -webkit-text-fill-color: #141821 !important;
-  border-color: #dfd6be !important;
+  border: 1px solid #dfd6be !important;
 }
 
-/* Keep Royal Luxury Dark Footer in BOTH Light & Dark Mode */
+/* =========================================================
+   LIGHT MODE FOOTER: Warm Alabaster / Crisp Light Footer with All Links & Social Icons
+   ========================================================= */
 html:not(.dark) footer,
 html:not(.dark) footer > div,
 html:not(.dark) footer [class*="bg-"] {
-  background-color: #070b14 !important;
-  background: #070b14 !important;
-  color: #f8f5ec !important;
+  background-color: #f4efe4 !important;
+  background: #f4efe4 !important;
+  color: #141821 !important;
+  border-color: #e5dec9 !important;
 }
 
 html:not(.dark) footer h1,
@@ -446,21 +464,70 @@ html:not(.dark) footer h2,
 html:not(.dark) footer h3,
 html:not(.dark) footer h4,
 html:not(.dark) footer .text-white {
+  color: #141821 !important;
+  -webkit-text-fill-color: #141821 !important;
+}
+
+html:not(.dark) footer p,
+html:not(.dark) footer li,
+html:not(.dark) footer span:not([class*="text-[#f4d06f]"]) {
+  color: #4b5563 !important;
+  -webkit-text-fill-color: #4b5563 !important;
+}
+
+/* Footer Navigation Links & Gold Accents clearly visible */
+html:not(.dark) footer a {
+  color: #1e2430 !important;
+  -webkit-text-fill-color: #1e2430 !important;
+  font-weight: 600 !important;
+}
+
+html:not(.dark) footer a:hover,
+html:not(.dark) footer [class*="text-[#f4d06f]"] {
+  color: #9e6f10 !important;
+  -webkit-text-fill-color: #9e6f10 !important;
+}
+
+/* Keep Social Media Icons (Facebook, Instagram, X, WhatsApp) crisp & visible in Light Footer */
+html:not(.dark) footer a[href*="facebook"],
+html:not(.dark) footer a[aria-label*="Facebook"] {
+  background-color: #1877f2 !important;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
 
-html:not(.dark) footer p,
-html:not(.dark) footer a,
-html:not(.dark) footer li,
-html:not(.dark) footer span:not([class*="text-[#f4d06f]"]) {
-  color: #d1d5db !important;
-  -webkit-text-fill-color: #d1d5db !important;
+html:not(.dark) footer a[href*="instagram"],
+html:not(.dark) footer a[aria-label*="Instagram"] {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
-html:not(.dark) footer [class*="text-[#f4d06f]"] {
-  color: #f4d06f !important;
-  -webkit-text-fill-color: #f4d06f !important;
+html:not(.dark) footer a[href*="twitter"],
+html:not(.dark) footer a[href*="x.com"],
+html:not(.dark) footer a[aria-label*="X"],
+html:not(.dark) footer a[aria-label*="Twitter"] {
+  background-color: #141821 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html:not(.dark) footer a[href*="wa.me"],
+html:not(.dark) footer a[href*="whatsapp"],
+html:not(.dark) footer a[aria-label*="WhatsApp"] {
+  background-color: #25d366 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html:not(.dark) footer a[href*="facebook"] svg,
+html:not(.dark) footer a[href*="instagram"] svg,
+html:not(.dark) footer a[href*="twitter"] svg,
+html:not(.dark) footer a[href*="x.com"] svg,
+html:not(.dark) footer a[href*="wa.me"] svg,
+html:not(.dark) footer a[href*="whatsapp"] svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 
 @keyframes ken-burns {
