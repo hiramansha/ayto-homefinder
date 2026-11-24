@@ -82,14 +82,14 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
 
   const solid = scrolled || open;
   const navLink =
-    "relative text-xs font-medium tracking-wide text-white/85 transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-0 after:bg-[#f4d06f] after:transition-all hover:text-[#f4d06f] hover:after:w-full xl:text-[13px]";
+    "relative text-xs font-semibold tracking-wide text-[#f4d06f] transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-0 after:bg-[#f4d06f] after:transition-all hover:text-[#ffe89e] hover:after:w-full xl:text-[13px]";
 
   return (
     <>
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-          solid ? "border-b border-white/10 bg-[#141414]/95 shadow-luxe backdrop-blur-md" : "bg-gradient-to-b from-[#141414]/90 to-transparent",
+          "fixed inset-x-0 top-0 z-50 w-full border-b border-white/10 bg-[#070b14] transition-all duration-300",
+          solid && "shadow-luxe",
         )}
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 md:px-8">
@@ -97,7 +97,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
             <img src={logo} alt="AYTO Properties logo" width={46} height={46} className="h-11 w-11 rounded-full border border-[#f4d06f]/70 object-cover object-[50%_25%]" />
             <span className="flex flex-col leading-none">
               <span className="font-display text-xl font-bold tracking-[0.18em] text-[#f4d06f] sm:text-2xl">AYTO</span>
-              <span className="mt-1 text-[0.52rem] font-semibold tracking-[0.45em] text-white/75">PROPERTIES</span>
+              <span className="mt-1 text-[0.52rem] font-semibold tracking-[0.45em] text-white/85">PROPERTIES</span>
             </span>
           </button>
 
@@ -133,21 +133,21 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
                   <button
                     type="button"
                     onClick={() => go("spotlight")}
-                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-white/85 transition hover:bg-white/10 hover:text-[#f4d06f]"
+                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-[#f4d06f] transition hover:bg-white/10 hover:text-[#ffe89e]"
                   >
                     Current Running Project
                   </button>
                   <button
                     type="button"
                     onClick={() => go("listings")}
-                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-white/85 transition hover:bg-white/10 hover:text-[#f4d06f]"
+                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-[#f4d06f] transition hover:bg-white/10 hover:text-[#ffe89e]"
                   >
                     Recommended Properties
                   </button>
                   <button
                     type="button"
                     onClick={() => go("emi")}
-                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-white/85 transition hover:bg-white/10 hover:text-[#f4d06f]"
+                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-[#f4d06f] transition hover:bg-white/10 hover:text-[#ffe89e]"
                   >
                     Cost & EMI Calculator
                   </button>
@@ -171,7 +171,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
             <button
               type="button"
               onClick={() => setShowPostModal(true)}
-              className="hidden items-center gap-1.5 rounded-full border border-[#f4d06f]/45 bg-white/5 px-3.5 py-2 text-xs font-semibold text-[#f4d06f] transition hover:border-[#f4d06f] hover:bg-[#f4d06f]/15 sm:inline-flex"
+              className="hidden items-center gap-1.5 rounded-full border border-[#f4d06f]/55 bg-[#0b1322] px-3.5 py-2 text-xs font-semibold text-[#f4d06f] transition hover:border-[#f4d06f] hover:bg-[#f4d06f]/15 sm:inline-flex"
             >
               <PlusCircle className="h-3.5 w-3.5" /> Post Property
             </button>
@@ -179,11 +179,11 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
             <button
               onClick={onShowSaved}
               aria-label="Saved properties"
-              className="relative grid h-9 w-9 place-items-center rounded-full border border-white/25 text-white transition-colors hover:border-[#f4d06f] hover:text-[#f4d06f]"
+              className="relative grid h-9 w-9 place-items-center rounded-full border border-white/25 bg-[#0b1322] text-white transition-colors hover:border-[#f4d06f] hover:text-[#f4d06f]"
             >
               <Heart className="h-4 w-4" />
               {savedCount > 0 && (
-                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#f4d06f] px-1 text-[0.65rem] font-bold text-[#141414]">
+                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#f4d06f] px-1 text-[0.65rem] font-bold text-[#070b14]">
                   {savedCount}
                 </span>
               )}
@@ -192,13 +192,13 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
             <button
               type="button"
               onClick={() => go("contact")}
-              className="hidden rounded-full bg-[#f4d06f] px-5 py-2.5 text-xs font-bold tracking-wide text-[#141414] shadow-[0_8px_22px_-6px_rgba(244,208,111,0.65)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white md:inline-flex"
+              className="hidden rounded-full bg-[#f4d06f] px-5 py-2.5 text-xs font-bold tracking-wide text-[#070b14] shadow-[0_8px_22px_-6px_rgba(244,208,111,0.65)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white md:inline-flex"
             >
               Get a Quote
             </button>
 
             <button
-              className="grid h-9 w-9 place-items-center rounded-full border border-white/25 text-white lg:hidden"
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/25 text-[#f4d06f] lg:hidden"
               onClick={() => setOpen((o) => !o)}
               aria-label="Menu"
             >
@@ -209,7 +209,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
 
         {/* Mobile Menu */}
         {open && (
-          <nav className="space-y-2 border-t border-white/10 bg-[#141414] px-5 pb-6 pt-3 lg:hidden">
+          <nav className="space-y-2 border-t border-white/10 bg-[#070b14] px-5 pb-6 pt-3 lg:hidden">
             {[
               ["top", "Home"],
               ["about", "About Us"],
@@ -222,7 +222,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
               <button
                 key={id}
                 onClick={() => go(id ?? "")}
-                className="block w-full border-b border-white/10 py-2.5 text-left text-sm text-white/90 hover:text-[#f4d06f]"
+                className="block w-full border-b border-white/10 py-2.5 text-left text-sm font-semibold text-[#f4d06f] hover:text-[#ffe89e]"
               >
                 {label}
               </button>
@@ -231,7 +231,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
               <Button
                 variant="outline"
                 size="lg"
-                className="border-[#f4d06f]/50 bg-transparent text-[#f4d06f]"
+                className="border-[#f4d06f]/50 bg-[#0b1322] text-[#f4d06f]"
                 onClick={() => { setOpen(false); setShowPostModal(true); }}
               >
                 <PlusCircle className="mr-1.5 h-4 w-4" /> Post Property
@@ -239,7 +239,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
               <button
                 type="button"
                 onClick={() => go("contact")}
-                className="rounded-full bg-[#f4d06f] text-xs font-bold text-[#141414]"
+                className="rounded-full bg-[#f4d06f] text-xs font-bold text-[#070b14]"
               >
                 Get a Quote
               </button>
@@ -395,7 +395,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
 
               <button
                 type="submit"
-                className="mt-4 h-11 w-full rounded-full bg-[#f4d06f] text-sm font-bold text-[#141414] transition hover:bg-white"
+                className="mt-4 h-11 w-full rounded-full bg-[#f4d06f] text-sm font-bold text-[#070b14] transition hover:bg-white"
               >
                 Submit Listing Request
               </button>
