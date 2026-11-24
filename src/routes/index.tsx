@@ -27,13 +27,11 @@ import {
   Maximize2,
   MessageCircle,
   MessageSquare,
-  Moon,
   Phone,
   PlusCircle,
   Search,
   ShieldCheck,
   Sparkles,
-  Sun,
   Trash2,
   User,
   UserCheck,
@@ -375,22 +373,6 @@ function RoyalArchitecturalBackdrop() {
 
 export function Index() {
   const [saved, setSaved] = useState<number[]>([]);
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    try {
-      return (localStorage.getItem("ayto-theme") as "dark" | "light") || "dark";
-    } catch {
-      return "dark";
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("ayto-theme", theme);
-    } catch {
-      /* ignore */
-    }
-  }, [theme]);
-
   const [showSaved, setShowSaved] = useState(false);
   const [open, setOpen] = useState<Property | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>("home");
@@ -463,7 +445,7 @@ export function Index() {
   const [downPaymentPct, setDownPaymentPct] = useState(25);
   const [installmentMonths, setInstallmentMonths] = useState(36);
 
- const [projectFilter, setProjectFilter] = useState("All");
+  const [projectFilter, setProjectFilter] = useState("All");
   const [galleryFilter, setGalleryFilter] = useState("All");
   const [lightboxImg, setLightboxImg] = useState<{ title: string; image: string } | null>(null);
 
@@ -1389,11 +1371,7 @@ export function Index() {
   return (
     <div
       id="top"
-      className={`relative min-h-screen transition-colors duration-300 selection:bg-[#f4c414] selection:text-[#070b14] ${
-        theme === "light"
-          ? "ayto-light-mode bg-[#FAF8F5] text-slate-900"
-          : "bg-[#070b14] text-white"
-      }`}
+      className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
       <style>{`
         footer a[aria-label], footer > div:last-child a {
@@ -1404,93 +1382,6 @@ export function Index() {
         }
         main section, footer {
           background-color: transparent !important;
-        }
-
-        /* Light Mode Overrides */
-        .ayto-light-mode, .ayto-light-mode * {
-          transition-property: color, background-color, border-color, box-shadow;
-          transition-duration: 300ms;
-        }
-        .ayto-light-mode {
-          background-color: #FAF8F5 !important;
-          color: #0F172A !important;
-        }
-        .ayto-light-mode .bg-\[\#070b14\],
-        .ayto-light-mode .bg-\[\#050912\]\/90 {
-          background-color: #FAF8F5 !important;
-          color: #0F172A !important;
-        }
-        .ayto-light-mode .bg-\[\#080f1d\],
-        .ayto-light-mode .bg-\[\#0b1322\],
-        .ayto-light-mode .bg-\[\#0e172a\],
-        .ayto-light-mode .bg-\[\#0f192d\],
-        .ayto-light-mode [class*="bg-[#070b14]/"],
-        .ayto-light-mode [class*="bg-[#080f1d]/"],
-        .ayto-light-mode [class*="bg-[#0b1322]/"],
-        .ayto-light-mode [class*="bg-[#0e172a]/"],
-        .ayto-light-mode [class*="bg-[#0f192d]/"] {
-          background-color: #FFFFFF !important;
-          color: #0F172A !important;
-          border-color: #E5E0D8 !important;
-          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06) !important;
-        }
-        .ayto-light-mode [class*="border-sky-300"] { border-color: #E5E0D8 !important; }
-        .ayto-light-mode h1, .ayto-light-mode h2, .ayto-light-mode h3,
-        .ayto-light-mode .text-white,
-        .ayto-light-mode .text-slate-100,
-        .ayto-light-mode .text-slate-200 {
-          color: #0F172A !important;
-        }
-        /* Keep Hero & Page Top Image Banners Crisp White in Light Mode */
-        .ayto-light-mode section.relative.flex h1,
-        .ayto-light-mode section.relative.flex p,
-        .ayto-light-mode .ayto-banner-overlay h1,
-        .ayto-light-mode .ayto-banner-overlay p {
-          color: #FFFFFF !important;
-          text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65) !important;
-        }
-        .ayto-light-mode .ayto-banner-overlay {
-          background: linear-gradient(to bottom, rgba(7, 11, 20, 0.72), rgba(7, 11, 20, 0.62), rgba(7, 11, 20, 0.85)) !important;
-        }
-        .ayto-light-mode .text-slate-300,
-        .ayto-light-mode .text-slate-400,
-        .ayto-light-mode [class*="text-slate-200/"],
-        .ayto-light-mode [class*="text-white/"] {
-          color: #475569 !important;
-        }
-        .ayto-light-mode .text-\[\#f4d06f\],
-        .ayto-light-mode .text-\[\#f4c414\] {
-          color: #9A7414 !important;
-        }
-        .ayto-light-mode .bg-\[\#f4c414\],
-        .ayto-light-mode .ayto-gold-btn {
-          background-color: #C59B27 !important;
-          color: #FFFFFF !important;
-        }
-        .ayto-light-mode header {
-          background-color: rgba(255, 255, 255, 0.96) !important;
-          backdrop-filter: blur(14px);
-          border-bottom: 1px solid #E5E0D8 !important;
-          box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06) !important;
-        }
-        .ayto-light-mode header nav button,
-        .ayto-light-mode header nav a {
-          color: #0F172A !important;
-          font-weight: 600 !important;
-        }
-        .ayto-light-mode input,
-        .ayto-light-mode select,
-        .ayto-light-mode textarea {
-          background-color: #F8FAFC !important;
-          color: #0F172A !important;
-          border-color: #CBD5E1 !important;
-        }
-        .ayto-light-mode input:focus,
-        .ayto-light-mode select:focus,
-        .ayto-light-mode textarea:focus {
-          outline: none !important;
-          border-color: #C59B27 !important;
-          box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.3) !important;
         }
         @keyframes aytoAuroraDrift1 {
           0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
@@ -1531,7 +1422,7 @@ export function Index() {
         .ayto-page-enter { animation: aytoPageFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
       `}</style>
 
-      {theme === "dark" && <RoyalArchitecturalBackdrop />}
+      <RoyalArchitecturalBackdrop />
 
       <div className="relative z-10">
         <SiteHeader
@@ -1546,28 +1437,8 @@ export function Index() {
           }}
         />
 
-        {/* Light/Dark Toggle + Compact Seller Login / Dashboard Pill */}
+        {/* Compact Seller Login / Dashboard Pill */}
         <div className="fixed right-4 top-[78px] z-40 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() =>
-              setTheme((prev) => (prev === "dark" ? "light" : "dark"))
-            }
-            title={
-              theme === "dark"
-                ? "Switch to Light Mode"
-                : "Switch to Dark Mode"
-            }
-            className="inline-flex items-center gap-1.5 rounded-full border border-[#f4c414]/45 bg-[#0b1322]/90 px-3 py-1.5 text-[11px] font-bold text-[#f4d06f] shadow-lg backdrop-blur-xl transition hover:border-[#f4c414] hover:bg-[#f4c414] hover:text-[#070b14]"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-3.5 w-3.5" />
-            ) : (
-              <Moon className="h-3.5 w-3.5" />
-            )}
-            <span>{theme === "dark" ? "Light" : "Dark"}</span>
-          </button>
-
           {currentUser ? (
             <div className="flex items-center gap-1.5 rounded-full border border-[#f4c414]/45 bg-[#0b1322]/90 px-3 py-1.5 text-xs shadow-xl backdrop-blur-xl">
               <button
