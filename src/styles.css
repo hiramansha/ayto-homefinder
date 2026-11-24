@@ -336,30 +336,30 @@ html:not(.dark) main section [class*="from-zinc"] {
   box-shadow: 0 12px 32px -14px rgba(20, 24, 33, 0.09) !important;
 }
 
-/* Make ALL headings & text prominent dark charcoal across light sections (fixes Contact Us heading) */
-html:not(.dark) main section h1,
-html:not(.dark) main section h2,
-html:not(.dark) main section h3,
-html:not(.dark) main section h4,
-html:not(.dark) main section [style*="color"],
-html:not(.dark) main section [class*="text-white"] {
+/* Make ALL headings & text prominent dark charcoal across EVERY div & section in Light Mode */
+html:not(.dark) main h1,
+html:not(.dark) main h2,
+html:not(.dark) main h3,
+html:not(.dark) main h4,
+html:not(.dark) main [style*="color"],
+html:not(.dark) main [class*="text-white"] {
   color: #141821 !important;
   -webkit-text-fill-color: #141821 !important;
 }
 
-html:not(.dark) main section p,
-html:not(.dark) main section li,
-html:not(.dark) main section [class*="text-white/"],
-html:not(.dark) main section [class*="text-slate-"],
-html:not(.dark) main section [class*="text-zinc-"],
-html:not(.dark) main section [class*="text-gray-1"],
-html:not(.dark) main section [class*="text-gray-2"],
-html:not(.dark) main section [class*="text-gray-3"] {
+html:not(.dark) main p,
+html:not(.dark) main li,
+html:not(.dark) main [class*="text-white/"],
+html:not(.dark) main [class*="text-slate-"],
+html:not(.dark) main [class*="text-zinc-"],
+html:not(.dark) main [class*="text-gray-1"],
+html:not(.dark) main [class*="text-gray-2"],
+html:not(.dark) main [class*="text-gray-3"] {
   color: #374151 !important;
   -webkit-text-fill-color: #374151 !important;
 }
 
-/* ONLY Hero Slider & Full-Bleed Page Banners keep crisp white overlay text (fixes Turnkey Construction hero) */
+/* ONLY Hero Slider & Full-Bleed Page Banners keep crisp white overlay text */
 html:not(.dark) main section:has(.animate-ken-burns),
 html:not(.dark) main section:has(.bg-hero-overlay),
 html:not(.dark) main > section:first-of-type:has(img) {
