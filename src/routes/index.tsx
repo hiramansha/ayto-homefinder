@@ -1374,17 +1374,28 @@ export function Index() {
       className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
 <style>{`
-        html, body, #top {
+        html, body, #top,
+        #top > div:has(header),
+        header,
+        header > div {
           background-color: #070b14 !important;
+          background: #070b14 !important;
         }
         header {
           left: 0 !important;
           right: 0 !important;
-          width: 100vw !important;
-          max-width: 100vw !important;
-          margin: 0 !important;
-          background-color: #070b14 !important;
-          box-shadow: -50vw 0 0 #070b14, 50vw 0 0 #070b14 !important;
+          width: 100% !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+        }
+        header nav button,
+        header nav a,
+        header nav span,
+        header nav svg {
+          color: #f4d06f !important;
+        }
+        header nav button:hover,
+        header nav a:hover {
+          color: #ffe89e !important;
         }
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
