@@ -1709,7 +1709,7 @@ export function Index() {
           display: none !important;
         }
 
-        /* ================= CENTERED PAGE BANNERS (OUR OFFICES, PROJECTS, SERVICES, GALLERY) ================= */
+        /* ================= CENTERED PAGE BANNERS (LIGHT & DARK THEME AWARE) ================= */
         [data-ayto-banner-hero] {
           position: relative !important;
           display: flex !important;
@@ -1727,10 +1727,24 @@ export function Index() {
           object-position: center !important;
           z-index: 0 !important;
         }
-        [data-ayto-banner-hero] > .ayto-banner-shade {
+        /* Dark Theme Banner Shade */
+        html.dark [data-ayto-banner-hero] > .ayto-banner-shade {
           position: absolute !important;
           inset: 0 !important;
           background: linear-gradient(to bottom, rgba(7, 11, 20, 0.72), rgba(7, 11, 20, 0.62), rgba(7, 11, 20, 0.85)) !important;
+          z-index: 1 !important;
+        }
+        /* Light Theme Banner Shade (Bright Royal Ivory / Soft Daylight Overlay) */
+        html:not(.dark) [data-ayto-banner-hero] {
+          border-bottom: 1px solid rgba(180, 142, 34, 0.25) !important;
+        }
+        html:not(.dark) [data-ayto-banner-hero] > img {
+          opacity: 0.34 !important;
+        }
+        html:not(.dark) [data-ayto-banner-hero] > .ayto-banner-shade {
+          position: absolute !important;
+          inset: 0 !important;
+          background: linear-gradient(to bottom, rgba(251, 249, 243, 0.86), rgba(248, 244, 232, 0.78), rgba(248, 246, 240, 0.94)) !important;
           z-index: 1 !important;
         }
         [data-ayto-banner-hero] > .ayto-banner-content {
@@ -1742,13 +1756,26 @@ export function Index() {
           padding: 0 1.25rem !important;
           text-align: center !important;
         }
-        .ayto-banner-content h1,
-        .ayto-banner-content p {
+        /* Dark Theme Banner Text */
+        html.dark .ayto-banner-content h1,
+        html.dark .ayto-banner-content p {
           color: #ffffff !important;
           text-align: center !important;
         }
-        .ayto-banner-content p:first-child {
+        html.dark .ayto-banner-content p:first-child {
           color: #f4d06f !important;
+        }
+        /* Light Theme Banner Text */
+        html:not(.dark) .ayto-banner-content h1 {
+          color: #0f172a !important;
+          text-align: center !important;
+        }
+        html:not(.dark) .ayto-banner-content p {
+          color: #334155 !important;
+          text-align: center !important;
+        }
+        html:not(.dark) .ayto-banner-content p:first-child {
+          color: #9a7409 !important;
         }
 
         footer a[aria-label], footer > div:last-child a {
