@@ -324,6 +324,14 @@ const urgentRayaPlotListing = {
   isApproved: true,
 } as unknown as UserPostedProperty;
 
+function resolvePropertyImage(rawImg: unknown, category?: string): string {
+  const str = String(rawImg || "").trim();
+  if (str.startsWith("data:image/") || str.startsWith("http://") || str.startsWith("https://") || str.startsWith("/")) {
+    return str;
+  }
+  return propertySampleImages[category || "House"] || propertySampleImages["House"]!;
+}
+
 function compressImageFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -498,11 +506,7 @@ export function Index() {
             const baseTemplate = properties[0]!;
             const mapped = rows.map((row: Record<string, unknown>) => {
               const cat = String(row["category"] || "House");
-              const rawImg = String(row["image"] || "").trim();
-              const validImg =
-                rawImg && (rawImg.startsWith("data:image/") || rawImg.startsWith("http"))
-                  ? rawImg
-                  : propertySampleImages[cat] || propertySampleImages["House"]!;
+              const validImg = resolvePropertyImage(row["image"], cat);
 
               return {
                 ...baseTemplate,
@@ -575,7 +579,16 @@ export function Index() {
       const storedPosts: UserPostedProperty[] = JSON.parse(
         localStorage.getItem(USER_POSTS_KEY) || "[]",
       );
-      if (storedPosts.length > 0) setUserListings(storedPosts);
+      if (storedPosts.length > 0) {
+        const normalizedPosts = storedPosts.map((post) => ({
+          ...post,
+          image: resolvePropertyImage(
+            post.image,
+            (post as unknown as { category?: string }).category,
+          ),
+        }));
+        setUserListings(normalizedPosts);
+      }
     } catch {
       /* ignore */
     }
@@ -1427,9 +1440,40 @@ export function Index() {
   return (
     <div
       id="top"
-      className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
+      className="relative min-h-screen overflow-x-clip bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
       <style>{`
+        /* ================= PREVENT HORIZONTAL OVERFLOW & HEADER CUT ================= */
+        html, body {
+          max-width: 100vw !important;
+          overflow-x: clip !important;
+        }
+        header {
+          left: 0 !important;
+          right: 0 !important;
+          width: 100% !important;
+          max-width: 100vw !important;
+          box-sizing: border-box !important;
+        }
+        header > div {
+          width: 100% !important;
+          max-width: 80rem !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+          padding-left: clamp(0.75rem, 2.5vw, 1.5rem) !important;
+          padding-right: clamp(0.75rem, 2.5vw, 1.5rem) !important;
+          box-sizing: border-box !important;
+        }
+        header nav {
+          flex-wrap: wrap !important;
+          gap: 0.5rem 1rem !important;
+        }
+        header nav button,
+        header nav a,
+        header button {
+          white-space: nowrap !important;
+        }
+
         /* ================= DARK THEME ================= */
         html.dark, html.dark body, html.dark #top,
         html.dark #top > div:has(header),
@@ -1501,7 +1545,7 @@ export function Index() {
           color: #ffffff !important;
         }
 
-        /* ================= FIX DASHBOARD IMAGES IN LIGHT & DARK ================= */
+        /* ================= FIX DASHBOARD & CARD IMAGES IN LIGHT & DARK ================= */
         [data-ayto-photo-box] {
           background-color: #e2e8f0 !important;
           position: relative !important;
@@ -1515,6 +1559,9 @@ export function Index() {
           opacity: 1 !important;
           visibility: visible !important;
           display: block !important;
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
           mix-blend-mode: normal !important;
           filter: none !important;
           position: relative !important;
@@ -1522,10 +1569,10 @@ export function Index() {
         }
         [data-ayto-photo-box] span,
         [data-ayto-photo-box] button {
-          z-index: 3 !important;
+          z-index: 4 !important;
         }
         [data-ayto-photo-box] [class*="bg-[#070b14]"] {
-          background-color: rgba(15, 23, 42, 0.88) !important;
+          background-color: rgba(15, 23, 42, 0.9) !important;
           color: #ffffff !important;
         }
         [data-ayto-photo-box] [class*="text-[#f4c414]"] {
@@ -1533,7 +1580,7 @@ export function Index() {
         }
         [data-ayto-photo-gradient] {
           z-index: 2 !important;
-          background: linear-gradient(to top, rgba(7, 11, 20, 0.65), transparent 55%) !important;
+          background: linear-gradient(to top, rgba(7, 11, 20, 0.55), transparent 50%) !important;
         }
 
         /* Keep Hero & Page Banner Overlay Text Readable */
@@ -1546,11 +1593,6 @@ export function Index() {
           color: #f4d06f !important;
         }
 
-        header {
-          left: 0 !important;
-          right: 0 !important;
-          width: 100% !important;
-        }
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
         }
@@ -1611,7 +1653,7 @@ export function Index() {
         />
 
         {/* Compact Seller Login / Dashboard Pill */}
-        <div className="fixed right-4 top-[78px] z-40 flex items-center gap-2">
+        <div className="fixed right-3 top-[78px] z-40 flex max-w-[calc(100vw-1.5rem)] items-center gap-2 sm:right-5">
           {currentUser ? (
             <div className="flex items-center gap-1.5 rounded-full border border-[#f4c414]/45 bg-[#0b1322]/90 px-3 py-1.5 text-xs shadow-xl backdrop-blur-xl">
               <button
@@ -1619,8 +1661,8 @@ export function Index() {
                 onClick={() => openUserProfile(currentUser.id)}
                 className="inline-flex items-center gap-1.5 font-bold text-[#f4d06f] hover:underline"
               >
-                <UserCheck className="h-3.5 w-3.5" />
-                <span>{currentUser.name}</span>
+                <UserCheck className="h-3.5 w-3.5 shrink-0" />
+                <span className="max-w-[120px] truncate sm:max-w-none">{currentUser.name}</span>
                 <span className="rounded-full bg-[#f4c414] px-1.5 py-0.5 text-[10px] font-extrabold text-[#070b14]">
                   {userListings.filter((l) => l.ownerId === currentUser.id).length}
                 </span>
@@ -2062,7 +2104,7 @@ export function Index() {
                               <div
                                 key={idx}
                                 data-ayto-photo-box
-                                className="group relative overflow-hidden rounded-xl border border-sky-300/20"
+                                className="group relative h-32 overflow-hidden rounded-xl border border-sky-300/20"
                               >
                                 <img
                                   src={imgSrc}
@@ -2199,18 +2241,30 @@ export function Index() {
                   <div className="mt-8 space-y-4">
                     {userListings.map((item) => {
                       const approved = Boolean(item.isApproved);
+                      const safeImg = resolvePropertyImage(
+                        item.image,
+                        (item as unknown as { category?: string }).category,
+                      );
                       return (
                         <div
                           key={item.id}
                           className="flex flex-col justify-between gap-4 rounded-2xl border border-sky-300/20 bg-[#0e172a]/90 p-5 shadow-xl sm:flex-row sm:items-center"
                         >
                           <div className="flex items-center gap-4">
-                            <img
-                              src={item.image}
-                              data-ayto-photo
-                              alt={item.title}
-                              className="h-20 w-24 shrink-0 rounded-xl object-cover"
-                            />
+                            <div
+                              data-ayto-photo-box
+                              className="h-20 w-24 shrink-0 overflow-hidden rounded-xl"
+                            >
+                              <img
+                                src={safeImg}
+                                data-ayto-photo
+                                onError={(e) => {
+                                  e.currentTarget.src = propertySampleImages["House"]!;
+                                }}
+                                alt={item.title}
+                                className="h-20 w-24 object-cover"
+                              />
+                            </div>
                             <div>
                               <div className="flex flex-wrap items-center gap-2">
                                 <span
@@ -2267,7 +2321,7 @@ export function Index() {
         ) : activePage === "user-profile" && viewedProfileUser ? (
           <main key="user-profile" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-6xl px-5 pb-24 md:px-8">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <button
                   type="button"
                   onClick={() => navigatePage("home", "listings")}
@@ -2427,106 +2481,107 @@ export function Index() {
                   </div>
                 ) : (
                   <div className="mt-6 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-                    {profileListings.map((item) => (
-                      <div
-                        key={item.id}
-                        onClick={() => setOpen(item)}
-                        className="group cursor-pointer overflow-hidden rounded-2xl border border-sky-300/15 bg-[#0e172a]/90 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/60"
-                      >
+                    {profileListings.map((item) => {
+                      const cardImage = resolvePropertyImage(
+                        item.image,
+                        (item as unknown as { category?: string }).category,
+                      );
+                      return (
                         <div
-                          data-ayto-photo-box
-                          className="relative aspect-[16/10] overflow-hidden bg-[#131f36]"
+                          key={item.id}
+                          onClick={() => setOpen({ ...item, image: cardImage })}
+                          className="group cursor-pointer overflow-hidden rounded-2xl border border-sky-300/15 bg-[#0e172a]/90 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/60"
                         >
-                          <img
-                            src={
-                              item.image &&
-                              (item.image.startsWith("data:image/") || item.image.startsWith("http"))
-                                ? item.image
-                                : propertySampleImages["House"]!
-                            }
-                            data-ayto-photo
-                            onError={(e) => {
-                              e.currentTarget.src = propertySampleImages["House"]!;
-                            }}
-                            alt={item.title}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
                           <div
-                            data-ayto-photo-gradient
-                            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070b14]/80 via-transparent to-transparent"
-                          />
-                          <span className="absolute left-3.5 top-3.5 rounded-lg bg-[#070b14]/90 px-3 py-1 text-xs font-extrabold text-[#f4c414] backdrop-blur-md">
-                            {item.customPriceText}
-                          </span>
-                          <span
-                            className={`absolute right-3.5 top-3.5 rounded-lg px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider ${
-                              !item.isApproved
-                                ? "bg-amber-400 text-[#070b14]"
-                                : item.listingStatus === "Sold"
-                                ? "bg-red-500 text-white"
-                                : "bg-emerald-500 text-[#070b14]"
-                            }`}
+                            data-ayto-photo-box
+                            className="relative aspect-[16/10] w-full overflow-hidden bg-[#131f36]"
                           >
-                            {!item.isApproved ? "Pending Verification" : item.listingStatus || "Available"}
-                          </span>
-                          <span className="absolute bottom-3 left-3.5 inline-flex items-center gap-1 rounded-md bg-[#070b14]/75 px-2 py-0.5 text-[11px] font-semibold text-white">
-                            <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {item.areaText}
-                          </span>
-                        </div>
-
-                        <div className="p-4">
-                          <h3 className="truncate text-base font-bold text-white group-hover:text-[#f4d06f]">
-                            {item.title}
-                          </h3>
-                          <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-300/80">
-                            <MapPin className="h-3.5 w-3.5 shrink-0 text-[#f4c414]" /> {item.location}
-                          </p>
-
-                          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-sky-300/15 pt-3.5">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setOpen(item);
+                            <img
+                              src={cardImage}
+                              data-ayto-photo
+                              onError={(e) => {
+                                e.currentTarget.src = propertySampleImages["House"]!;
                               }}
-                              className="rounded-lg bg-[#f4c414] px-3.5 py-1.5 text-xs font-extrabold text-[#070b14] transition hover:brightness-105"
+                              alt={item.title}
+                              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            <div
+                              data-ayto-photo-gradient
+                              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070b14]/75 via-transparent to-transparent"
+                            />
+                            <span className="absolute left-3.5 top-3.5 rounded-lg bg-[#070b14]/90 px-3 py-1 text-xs font-extrabold text-[#f4c414] backdrop-blur-md">
+                              {item.customPriceText}
+                            </span>
+                            <span
+                              className={`absolute right-3.5 top-3.5 rounded-lg px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider ${
+                                !item.isApproved
+                                  ? "bg-amber-400 text-[#070b14]"
+                                  : item.listingStatus === "Sold"
+                                  ? "bg-red-500 text-white"
+                                  : "bg-emerald-500 text-[#070b14]"
+                              }`}
                             >
-                              View Details
-                            </button>
+                              {!item.isApproved ? "Pending Verification" : item.listingStatus || "Available"}
+                            </span>
+                            <span className="absolute bottom-3 left-3.5 inline-flex items-center gap-1 rounded-md bg-[#070b14]/85 px-2.5 py-0.5 text-[11px] font-semibold text-white">
+                              <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {item.areaText}
+                            </span>
+                          </div>
 
-                            {currentUser?.id === viewedProfileUser.id && (
-                              <div className="flex items-center gap-1.5">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingListing(item);
-                                    setEditPropTitle(item.title);
-                                    setEditPropDemand(item.customPriceText);
-                                    setEditPropLocation(item.location);
-                                    setEditPropStatus(item.listingStatus || "Available");
-                                  }}
-                                  className="inline-flex items-center gap-1 rounded-lg border border-sky-300/30 bg-[#080f1d] px-3 py-1.5 text-[11px] font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
-                                >
-                                  <Edit3 className="h-3 w-3" /> Edit
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteUserListing(item.id);
-                                  }}
-                                  title="Delete Listing"
-                                  className="inline-flex items-center gap-1 rounded-lg border border-red-400/35 bg-red-500/10 px-3 py-1.5 text-[11px] font-bold text-red-300 transition hover:bg-red-500/25"
-                                >
-                                  <Trash2 className="h-3 w-3" /> Remove
-                                </button>
-                              </div>
-                            )}
+                          <div className="p-4">
+                            <h3 className="truncate text-base font-bold text-white group-hover:text-[#f4d06f]">
+                              {item.title}
+                            </h3>
+                            <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-300/80">
+                              <MapPin className="h-3.5 w-3.5 shrink-0 text-[#f4c414]" /> {item.location}
+                            </p>
+
+                            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-sky-300/15 pt-3.5">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpen({ ...item, image: cardImage });
+                                }}
+                                className="rounded-lg bg-[#f4c414] px-3.5 py-1.5 text-xs font-extrabold text-[#070b14] transition hover:brightness-105"
+                              >
+                                View Details
+                              </button>
+
+                              {currentUser?.id === viewedProfileUser.id && (
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingListing(item);
+                                      setEditPropTitle(item.title);
+                                      setEditPropDemand(item.customPriceText);
+                                      setEditPropLocation(item.location);
+                                      setEditPropStatus(item.listingStatus || "Available");
+                                    }}
+                                    className="inline-flex items-center gap-1 rounded-lg border border-sky-300/30 bg-[#080f1d] px-3 py-1.5 text-[11px] font-bold text-white transition hover:border-[#f4c414] hover:text-[#f4c414]"
+                                  >
+                                    <Edit3 className="h-3 w-3" /> Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteUserListing(item.id);
+                                    }}
+                                    title="Delete Listing"
+                                    className="inline-flex items-center gap-1 rounded-lg border border-red-400/35 bg-red-500/10 px-3 py-1.5 text-[11px] font-bold text-red-300 transition hover:bg-red-500/25"
+                                  >
+                                    <Trash2 className="h-3 w-3" /> Remove
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -3579,11 +3634,15 @@ export function Index() {
                     const displayPrice = userPost?.customPriceText || priceLabel(p);
                     const isCompared = compareIds.includes(p.id);
                     const isSaved = saved.includes(p.id);
+                    const cardImage = resolvePropertyImage(
+                      p.image,
+                      (p as unknown as { category?: string }).category,
+                    );
 
                     return (
                       <div
                         key={p.id}
-                        onClick={() => setOpen(p)}
+                        onClick={() => setOpen({ ...p, image: cardImage })}
                         className="group cursor-pointer rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-2.5 shadow-lg backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
                       >
                         <div
@@ -3591,8 +3650,11 @@ export function Index() {
                           className="relative aspect-square overflow-hidden rounded-xl bg-[#131f36] shadow-lg"
                         >
                           <img
-                            src={p.image}
+                            src={cardImage}
                             data-ayto-photo
+                            onError={(e) => {
+                              e.currentTarget.src = propertySampleImages["House"]!;
+                            }}
                             alt={p.title}
                             loading="lazy"
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -3706,7 +3768,7 @@ export function Index() {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setOpen(p);
+                                  setOpen({ ...p, image: cardImage });
                                 }}
                                 className="inline-flex items-center gap-1 rounded-full border border-sky-200/40 px-3 py-1 text-[11px] font-medium text-white transition-all duration-300 group-hover:border-[#f4d06f] group-hover:bg-[#f4d06f] group-hover:text-[#070b14]"
                               >
@@ -3927,12 +3989,14 @@ export function Index() {
                       key={item.id}
                       className="rounded-2xl border border-sky-300/20 bg-[#080f1d] p-4"
                     >
-                      <img
-                        src={item.image}
-                        data-ayto-photo
-                        alt={item.title}
-                        className="h-36 w-full rounded-xl object-cover"
-                      />
+                      <div data-ayto-photo-box className="h-36 w-full overflow-hidden rounded-xl">
+                        <img
+                          src={resolvePropertyImage(item.image)}
+                          data-ayto-photo
+                          alt={item.title}
+                          className="h-36 w-full object-cover"
+                        />
+                      </div>
                       <h3 className="mt-3 text-sm font-bold text-white">{item.title}</h3>
                       <p className="mt-1 text-xs font-extrabold text-[#f4c414]">{price}</p>
                       <div className="mt-3 space-y-1.5 border-t border-sky-300/15 pt-2.5 text-xs text-slate-300">
