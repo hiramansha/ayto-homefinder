@@ -326,7 +326,12 @@ const urgentRayaPlotListing = {
 
 function resolvePropertyImage(rawImg: unknown, category?: string): string {
   const str = String(rawImg || "").trim();
-  if (str.startsWith("data:image/") || str.startsWith("http://") || str.startsWith("https://") || str.startsWith("/")) {
+  if (
+    str.startsWith("data:image/") ||
+    str.startsWith("http://") ||
+    str.startsWith("https://") ||
+    str.startsWith("/")
+  ) {
     return str;
   }
   return propertySampleImages[category || "House"] || propertySampleImages["House"]!;
@@ -338,7 +343,7 @@ function compressImageFile(file: File): Promise<string> {
     reader.onload = () => {
       const img = new Image();
       img.onload = () => {
-        const maxWidth = 960;
+        const maxWidth = 720;
         const scale = img.width > maxWidth ? maxWidth / img.width : 1;
         const canvas = document.createElement("canvas");
         canvas.width = Math.round(img.width * scale);
@@ -349,7 +354,7 @@ function compressImageFile(file: File): Promise<string> {
           return;
         }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.78));
+        resolve(canvas.toDataURL("image/jpeg", 0.68));
       };
       img.onerror = () => resolve(String(reader.result));
       img.src = String(reader.result);
@@ -531,12 +536,17 @@ export function Index() {
                 beds: Number(row["beds"] || 0),
               };
             }) as unknown as UserPostedProperty[];
-            setUserListings(mapped);
-            try {
-              localStorage.setItem(USER_POSTS_KEY, JSON.stringify(mapped));
-            } catch {
-              /* ignore storage quota */
-            }
+            setUserListings((prev) => {
+              const cloudIds = new Set(mapped.map((m) => m.id));
+              const localOnly = prev.filter((p) => !cloudIds.has(p.id));
+              const merged = [...localOnly, ...mapped];
+              try {
+                localStorage.setItem(USER_POSTS_KEY, JSON.stringify(merged));
+              } catch {
+                /* ignore storage quota */
+              }
+              return merged;
+            });
           }
         }
 
@@ -1043,10 +1053,7 @@ export function Index() {
 
     setPostErrorMsg("");
 
-    const finalImage =
-      propImages[0] ||
-      propertySampleImages[propCategory] ||
-      propertySampleImages["House"]!;
+    const finalImage = resolvePropertyImage(propImages[0], propCategory);
 
     const formattedArea = `${propAreaSize.trim() || "10"} ${propAreaUnit}`;
     const formattedPrice = `PKR ${propPriceValue.trim()} ${propPriceUnit}`;
@@ -1128,7 +1135,12 @@ export function Index() {
     try {
       localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
     } catch {
-      /* ignore storage quota */
+      try {
+        const slimListings = nextListings.slice(0, 12);
+        localStorage.setItem(USER_POSTS_KEY, JSON.stringify(slimListings));
+      } catch {
+        /* ignore storage quota */
+      }
     }
 
     toast.success("Thank you! Your property listing has been submitted for verification.");
@@ -1440,38 +1452,57 @@ export function Index() {
   return (
     <div
       id="top"
-      className="relative min-h-screen overflow-x-clip bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
+      className="relative min-h-screen w-full overflow-x-clip bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
       <style>{`
-        /* ================= PREVENT HORIZONTAL OVERFLOW & HEADER CUT ================= */
+        /* ================= PREVENT HORIZONTAL OVERFLOW & HEADER CUT (LIGHT & DARK) ================= */
         html, body {
+          width: 100% !important;
           max-width: 100vw !important;
           overflow-x: clip !important;
         }
         header {
+          position: fixed !important;
+          top: 0 !important;
           left: 0 !important;
           right: 0 !important;
           width: 100% !important;
           max-width: 100vw !important;
+          margin: 0 !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
           box-sizing: border-box !important;
+          z-index: 45 !important;
         }
         header > div {
           width: 100% !important;
-          max-width: 80rem !important;
-          margin-left: auto !important;
-          margin-right: auto !important;
-          padding-left: clamp(0.75rem, 2.5vw, 1.5rem) !important;
-          padding-right: clamp(0.75rem, 2.5vw, 1.5rem) !important;
+          max-width: 100% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          padding-left: clamp(0.75rem, 2vw, 1.75rem) !important;
+          padding-right: clamp(0.75rem, 2vw, 1.75rem) !important;
           box-sizing: border-box !important;
+          overflow: visible !important;
         }
         header nav {
+          display: flex !important;
           flex-wrap: wrap !important;
-          gap: 0.5rem 1rem !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 0.4rem 0.9rem !important;
+          max-width: 100% !important;
         }
         header nav button,
         header nav a,
         header button {
           white-space: nowrap !important;
+          flex-shrink: 0 !important;
+        }
+        html:not(.dark) header,
+        html:not(.dark) header > div {
+          background-color: rgba(255, 255, 255, 0.96) !important;
+          border-bottom: 1px solid rgba(180, 142, 34, 0.25) !important;
+          box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08) !important;
         }
 
         /* ================= DARK THEME ================= */
@@ -1499,10 +1530,10 @@ export function Index() {
           box-shadow: 0 18px 40px -15px rgba(15, 23, 42, 0.12) !important;
         }
 
-        /* Light Theme: Inputs, Inner Boxes & Tab Switchers */
-        html:not(.dark) [class*="bg-[#070b14]"],
-        html:not(.dark) [class*="bg-[#080f1d]"],
-        html:not(.dark) [class*="bg-[#050912]"] {
+        /* Light Theme: Inputs, Inner Boxes & Tab Switchers (Exclude Photo Containers) */
+        html:not(.dark) [class*="bg-[#070b14]"]:not([data-ayto-photo-box]):not([data-ayto-photo-badge]),
+        html:not(.dark) [class*="bg-[#080f1d]"]:not([data-ayto-photo-box]),
+        html:not(.dark) [class*="bg-[#050912]"]:not([data-ayto-photo-box]) {
           background-color: #f4f1ea !important;
           color: #0f172a !important;
           border-color: rgba(15, 23, 42, 0.15) !important;
@@ -1547,9 +1578,10 @@ export function Index() {
 
         /* ================= FIX DASHBOARD & CARD IMAGES IN LIGHT & DARK ================= */
         [data-ayto-photo-box] {
-          background-color: #e2e8f0 !important;
+          background-color: #cbd5e1 !important;
           position: relative !important;
           overflow: hidden !important;
+          isolation: isolate !important;
         }
         html.dark [data-ayto-photo-box] {
           background-color: #131f36 !important;
@@ -1564,23 +1596,24 @@ export function Index() {
           object-fit: cover !important;
           mix-blend-mode: normal !important;
           filter: none !important;
+          background: transparent !important;
           position: relative !important;
-          z-index: 1 !important;
+          z-index: 2 !important;
         }
         [data-ayto-photo-box] span,
         [data-ayto-photo-box] button {
-          z-index: 4 !important;
+          z-index: 5 !important;
         }
-        [data-ayto-photo-box] [class*="bg-[#070b14]"] {
-          background-color: rgba(15, 23, 42, 0.9) !important;
+        [data-ayto-photo-badge] {
+          background-color: rgba(15, 23, 42, 0.92) !important;
           color: #ffffff !important;
         }
         [data-ayto-photo-box] [class*="text-[#f4c414]"] {
           color: #f4c414 !important;
         }
         [data-ayto-photo-gradient] {
-          z-index: 2 !important;
-          background: linear-gradient(to top, rgba(7, 11, 20, 0.55), transparent 50%) !important;
+          z-index: 3 !important;
+          background: linear-gradient(to top, rgba(7, 11, 20, 0.45), transparent 45%) !important;
         }
 
         /* Keep Hero & Page Banner Overlay Text Readable */
@@ -1639,7 +1672,7 @@ export function Index() {
       `}</style>
       <RoyalArchitecturalBackdrop />
 
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         <SiteHeader
           savedCount={saved.length}
           onShowSaved={() => {
@@ -2507,9 +2540,12 @@ export function Index() {
                             />
                             <div
                               data-ayto-photo-gradient
-                              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070b14]/75 via-transparent to-transparent"
+                              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070b14]/65 via-transparent to-transparent"
                             />
-                            <span className="absolute left-3.5 top-3.5 rounded-lg bg-[#070b14]/90 px-3 py-1 text-xs font-extrabold text-[#f4c414] backdrop-blur-md">
+                            <span
+                              data-ayto-photo-badge
+                              className="absolute left-3.5 top-3.5 rounded-lg bg-[#070b14]/90 px-3 py-1 text-xs font-extrabold text-[#f4c414] backdrop-blur-md"
+                            >
                               {item.customPriceText}
                             </span>
                             <span
@@ -2523,7 +2559,10 @@ export function Index() {
                             >
                               {!item.isApproved ? "Pending Verification" : item.listingStatus || "Available"}
                             </span>
-                            <span className="absolute bottom-3 left-3.5 inline-flex items-center gap-1 rounded-md bg-[#070b14]/85 px-2.5 py-0.5 text-[11px] font-semibold text-white">
+                            <span
+                              data-ayto-photo-badge
+                              className="absolute bottom-3 left-3.5 inline-flex items-center gap-1 rounded-md bg-[#070b14]/85 px-2.5 py-0.5 text-[11px] font-semibold text-white"
+                            >
                               <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {item.areaText}
                             </span>
                           </div>
@@ -3659,7 +3698,10 @@ export function Index() {
                             loading="lazy"
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />
-                          <span className="absolute left-2.5 top-2.5 rounded-full bg-[#070b14]/85 px-3 py-1 text-[11px] font-extrabold text-[#f4c414] backdrop-blur-md">
+                          <span
+                            data-ayto-photo-badge
+                            className="absolute left-2.5 top-2.5 rounded-full bg-[#070b14]/85 px-3 py-1 text-[11px] font-extrabold text-[#f4c414] backdrop-blur-md"
+                          >
                             {displayPrice}
                           </span>
 
