@@ -128,7 +128,7 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
               Our Offices
             </button>
 
-            {/* Projects Dropdown */}
+            {/* Projects Dropdown (Theme Aware) */}
             <div
               className="relative"
               onMouseEnter={() => setProjectsOpen(true)}
@@ -144,25 +144,47 @@ export function SiteHeader({ savedCount, onShowSaved }: { savedCount: number; on
               </button>
 
               {projectsOpen && (
-                <div className="absolute left-0 top-full w-60 rounded-2xl border border-white/15 bg-[#191919] p-2 shadow-2xl backdrop-blur-xl">
+                <div
+                  className={cn(
+                    "absolute left-0 top-full z-[99999] mt-1 w-60 rounded-2xl border p-2 shadow-2xl",
+                    theme === "dark"
+                      ? "border-white/15 bg-[#0e1525] text-[#f4d06f]"
+                      : "border-[#e5dec9] bg-white text-[#141821]"
+                  )}
+                >
                   <button
                     type="button"
                     onClick={() => go("spotlight")}
-                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-[#f4d06f] transition hover:bg-white/10 hover:text-[#ffe89e]"
+                    className={cn(
+                      "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-xs font-semibold transition",
+                      theme === "dark"
+                        ? "text-[#f4d06f] hover:bg-white/10 hover:text-[#ffe89e]"
+                        : "text-[#141821] hover:bg-[#f6efe0] hover:text-[#9e6f10]"
+                    )}
                   >
                     Current Running Project
                   </button>
                   <button
                     type="button"
                     onClick={() => go("listings")}
-                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-[#f4d06f] transition hover:bg-white/10 hover:text-[#ffe89e]"
+                    className={cn(
+                      "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-xs font-semibold transition",
+                      theme === "dark"
+                        ? "text-[#f4d06f] hover:bg-white/10 hover:text-[#ffe89e]"
+                        : "text-[#141821] hover:bg-[#f6efe0] hover:text-[#9e6f10]"
+                    )}
                   >
                     Recommended Properties
                   </button>
                   <button
                     type="button"
                     onClick={() => go("emi")}
-                    className="block w-full rounded-xl px-3.5 py-2.5 text-left text-xs font-medium text-[#f4d06f] transition hover:bg-white/10 hover:text-[#ffe89e]"
+                    className={cn(
+                      "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-xs font-semibold transition",
+                      theme === "dark"
+                        ? "text-[#f4d06f] hover:bg-white/10 hover:text-[#ffe89e]"
+                        : "text-[#141821] hover:bg-[#f6efe0] hover:text-[#9e6f10]"
+                    )}
                   >
                     Cost & EMI Calculator
                   </button>
