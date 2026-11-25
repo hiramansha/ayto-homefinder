@@ -297,7 +297,6 @@ const propertySampleImages: Record<string, string> = {
   Apartment: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80",
 };
 
-// Urgent Sale Plot Listing (DHA Lahore Phase 6 - Near Raya Golf)
 const urgentRayaPlotListing = {
   ...(properties[0] as Property),
   id: 99061045,
@@ -406,8 +405,6 @@ export function Index() {
   const [editPropLocation, setEditPropLocation] = useState("");
   const [editPropStatus, setEditPropStatus] = useState<"Available" | "Sold">("Available");
 
-  const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
-
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
@@ -422,7 +419,7 @@ export function Index() {
   const [propTitle, setPropTitle] = useState("");
   const [propCategory, setPropCategory] = useState("House");
   const [propCity, setPropCity] = useState("Lahore");
-  const [propLocation, setPropLocation] = useState("DHA Phase 6");
+  const [propLocation, setPropLocation] = useState("");
   const [propAreaSize, setPropAreaSize] = useState("10");
   const [propAreaUnit, setPropAreaUnit] = useState("Marla");
   const [propPriceValue, setPropPriceValue] = useState("");
@@ -438,6 +435,8 @@ export function Index() {
   ]);
   const [propDescription, setPropDescription] = useState("");
   const [propImages, setPropImages] = useState<string[]>([]);
+  const [postErrorMsg, setPostErrorMsg] = useState("");
+  const [postThankYouOpen, setPostThankYouOpen] = useState(false);
 
   const [plotMarla, setPlotMarla] = useState<5 | 10 | 20>(10);
   const [buildQuality, setBuildQuality] = useState<"grey" | "luxury">("luxury");
@@ -454,7 +453,6 @@ export function Index() {
   const [formPhone, setFormPhone] = useState("");
   const [formMessage, setFormMessage] = useState("");
 
-  // Load cloud listings & cloud seller accounts from Supabase
   useEffect(() => {
     const fetchCloudData = async () => {
       try {
@@ -521,7 +519,7 @@ export function Index() {
           }
         }
       } catch {
-        /* fallback to localStorage silently */
+        /* fallback silently */
       }
     };
     fetchCloudData();
@@ -608,7 +606,6 @@ export function Index() {
     };
   }, [activePage]);
 
-  // Highlight active navigation link in SiteHeader
   useEffect(() => {
     const pageToLabelMap: Record<ActivePage, string> = {
       home: "home",
@@ -655,7 +652,6 @@ export function Index() {
   }, [activePage]);
 
   const navigatePage = (page: ActivePage, sectionId?: string, text = "") => {
-    setProjectsMenuOpen(false);
     if (text) {
       setPrefill({ text, nonce: Date.now() });
       setFormMessage(text);
@@ -718,50 +714,16 @@ export function Index() {
       toast("Please login or create an account to post your property.");
       return;
     }
+    setPostErrorMsg("");
     navigatePage("post-property");
   };
 
   useEffect(() => {
-    let hoverTimer: number | undefined;
-
-    const isProjectsTrigger = (el: HTMLElement | null) => {
-      const btn = el?.closest("header button, header a");
-      if (!btn) return false;
-      const clean = (btn.textContent || "").replace(/[^\w\s]/g, "").trim().toLowerCase();
-      return clean === "projects";
-    };
-
-    const onMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (isProjectsTrigger(target) || target?.closest("[data-projects-dropdown]")) {
-        if (hoverTimer) window.clearTimeout(hoverTimer);
-        setProjectsMenuOpen(true);
-      }
-    };
-
-    const onMouseOut = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      const related = e.relatedTarget as HTMLElement | null;
-      if (isProjectsTrigger(target) || target?.closest("[data-projects-dropdown]")) {
-        if (isProjectsTrigger(related) || related?.closest("[data-projects-dropdown]")) {
-          return;
-        }
-        hoverTimer = window.setTimeout(() => {
-          setProjectsMenuOpen(false);
-        }, 220);
-      }
-    };
-
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      if (!target?.closest("[data-projects-dropdown]") && !isProjectsTrigger(target)) {
-        setProjectsMenuOpen(false);
-      }
-
       const btn = target?.closest("button, a");
       if (!btn) return;
       if (btn.getAttribute("target") === "_blank") return;
-      if (btn.closest("[data-projects-dropdown]")) return;
 
       const raw = (btn.textContent || "").trim().toLowerCase();
       const label = raw.replace(/[^\w\s]/g, "").trim();
@@ -781,6 +743,21 @@ export function Index() {
         return;
       }
 
+      if (label === "current running project") {
+        stopAndGo("home", "spotlight");
+        return;
+      }
+
+      if (label === "recommended properties") {
+        stopAndGo("home", "listings");
+        return;
+      }
+
+      if (label.includes("cost") && label.includes("emi calculator")) {
+        stopAndGo("services");
+        return;
+      }
+
       if (label === "about us" || label.includes("more about ayto")) {
         stopAndGo("about-us");
         return;
@@ -791,7 +768,7 @@ export function Index() {
         return;
       }
 
-      if (label === "projects" || label === "view project") {
+      if (label === "view project") {
         stopAndGo("projects");
         return;
       }
@@ -826,13 +803,8 @@ export function Index() {
       }
     };
 
-    document.addEventListener("mouseover", onMouseOver, true);
-    document.addEventListener("mouseout", onMouseOut, true);
     document.addEventListener("click", onDocClick, true);
     return () => {
-      if (hoverTimer) window.clearTimeout(hoverTimer);
-      document.removeEventListener("mouseover", onMouseOver, true);
-      document.removeEventListener("mouseout", onMouseOut, true);
       document.removeEventListener("click", onDocClick, true);
     };
   }, [currentUser]);
@@ -975,6 +947,7 @@ export function Index() {
       reader.onload = () => {
         if (typeof reader.result === "string") {
           setPropImages((prev) => [...prev, reader.result as string]);
+          setPostErrorMsg("");
         }
       };
       reader.readAsDataURL(file);
@@ -988,10 +961,35 @@ export function Index() {
       setAuthModalOpen(true);
       return;
     }
-    if (!propTitle.trim() || !propLocation.trim() || !propPriceValue.trim()) {
-      toast.error("Please fill in Property Title, Society/Location, and Demand Price.");
+
+    const isResidentialBuilding = ["House", "Villa", "Apartment"].includes(propCategory);
+    const missingFields: string[] = [];
+
+    if (!propPurpose.trim()) missingFields.push("Listing Purpose");
+    if (!propCategory.trim()) missingFields.push("Property Category");
+    if (!propCity.trim()) missingFields.push("City");
+    if (!propLocation.trim()) missingFields.push("Society / Phase / Block");
+    if (!propAreaSize.trim() || Number(propAreaSize) <= 0) missingFields.push("Area Size");
+    if (!propPriceValue.trim() || Number(propPriceValue) <= 0) missingFields.push("Total Demand / Price");
+
+    if (isResidentialBuilding) {
+      if (!propBeds.trim() || Number(propBeds) <= 0) missingFields.push("Bedrooms");
+      if (!propBaths.trim() || Number(propBaths) <= 0) missingFields.push("Bathrooms");
+      if (!propKitchens.trim() || Number(propKitchens) <= 0) missingFields.push("Kitchens");
+    }
+
+    if (!propTitle.trim()) missingFields.push("Property Headline / Title");
+    if (!propDescription.trim()) missingFields.push("Detailed Property Description");
+    if (propImages.length === 0) missingFields.push("Property Gallery Photos (at least 1 photo)");
+
+    if (missingFields.length > 0) {
+      const msg = `Ye important cheezein missing hain: ${missingFields.join(", ")}. Please fill all * marked fields!`;
+      setPostErrorMsg(msg);
+      toast.error(msg);
       return;
     }
+
+    setPostErrorMsg("");
 
     const finalImage =
       propImages[0] ||
@@ -1000,8 +998,7 @@ export function Index() {
 
     const formattedArea = `${propAreaSize.trim() || "10"} ${propAreaUnit}`;
     const formattedPrice = `PKR ${propPriceValue.trim()} ${propPriceUnit}`;
-    const fullLocation = `${propLocation.trim()}, ${propCity}`;
-    const isResidentialBuilding = ["House", "Villa", "Apartment"].includes(propCategory);
+    const fullLocation = `${propLocation.trim()}, Lahore`;
     const finalBeds = isResidentialBuilding ? Number(propBeds) || 0 : 0;
 
     const richSummary = [
@@ -1046,7 +1043,7 @@ export function Index() {
         }
       }
     } catch {
-      /* fallback to local state */
+      /* fallback */
     }
 
     const baseTemplate = properties[0]!;
@@ -1055,7 +1052,7 @@ export function Index() {
       id: insertedId,
       title: propTitle.trim(),
       location: fullLocation,
-      city: propCity,
+      city: "Lahore",
       ...(richSummary ? { description: richSummary } : {}),
       ...({
         type: propCategory,
@@ -1078,13 +1075,13 @@ export function Index() {
     setUserListings(nextListings);
     localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
 
-    toast.success("Property submitted! Owner verification ke baad live website par show hogi.");
+    toast.success("Thank you! Aap ki property successfully submit ho gayi hai.");
     setPropTitle("");
+    setPropLocation("");
     setPropPriceValue("");
     setPropDescription("");
     setPropImages([]);
-    setViewedProfileUser(currentUser);
-    navigatePage("user-profile");
+    setPostThankYouOpen(true);
   };
 
   const handleSaveProfileChanges = async (e: React.FormEvent) => {
@@ -1373,11 +1370,11 @@ export function Index() {
       id="top"
       className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
-<style>{`
-        html, body, #top,
-        #top > div:has(header),
-        header,
-        header > div {
+      <style>{`
+        html.dark, html.dark body, html.dark #top,
+        html.dark #top > div:has(header),
+        html.dark header,
+        html.dark header > div {
           background-color: #070b14 !important;
           background: #070b14 !important;
         }
@@ -1385,17 +1382,6 @@ export function Index() {
           left: 0 !important;
           right: 0 !important;
           width: 100% !important;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-        }
-        header nav button,
-        header nav a,
-        header nav span,
-        header nav svg {
-          color: #f4d06f !important;
-        }
-        header nav button:hover,
-        header nav a:hover {
-          color: #ffe89e !important;
         }
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
@@ -1496,42 +1482,6 @@ export function Index() {
           )}
         </div>
 
-        {projectsMenuOpen && (
-          <div
-            data-projects-dropdown
-            onMouseEnter={() => setProjectsMenuOpen(true)}
-            onMouseLeave={() => setProjectsMenuOpen(false)}
-            className="fixed left-1/2 top-[68px] z-50 w-[310px] -translate-x-1/2 rounded-2xl border border-[#f4c414]/40 bg-[#0b1322]/95 p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl"
-          >
-            <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#f4d06f]">
-              AYTO Signature Projects
-            </div>
-            {projectsList.map((proj) => (
-              <button
-                key={proj.id}
-                type="button"
-                onClick={() => navigatePage("projects", proj.id)}
-                className="flex w-full items-start justify-between gap-2 rounded-xl px-3 py-2.5 text-left transition hover:bg-[#f4c414]/15"
-              >
-                <div>
-                  <p className="text-xs font-bold text-white">{proj.title}</p>
-                  <p className="text-[11px] text-slate-400">{proj.status}</p>
-                </div>
-                <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#f4c414]" />
-              </button>
-            ))}
-            <div className="mt-1 border-t border-sky-300/15 pt-1">
-              <button
-                type="button"
-                onClick={() => navigatePage("projects")}
-                className="w-full rounded-xl bg-[#f4c414] py-2 text-center text-xs font-extrabold text-[#070b14] transition hover:brightness-105"
-              >
-                View All Projects
-              </button>
-            </div>
-          </div>
-        )}
-
         {activePage === "post-property" ? (
           <main key="post-property" className="ayto-page-enter relative isolate overflow-hidden pt-28 text-white">
             <div className="mx-auto max-w-4xl px-5 pb-24 md:px-8">
@@ -1587,11 +1537,17 @@ export function Index() {
                       List Your Property With Complete Details
                     </h1>
                     <p className="mt-1 text-xs text-slate-300">
-                      Accurate details aur clear photos add karne se buyers ka trust barhta hai aur deal jaldi close hoti hai.
+                      Accurate details aur clear photos add karne se buyers ka trust barhta hai aur deal jaldi close hoti hai. (<span className="font-bold text-[#f4c414]">*</span> marked fields zaroori hain)
                     </p>
                   </div>
 
-                  <form onSubmit={handleCreatePropertyListing} className="space-y-8 p-6 sm:p-9">
+                  <form noValidate onSubmit={handleCreatePropertyListing} className="space-y-8 p-6 sm:p-9">
+                    {postErrorMsg && (
+                      <div className="rounded-2xl border border-red-500/60 bg-red-500/15 px-4 py-3 text-xs font-bold text-red-300">
+                        ⚠️ {postErrorMsg}
+                      </div>
+                    )}
+
                     {/* SECTION 1: Purpose & Property Category */}
                     <div>
                       <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
@@ -1600,7 +1556,7 @@ export function Index() {
                       <div className="mt-4 grid gap-5 sm:grid-cols-2">
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Listing Purpose *
+                            Listing Purpose <span className="text-red-400">*</span>
                           </label>
                           <div className="grid grid-cols-2 gap-2.5 rounded-xl border border-sky-300/20 bg-[#070b14] p-1.5">
                             {(["Sale", "Rent"] as const).map((p) => (
@@ -1622,7 +1578,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Property Category *
+                            Property Category <span className="text-red-400">*</span>
                           </label>
                           <select
                             value={propCategory}
@@ -1647,7 +1603,7 @@ export function Index() {
                       <div className="mt-4 grid gap-5 sm:grid-cols-2">
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            City *
+                            City <span className="text-red-400">*</span>
                           </label>
                           <select
                             value={propCity}
@@ -1655,31 +1611,29 @@ export function Index() {
                             className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs font-semibold text-white focus:border-[#f4c414] focus:outline-none"
                           >
                             <option value="Lahore">Lahore</option>
-                            <option value="Islamabad">Islamabad</option>
-                            <option value="Rawalpindi">Rawalpindi</option>
-                            <option value="Karachi">Karachi</option>
-                            <option value="Multan">Multan</option>
-                            <option value="Faisalabad">Faisalabad</option>
                           </select>
                         </div>
 
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Society / Phase / Block *
+                            Society / Phase / Block <span className="text-red-400">*</span>
                           </label>
                           <input
                             type="text"
                             required
                             placeholder="e.g., DHA Phase 6, Block H"
                             value={propLocation}
-                            onChange={(e) => setPropLocation(e.target.value)}
+                            onChange={(e) => {
+                              setPropLocation(e.target.value);
+                              setPostErrorMsg("");
+                            }}
                             className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
                           />
                         </div>
 
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Area Size &amp; Unit *
+                            Area Size &amp; Unit <span className="text-red-400">*</span>
                           </label>
                           <div className="grid grid-cols-[1.2fr_1fr] gap-2.5">
                             <input
@@ -1689,7 +1643,10 @@ export function Index() {
                               required
                               placeholder="e.g., 10"
                               value={propAreaSize}
-                              onChange={(e) => setPropAreaSize(e.target.value)}
+                              onChange={(e) => {
+                                setPropAreaSize(e.target.value);
+                                setPostErrorMsg("");
+                              }}
                               className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
                             />
                             <select
@@ -1707,7 +1664,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Total Demand / Price (PKR) *
+                            Total Demand / Price (PKR) <span className="text-red-400">*</span>
                           </label>
                           <div className="grid grid-cols-[1.2fr_1fr] gap-2.5">
                             <input
@@ -1717,7 +1674,10 @@ export function Index() {
                               required
                               placeholder="e.g., 4.5"
                               value={propPriceValue}
-                              onChange={(e) => setPropPriceValue(e.target.value)}
+                              onChange={(e) => {
+                                setPropPriceValue(e.target.value);
+                                setPostErrorMsg("");
+                              }}
                               className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
                             />
                             <select
@@ -1744,40 +1704,52 @@ export function Index() {
                           <>
                             <div>
                               <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                                Bedrooms
+                                Bedrooms <span className="text-red-400">*</span>
                               </label>
                               <input
                                 type="number"
-                                min="0"
+                                min="1"
                                 max="20"
+                                required
                                 value={propBeds}
-                                onChange={(e) => setPropBeds(e.target.value)}
+                                onChange={(e) => {
+                                  setPropBeds(e.target.value);
+                                  setPostErrorMsg("");
+                                }}
                                 className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3.5 py-2.5 text-xs text-white focus:border-[#f4c414] focus:outline-none"
                               />
                             </div>
                             <div>
                               <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                                Bathrooms
+                                Bathrooms <span className="text-red-400">*</span>
                               </label>
                               <input
                                 type="number"
-                                min="0"
+                                min="1"
                                 max="20"
+                                required
                                 value={propBaths}
-                                onChange={(e) => setPropBaths(e.target.value)}
+                                onChange={(e) => {
+                                  setPropBaths(e.target.value);
+                                  setPostErrorMsg("");
+                                }}
                                 className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3.5 py-2.5 text-xs text-white focus:border-[#f4c414] focus:outline-none"
                               />
                             </div>
                             <div>
                               <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                                Kitchens
+                                Kitchens <span className="text-red-400">*</span>
                               </label>
                               <input
                                 type="number"
-                                min="0"
+                                min="1"
                                 max="10"
+                                required
                                 value={propKitchens}
-                                onChange={(e) => setPropKitchens(e.target.value)}
+                                onChange={(e) => {
+                                  setPropKitchens(e.target.value);
+                                  setPostErrorMsg("");
+                                }}
                                 className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-3.5 py-2.5 text-xs text-white focus:border-[#f4c414] focus:outline-none"
                               />
                             </div>
@@ -1786,7 +1758,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                            Car Parking
+                            Car Parking <span className="text-red-400">*</span>
                           </label>
                           <select
                             value={propParking}
@@ -1802,7 +1774,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                            Condition
+                            Condition <span className="text-red-400">*</span>
                           </label>
                           <select
                             value={propCondition}
@@ -1862,27 +1834,34 @@ export function Index() {
                       </h2>
                       <div>
                         <label className="mb-2 block text-xs font-bold text-slate-300">
-                          Property Headline / Title *
+                          Property Headline / Title <span className="text-red-400">*</span>
                         </label>
                         <input
                           type="text"
                           required
                           placeholder="e.g., 10 Marla Brand New Spanish Designer House in DHA Phase 6"
                           value={propTitle}
-                          onChange={(e) => setPropTitle(e.target.value)}
+                          onChange={(e) => {
+                            setPropTitle(e.target.value);
+                            setPostErrorMsg("");
+                          }}
                           className="w-full rounded-xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
                         />
                       </div>
 
                       <div>
                         <label className="mb-2 block text-xs font-bold text-slate-300">
-                          Detailed Property Description
+                          Detailed Property Description <span className="text-red-400">*</span>
                         </label>
                         <textarea
                           rows={4}
+                          required
                           placeholder="Write complete details about construction quality, nearby landmarks (mosque, park, commercial market), floor plan, etc..."
                           value={propDescription}
-                          onChange={(e) => setPropDescription(e.target.value)}
+                          onChange={(e) => {
+                            setPropDescription(e.target.value);
+                            setPostErrorMsg("");
+                          }}
                           className="w-full rounded-2xl border border-sky-300/20 bg-[#070b14] px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:border-[#f4c414] focus:outline-none"
                         />
                       </div>
@@ -1891,12 +1870,12 @@ export function Index() {
                     {/* SECTION 6: Multiple Photos Upload */}
                     <div className="border-t border-sky-300/15 pt-7">
                       <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
-                        6. Property Gallery Photos (Up to 6 Photos)
+                        6. Property Gallery Photos (Up to 6 Photos) <span className="text-red-400">*</span>
                       </h2>
                       <div className="mt-3 rounded-2xl border-2 border-dashed border-[#f4c414]/45 bg-[#070b14] p-6 text-center">
                         <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-md transition hover:brightness-105">
                           <ImagePlus className="h-4 w-4" />
-                          <span>Select Property Photos From Device</span>
+                          <span>Select Property Photos From Device *</span>
                           <input
                             type="file"
                             accept="image/*"
@@ -2191,7 +2170,10 @@ export function Index() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => navigatePage("post-property")}
+                            onClick={() => {
+                              setPostErrorMsg("");
+                              navigatePage("post-property");
+                            }}
                             className="inline-flex items-center gap-2 rounded-xl bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
                           >
                             <PlusCircle className="h-4 w-4" /> Post New Property
@@ -2262,7 +2244,10 @@ export function Index() {
                     {currentUser?.id === viewedProfileUser.id && (
                       <button
                         type="button"
-                        onClick={() => navigatePage("post-property")}
+                        onClick={() => {
+                          setPostErrorMsg("");
+                          navigatePage("post-property");
+                        }}
                         className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f4c414] px-6 py-2.5 text-xs font-extrabold text-[#070b14]"
                       >
                         <PlusCircle className="h-4 w-4" /> Post Your First Property
@@ -3277,7 +3262,6 @@ export function Index() {
                 {/* Filter & Search Bar */}
                 <div className="mt-10 rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-4 shadow-xl backdrop-blur-md">
                   <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-                    {/* Search Input with Clear Button */}
                     <div className="relative w-full md:max-w-xs">
                       <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       <input
@@ -3299,7 +3283,6 @@ export function Index() {
                       )}
                     </div>
 
-                    {/* Purpose & Category Pills */}
                     <div className="flex flex-wrap items-center justify-center gap-2">
                       <div
                         className="mr-1 inline-flex rounded-full border border-sky-300/20 bg-[#080f1d]/80 p-0.5"
@@ -3348,7 +3331,6 @@ export function Index() {
                     </div>
                   </div>
 
-                  {/* Area Size Pills + Active Summary */}
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-sky-300/10 pt-3 text-[11px] text-slate-400">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className="mr-1 font-semibold text-slate-300">Plot / Area Size:</span>
@@ -3421,7 +3403,6 @@ export function Index() {
                             {displayPrice}
                           </span>
 
-                          {/* Save Wishlist Heart Button */}
                           <button
                             type="button"
                             onClick={(e) => {
@@ -3439,7 +3420,6 @@ export function Index() {
                             <Heart className={`h-3.5 w-3.5 ${isSaved ? "fill-current" : ""}`} />
                           </button>
 
-                          {/* Compare Badge */}
                           <button
                             type="button"
                             onClick={(e) => {
@@ -3543,7 +3523,6 @@ export function Index() {
                   })}
                 </div>
 
-                {/* Show More / Less Button if > 12 properties */}
                 {list.length > 12 && (
                   <div className="mt-10 text-center">
                     <button
@@ -3558,7 +3537,6 @@ export function Index() {
                   </div>
                 )}
 
-                {/* Empty State */}
                 {list.length === 0 && (
                   <div className="mt-10 rounded-2xl border border-sky-300/15 bg-[#0e172a]/70 py-12 text-center">
                     <p className="text-sm font-medium text-slate-200">
@@ -3649,6 +3627,44 @@ export function Index() {
           </div>
         </div>
       </div>
+
+      {/* Thank You Modal after submitting Property */}
+      {postThankYouOpen && (
+        <div
+          onClick={() => {
+            setPostThankYouOpen(false);
+            if (currentUser) setViewedProfileUser(currentUser);
+            navigatePage("user-profile");
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md rounded-3xl border border-[#f4c414]/50 bg-[#0b1322] p-8 text-center text-white shadow-2xl"
+          >
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500/20 text-emerald-400">
+              <CheckCircle2 className="h-9 w-9" />
+            </div>
+            <h2 className="mt-4 font-sans text-2xl font-extrabold text-white">
+              Thank You!
+            </h2>
+            <p className="mt-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
+              Shukriya! Aap ki property listing successfully submit ho gayi hai. AYTO Properties ki team verification ke baad isay website par live kar degi.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setPostThankYouOpen(false);
+                if (currentUser) setViewedProfileUser(currentUser);
+                navigatePage("user-profile");
+              }}
+              className="mt-6 w-full rounded-full bg-[#f4c414] py-3 text-xs font-extrabold text-[#070b14] shadow-lg transition hover:brightness-105"
+            >
+              OK, View My Dashboard
+            </button>
+          </div>
+        </div>
+      )}
 
       {compareIds.length > 0 && (
         <div className="fixed bottom-6 left-6 z-40 flex items-center gap-3 rounded-full border border-[#f4c414]/50 bg-[#0b1322]/95 px-4 py-2.5 text-xs shadow-2xl backdrop-blur-xl">
