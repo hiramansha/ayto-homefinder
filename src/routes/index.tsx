@@ -289,6 +289,26 @@ const galleryItems = [
   },
 ];
 
+const FALLBACK_PROPERTY_SVG =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0f1c34"/>
+          <stop offset="100%" stop-color="#1e355e"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="500" fill="url(#bg)"/>
+      <polygon points="400,115 220,250 580,250" fill="#f4c414"/>
+      <rect x="260" y="250" width="280" height="150" fill="#f8fafc" rx="6"/>
+      <rect x="370" y="310" width="60" height="90" fill="#0f1c34" rx="4"/>
+      <rect x="290" y="285" width="50" height="45" fill="#38bdf8" rx="4"/>
+      <rect x="460" y="285" width="50" height="45" fill="#38bdf8" rx="4"/>
+      <text x="400" y="455" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#f4d06f" text-anchor="middle">AYTO PROPERTIES • VERIFIED LISTING</text>
+    </svg>`
+  );
+
 const propertySampleImages: Record<string, string> = {
   House: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80",
   Villa: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1000&q=80",
@@ -334,7 +354,7 @@ function resolvePropertyImage(rawImg: unknown, category?: string): string {
   ) {
     return str;
   }
-  return propertySampleImages[category || "House"] || propertySampleImages["House"]!;
+  return propertySampleImages[category || "House"] || FALLBACK_PROPERTY_SVG;
 }
 
 function compressImageFile(file: File): Promise<string> {
@@ -1578,13 +1598,10 @@ export function Index() {
 
         /* ================= FIX DASHBOARD & CARD IMAGES IN LIGHT & DARK ================= */
         [data-ayto-photo-box] {
-          background-color: #cbd5e1 !important;
+          background-color: #131f36 !important;
           position: relative !important;
           overflow: hidden !important;
           isolation: isolate !important;
-        }
-        html.dark [data-ayto-photo-box] {
-          background-color: #131f36 !important;
         }
         [data-ayto-photo-box] img,
         [data-ayto-photo] {
@@ -1598,11 +1615,11 @@ export function Index() {
           filter: none !important;
           background: transparent !important;
           position: relative !important;
-          z-index: 2 !important;
+          z-index: 4 !important;
         }
         [data-ayto-photo-box] span,
         [data-ayto-photo-box] button {
-          z-index: 5 !important;
+          z-index: 10 !important;
         }
         [data-ayto-photo-badge] {
           background-color: rgba(15, 23, 42, 0.92) !important;
@@ -1612,8 +1629,7 @@ export function Index() {
           color: #f4c414 !important;
         }
         [data-ayto-photo-gradient] {
-          z-index: 3 !important;
-          background: linear-gradient(to top, rgba(7, 11, 20, 0.45), transparent 45%) !important;
+          display: none !important;
         }
 
         /* Keep Hero & Page Banner Overlay Text Readable */
@@ -2292,7 +2308,9 @@ export function Index() {
                                 src={safeImg}
                                 data-ayto-photo
                                 onError={(e) => {
-                                  e.currentTarget.src = propertySampleImages["House"]!;
+                                  if (e.currentTarget.src !== FALLBACK_PROPERTY_SVG) {
+                                    e.currentTarget.src = FALLBACK_PROPERTY_SVG;
+                                  }
                                 }}
                                 alt={item.title}
                                 className="h-20 w-24 object-cover"
@@ -2533,14 +2551,12 @@ export function Index() {
                               src={cardImage}
                               data-ayto-photo
                               onError={(e) => {
-                                e.currentTarget.src = propertySampleImages["House"]!;
+                                if (e.currentTarget.src !== FALLBACK_PROPERTY_SVG) {
+                                  e.currentTarget.src = FALLBACK_PROPERTY_SVG;
+                                }
                               }}
                               alt={item.title}
                               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            />
-                            <div
-                              data-ayto-photo-gradient
-                              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070b14]/65 via-transparent to-transparent"
                             />
                             <span
                               data-ayto-photo-badge
@@ -3692,7 +3708,9 @@ export function Index() {
                             src={cardImage}
                             data-ayto-photo
                             onError={(e) => {
-                              e.currentTarget.src = propertySampleImages["House"]!;
+                              if (e.currentTarget.src !== FALLBACK_PROPERTY_SVG) {
+                                e.currentTarget.src = FALLBACK_PROPERTY_SVG;
+                              }
                             }}
                             alt={p.title}
                             loading="lazy"
@@ -4035,6 +4053,11 @@ export function Index() {
                         <img
                           src={resolvePropertyImage(item.image)}
                           data-ayto-photo
+                          onError={(e) => {
+                            if (e.currentTarget.src !== FALLBACK_PROPERTY_SVG) {
+                              e.currentTarget.src = FALLBACK_PROPERTY_SVG;
+                            }
+                          }}
                           alt={item.title}
                           className="h-36 w-full object-cover"
                         />
