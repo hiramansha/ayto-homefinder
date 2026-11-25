@@ -774,13 +774,3 @@ html:not(.dark) footer a[href*="whatsapp"] svg {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
-/* Light mode mein dark dropdown (jis mein View All Projects button hai) ko chhupayein */
-html:not(.dark) header div:has(.bg-gradient-gold),
-html:not(.dark) header div:has(a[href="/projects"]) {
-  display: none !important;
-}
-
-/* Dark mode mein light dropdown (white background wala) ko chhupayein */
-html.dark header [class*="bg-white"] {
-  display: none !important;
-}
