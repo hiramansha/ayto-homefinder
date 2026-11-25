@@ -720,7 +720,7 @@ export function Index() {
     headerItems.forEach((el) => {
       const htmlEl = el as HTMLElement;
       const text = (htmlEl.textContent || "").replace(/[^\w\s]/g, "").trim().toLowerCase();
-      if (targetLabel && text === targetLabel) {
+      if (targetLabel && (text === targetLabel || (targetLabel === "projects" && text.startsWith("projects")))) {
         htmlEl.style.color = "#f4c414";
         htmlEl.style.textDecoration = "underline";
         htmlEl.style.textUnderlineOffset = "6px";
@@ -862,8 +862,33 @@ export function Index() {
         return;
       }
 
-      if (label === "view project") {
+      if (
+        label === "projects" ||
+        label.startsWith("projects ") ||
+        label === "view project" ||
+        label === "all projects"
+      ) {
         stopAndGo("projects");
+        return;
+      }
+
+      if (label.includes("ayto residency")) {
+        stopAndGo("projects", "ayto-residency");
+        return;
+      }
+
+      if (label.includes("ayto heights")) {
+        stopAndGo("projects", "ayto-heights");
+        return;
+      }
+
+      if (label.includes("ayto signature")) {
+        stopAndGo("projects", "ayto-signature");
+        return;
+      }
+
+      if (label.includes("ayto smart")) {
+        stopAndGo("projects", "ayto-smarthomes");
         return;
       }
 
@@ -1561,10 +1586,10 @@ export function Index() {
           box-shadow: 0 18px 40px -15px rgba(15, 23, 42, 0.12) !important;
         }
 
-        /* Light Theme: Inputs, Inner Boxes & Tab Switchers (Exclude Photo Containers) */
-        html:not(.dark) [class*="bg-[#070b14]"]:not([data-ayto-photo-box]):not([data-ayto-photo-badge]),
-        html:not(.dark) [class*="bg-[#080f1d]"]:not([data-ayto-photo-box]),
-        html:not(.dark) [class*="bg-[#050912]"]:not([data-ayto-photo-box]) {
+        /* Light Theme: Inputs, Inner Boxes & Tab Switchers (Exclude Photo & Banner Containers) */
+        html:not(.dark) [class*="bg-[#070b14]"]:not([data-ayto-photo-box]):not([data-ayto-photo-badge]):not([data-ayto-banner-hero]),
+        html:not(.dark) [class*="bg-[#080f1d]"]:not([data-ayto-photo-box]):not([data-ayto-banner-hero]),
+        html:not(.dark) [class*="bg-[#050912]"]:not([data-ayto-photo-box]):not([data-ayto-banner-hero]) {
           background-color: #f4f1ea !important;
           color: #0f172a !important;
           border-color: rgba(15, 23, 42, 0.15) !important;
@@ -1575,21 +1600,21 @@ export function Index() {
           background: linear-gradient(to right, #fdf8e7, #f5eedc, #efe4c8) !important;
         }
 
-        /* Light Theme: Text Colors inside Cards, Pages & Modals */
-        html:not(.dark) main .text-white,
+        /* Light Theme: Text Colors inside Cards, Pages & Modals (Exclude Hero Banners) */
+        html:not(.dark) main .text-white:not(.ayto-banner-text),
         html:not(.dark) .fixed .text-white {
           color: #0f172a !important;
         }
-        html:not(.dark) main .text-slate-300,
-        html:not(.dark) main .text-slate-200,
-        html:not(.dark) main .text-slate-400,
+        html:not(.dark) main .text-slate-300:not(.ayto-banner-text),
+        html:not(.dark) main .text-slate-200:not(.ayto-banner-text),
+        html:not(.dark) main .text-slate-400:not(.ayto-banner-text),
         html:not(.dark) .fixed .text-slate-300,
         html:not(.dark) .fixed .text-slate-400,
-        html:not(.dark) [class*="text-slate-300"],
-        html:not(.dark) [class*="text-slate-200"] {
+        html:not(.dark) [class*="text-slate-300"]:not(.ayto-banner-text),
+        html:not(.dark) [class*="text-slate-200"]:not(.ayto-banner-text) {
           color: #475569 !important;
         }
-        html:not(.dark) [class*="text-[#f4d06f]"] {
+        html:not(.dark) [class*="text-[#f4d06f]"]:not(.ayto-banner-text) {
           color: #9a7409 !important;
         }
 
@@ -1656,7 +1681,7 @@ export function Index() {
           isolation: isolate !important;
         }
         [data-ayto-photo-box] img,
-        [data-ayto-photo] {
+        [data-ayto-photo-box] [data-ayto-photo] {
           opacity: 1 !important;
           visibility: visible !important;
           display: block !important;
@@ -1684,20 +1709,52 @@ export function Index() {
           display: none !important;
         }
 
-        /* Keep Hero & Page Banner Overlay Text Readable */
-        .ayto-banner-overlay,
-        .ayto-banner-overlay h1,
-        .ayto-banner-overlay p {
-          color: #ffffff !important;
+        /* ================= CENTERED PAGE BANNERS (OUR OFFICES, PROJECTS, SERVICES, GALLERY) ================= */
+        [data-ayto-banner-hero] {
+          position: relative !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 100% !important;
+          overflow: hidden !important;
         }
-        .ayto-banner-overlay p:first-child {
+        [data-ayto-banner-hero] > img {
+          position: absolute !important;
+          inset: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+          object-position: center !important;
+          z-index: 0 !important;
+        }
+        [data-ayto-banner-hero] > .ayto-banner-shade {
+          position: absolute !important;
+          inset: 0 !important;
+          background: linear-gradient(to bottom, rgba(7, 11, 20, 0.72), rgba(7, 11, 20, 0.62), rgba(7, 11, 20, 0.85)) !important;
+          z-index: 1 !important;
+        }
+        [data-ayto-banner-hero] > .ayto-banner-content {
+          position: relative !important;
+          z-index: 2 !important;
+          width: 100% !important;
+          max-width: 52rem !important;
+          margin: 0 auto !important;
+          padding: 0 1.25rem !important;
+          text-align: center !important;
+        }
+        .ayto-banner-content h1,
+        .ayto-banner-content p {
+          color: #ffffff !important;
+          text-align: center !important;
+        }
+        .ayto-banner-content p:first-child {
           color: #f4d06f !important;
         }
 
         footer a[aria-label], footer > div:last-child a {
           display: none !important;
         }
-        main section, footer {
+        main section:not([data-ayto-banner-hero]), footer {
           background-color: transparent !important;
         }
         @keyframes aytoAuroraDrift1 {
@@ -2872,19 +2929,21 @@ export function Index() {
           </main>
         ) : activePage === "our-offices" ? (
           <main key="our-offices" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
-            <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <section
+              data-ayto-banner-hero
+              className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]"
+            >
               <img
                 src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=80"
-                data-ayto-photo
                 alt="AYTO Properties Head Office & Branches"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="ayto-banner-overlay absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
-              <div className="ayto-banner-overlay relative z-10 px-4 text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+              <div className="ayto-banner-shade" />
+              <div className="ayto-banner-content">
+                <p className="ayto-banner-text text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   Visit Us In Lahore
                 </p>
-                <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                <h1 className="ayto-banner-text mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                   Our Head Office &amp; Branches
                 </h1>
               </div>
@@ -2966,19 +3025,21 @@ export function Index() {
           </main>
         ) : activePage === "projects" ? (
           <main key="projects" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
-            <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <section
+              data-ayto-banner-hero
+              className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]"
+            >
               <img
                 src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80"
-                data-ayto-photo
                 alt="AYTO Properties Signature Projects"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="ayto-banner-overlay absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
-              <div className="ayto-banner-overlay relative z-10 px-4 text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+              <div className="ayto-banner-shade" />
+              <div className="ayto-banner-content">
+                <p className="ayto-banner-text text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   Developments &amp; Ventures
                 </p>
-                <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                <h1 className="ayto-banner-text mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                   Our Signature &amp; Ongoing Projects
                 </h1>
               </div>
@@ -3014,7 +3075,6 @@ export function Index() {
                       <div className="relative aspect-[16/10] w-full overflow-hidden">
                         <img
                           src={proj.image}
-                          data-ayto-photo
                           alt={proj.title}
                           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
@@ -3062,19 +3122,21 @@ export function Index() {
           </main>
         ) : activePage === "services" ? (
           <main key="services" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
-            <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
+            <section
+              data-ayto-banner-hero
+              className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]"
+            >
               <img
                 src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1800&q=80"
-                data-ayto-photo
                 alt="AYTO Properties Real Estate & Construction Services"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="ayto-banner-overlay absolute inset-0 bg-gradient-to-b from-[#070b14]/75 via-[#070b14]/60 to-[#070b14]" />
-              <div className="ayto-banner-overlay relative z-10 px-4 text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
+              <div className="ayto-banner-shade" />
+              <div className="ayto-banner-content">
+                <p className="ayto-banner-text text-xs font-semibold uppercase tracking-[0.25em] text-[#f4d06f]">
                   What We Offer
                 </p>
-                <h1 className="mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                <h1 className="ayto-banner-text mt-2 font-sans text-2xl font-bold tracking-tight text-white sm:text-4xl">
                   Our Real Estate &amp; Construction Services
                 </h1>
               </div>
@@ -3290,22 +3352,24 @@ export function Index() {
           </main>
         ) : activePage === "gallery" ? (
           <main key="gallery" className="ayto-page-enter relative isolate overflow-hidden pt-20 text-white">
-            <section className="relative flex h-[300px] w-full items-center justify-center overflow-hidden sm:h-[380px]">
+            <section
+              data-ayto-banner-hero
+              className="relative flex h-[300px] w-full items-center justify-center overflow-hidden sm:h-[380px]"
+            >
               <img
                 src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=80"
-                data-ayto-photo
                 alt="AYTO Properties Architecture & Interior Gallery"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
-              <div className="ayto-banner-overlay absolute inset-0 bg-gradient-to-b from-[#070b14]/80 via-[#070b14]/65 to-[#070b14]" />
-              <div className="ayto-banner-overlay relative z-10 px-4 text-center">
-                <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#f4d06f]">
+              <div className="ayto-banner-shade" />
+              <div className="ayto-banner-content">
+                <p className="ayto-banner-text inline-flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-[0.25em] text-[#f4d06f]">
                   <Sparkles className="h-3.5 w-3.5" /> Visual Portfolio
                 </p>
-                <h1 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+                <h1 className="ayto-banner-text mt-2 font-sans text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
                   Project &amp; Interior Gallery
                 </h1>
-                <p className="mx-auto mt-2 max-w-xl text-xs text-slate-200 sm:text-sm">
+                <p className="ayto-banner-text mx-auto mt-2 max-w-xl text-xs text-slate-200 sm:text-sm">
                   Click any project photo to view full architectural details in high resolution.
                 </p>
               </div>
@@ -3339,7 +3403,6 @@ export function Index() {
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <img
                         src={item.image}
-                        data-ayto-photo
                         alt={item.title}
                         loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -3392,7 +3455,6 @@ export function Index() {
                   <div className="bg-black">
                     <img
                       src={lightboxImg.image}
-                      data-ayto-photo
                       alt={lightboxImg.title}
                       className="mx-auto max-h-[60vh] w-full object-contain"
                     />
@@ -3660,7 +3722,7 @@ export function Index() {
                             className={`rounded-full px-3.5 py-1 text-xs font-bold transition ${
                               purposeFilter === v
                                 ? "bg-white text-[#070b14]"
-                                : "text-slate-200 hover:text-[#f4c414]"
+                                : "text-slate-200 hover:text-[#f4d06f]"
                             }`}
                           >
                             {l}
