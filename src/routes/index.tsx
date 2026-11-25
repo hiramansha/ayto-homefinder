@@ -324,6 +324,33 @@ const urgentRayaPlotListing = {
   isApproved: true,
 } as unknown as UserPostedProperty;
 
+function compressImageFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const maxWidth = 960;
+        const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(String(reader.result));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.78));
+      };
+      img.onerror = () => resolve(String(reader.result));
+      img.src = String(reader.result);
+    };
+    reader.onerror = () => reject(new Error("Failed to read image"));
+    reader.readAsDataURL(file);
+  });
+}
+
 function RoyalArchitecturalBackdrop() {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-gradient-to-b from-[#070b14] via-[#0b1322] to-[#070c16]">
@@ -467,32 +494,45 @@ export function Index() {
 
         if (listingsRes.ok) {
           const rows = await listingsRes.json();
-          if (Array.isArray(rows)) {
+          if (Array.isArray(rows) && rows.length > 0) {
             const baseTemplate = properties[0]!;
-            const mapped = rows.map((row: Record<string, unknown>) => ({
-              ...baseTemplate,
-              id: Number(row["id"]),
-              title: String(row["title"] || ""),
-              location: String(row["location"] || "Lahore"),
-              city: "Lahore",
-              ...({
-                type: String(row["category"] || "House"),
-                category: String(row["category"] || "House"),
-                purpose: "Sale",
-              }),
-              image: String(row["image"] || propertySampleImages["House"]),
-              ownerId: String(row["owner_id"] || ""),
-              ownerName: String(row["owner_name"] || "AYTO Member"),
-              ownerPhone: String(row["owner_phone"] || "+92 336-4785098"),
-              ownerAgency: row["owner_agency"] ? String(row["owner_agency"]) : undefined,
-              customPriceText: String(row["custom_price_text"] || ""),
-              areaText: String(row["area_text"] || "10 Marla"),
-              listingStatus: row["listing_status"] === "Sold" ? "Sold" : "Available",
-              isApproved: Boolean(row["is_approved"]),
-              beds: Number(row["beds"] || 0),
-            })) as unknown as UserPostedProperty[];
+            const mapped = rows.map((row: Record<string, unknown>) => {
+              const cat = String(row["category"] || "House");
+              const rawImg = String(row["image"] || "").trim();
+              const validImg =
+                rawImg && (rawImg.startsWith("data:image/") || rawImg.startsWith("http"))
+                  ? rawImg
+                  : propertySampleImages[cat] || propertySampleImages["House"]!;
+
+              return {
+                ...baseTemplate,
+                id: Number(row["id"]),
+                title: String(row["title"] || ""),
+                location: String(row["location"] || "Lahore"),
+                city: "Lahore",
+                ...({
+                  type: cat,
+                  category: cat,
+                  purpose: "Sale",
+                }),
+                image: validImg,
+                ownerId: String(row["owner_id"] || ""),
+                ownerName: String(row["owner_name"] || "AYTO Member"),
+                ownerPhone: String(row["owner_phone"] || "+92 336-4785098"),
+                ownerAgency: row["owner_agency"] ? String(row["owner_agency"]) : undefined,
+                customPriceText: String(row["custom_price_text"] || ""),
+                areaText: String(row["area_text"] || "10 Marla"),
+                listingStatus: row["listing_status"] === "Sold" ? "Sold" : "Available",
+                isApproved: Boolean(row["is_approved"]),
+                beds: Number(row["beds"] || 0),
+              };
+            }) as unknown as UserPostedProperty[];
             setUserListings(mapped);
-            localStorage.setItem(USER_POSTS_KEY, JSON.stringify(mapped));
+            try {
+              localStorage.setItem(USER_POSTS_KEY, JSON.stringify(mapped));
+            } catch {
+              /* ignore storage quota */
+            }
           }
         }
 
@@ -929,30 +969,29 @@ export function Index() {
     );
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
 
     if (propImages.length + files.length > 6) {
-      toast.error("Maximum 6 photos allowed per listing.");
+      toast.error("Maximum 6 photos are allowed per listing.");
       return;
     }
 
-    files.forEach((file) => {
-      if (file.size > 2.5 * 1024 * 1024) {
-        toast.error(`${file.name} is larger than 2.5 MB.`);
-        return;
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} exceeds the 5 MB size limit.`);
+        continue;
       }
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          setPropImages((prev) => [...prev, reader.result as string]);
-          setPostErrorMsg("");
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-    toast.success("Photo(s) added!");
+      try {
+        const compressedDataUrl = await compressImageFile(file);
+        setPropImages((prev) => [...prev, compressedDataUrl]);
+        setPostErrorMsg("");
+      } catch {
+        toast.error(`Could not process ${file.name}.`);
+      }
+    }
+    toast.success("Photo(s) uploaded successfully!");
   };
 
   const handleCreatePropertyListing = async (e: React.FormEvent) => {
@@ -983,7 +1022,7 @@ export function Index() {
     if (propImages.length === 0) missingFields.push("Property Gallery Photos (at least 1 photo)");
 
     if (missingFields.length > 0) {
-      const msg = `Ye important cheezein missing hain: ${missingFields.join(", ")}. Please fill all * marked fields!`;
+      const msg = `Missing required fields: ${missingFields.join(", ")}. Please complete all * marked fields before submitting.`;
       setPostErrorMsg(msg);
       toast.error(msg);
       return;
@@ -1073,9 +1112,13 @@ export function Index() {
 
     const nextListings = [newListing, ...userListings];
     setUserListings(nextListings);
-    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
+    try {
+      localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
+    } catch {
+      /* ignore storage quota */
+    }
 
-    toast.success("Thank you! Aap ki property successfully submit ho gayi hai.");
+    toast.success("Thank you! Your property listing has been submitted for verification.");
     setPropTitle("");
     setPropLocation("");
     setPropPriceValue("");
@@ -1139,7 +1182,11 @@ export function Index() {
     setUserListings(nextListings);
     localStorage.setItem(USERS_KEY, JSON.stringify(nextUsers));
     localStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser));
-    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
+    try {
+      localStorage.setItem(USER_POSTS_KEY, JSON.stringify(nextListings));
+    } catch {
+      /* ignore */
+    }
     setEditProfileOpen(false);
     toast.success("Profile updated!");
   };
@@ -1181,7 +1228,11 @@ export function Index() {
         : item,
     );
     setUserListings(updatedListings);
-    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updatedListings));
+    try {
+      localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updatedListings));
+    } catch {
+      /* ignore */
+    }
     setEditingListing(null);
     toast.success("Property listing updated!");
   };
@@ -1198,7 +1249,11 @@ export function Index() {
 
     const updated = userListings.filter((item) => item.id !== listingId);
     setUserListings(updated);
-    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
+    try {
+      localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
+    } catch {
+      /* ignore */
+    }
     toast.success("Listing removed!");
   };
 
@@ -1216,7 +1271,11 @@ export function Index() {
       item.id === listingId ? { ...item, isApproved: approve } : item,
     );
     setUserListings(updated);
-    localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
+    try {
+      localStorage.setItem(USER_POSTS_KEY, JSON.stringify(updated));
+    } catch {
+      /* ignore */
+    }
     toast.success(approve ? "✓ Post Approved & Live on Website!" : "Post Moved to Pending!");
   };
 
@@ -1378,6 +1437,20 @@ export function Index() {
           background-color: #070b14 !important;
           background: #070b14 !important;
         }
+        /* Ensure property photos always render crisply in both Light and Dark themes */
+        [data-ayto-photo-box] {
+          background-color: #131f36 !important;
+        }
+        [data-ayto-photo] {
+          opacity: 1 !important;
+          visibility: visible !important;
+          display: block !important;
+          mix-blend-mode: normal !important;
+          filter: none !important;
+        }
+        [data-ayto-photo-gradient] {
+          background: linear-gradient(to top, rgba(7, 11, 20, 0.72), transparent 55%) !important;
+        }
         header {
           left: 0 !important;
           right: 0 !important;
@@ -1513,7 +1586,7 @@ export function Index() {
                     Sign In Required to Post Property
                   </h1>
                   <p className="mx-auto mt-2 max-w-md text-xs text-slate-300">
-                    Apni property list karne ke liye pehle apna seller account login ya sign up karein.
+                    Please log in or create a seller account to list your property on AYTO Properties.
                   </p>
                   <button
                     type="button"
@@ -1537,13 +1610,13 @@ export function Index() {
                       List Your Property With Complete Details
                     </h1>
                     <p className="mt-1 text-xs text-slate-300">
-                      Accurate details aur clear photos add karne se buyers ka trust barhta hai aur deal jaldi close hoti hai. (<span className="font-bold text-[#f4c414]">*</span> marked fields zaroori hain)
+                      Adding accurate details and clear photos builds buyer trust and helps close deals faster. Fields marked with (<span className="font-bold text-[#f4c414]">*</span>) are required.
                     </p>
                   </div>
 
                   <form noValidate onSubmit={handleCreatePropertyListing} className="space-y-8 p-6 sm:p-9">
                     {postErrorMsg && (
-                      <div className="rounded-2xl border border-red-500/60 bg-red-500/15 px-4 py-3 text-xs font-bold text-red-300">
+                      <div className="rounded-2xl border border-red-500/60 bg-red-500/15 px-4 py-3 text-xs font-bold text-red-400">
                         ⚠️ {postErrorMsg}
                       </div>
                     )}
@@ -1556,7 +1629,7 @@ export function Index() {
                       <div className="mt-4 grid gap-5 sm:grid-cols-2">
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Listing Purpose <span className="text-red-400">*</span>
+                            Listing Purpose <span className="text-red-500">*</span>
                           </label>
                           <div className="grid grid-cols-2 gap-2.5 rounded-xl border border-sky-300/20 bg-[#070b14] p-1.5">
                             {(["Sale", "Rent"] as const).map((p) => (
@@ -1578,7 +1651,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Property Category <span className="text-red-400">*</span>
+                            Property Category <span className="text-red-500">*</span>
                           </label>
                           <select
                             value={propCategory}
@@ -1603,7 +1676,7 @@ export function Index() {
                       <div className="mt-4 grid gap-5 sm:grid-cols-2">
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            City <span className="text-red-400">*</span>
+                            City <span className="text-red-500">*</span>
                           </label>
                           <select
                             value={propCity}
@@ -1616,7 +1689,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Society / Phase / Block <span className="text-red-400">*</span>
+                            Society / Phase / Block <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
@@ -1633,7 +1706,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Area Size &amp; Unit <span className="text-red-400">*</span>
+                            Area Size &amp; Unit <span className="text-red-500">*</span>
                           </label>
                           <div className="grid grid-cols-[1.2fr_1fr] gap-2.5">
                             <input
@@ -1664,7 +1737,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-2 block text-xs font-bold text-slate-300">
-                            Total Demand / Price (PKR) <span className="text-red-400">*</span>
+                            Total Demand / Price (PKR) <span className="text-red-500">*</span>
                           </label>
                           <div className="grid grid-cols-[1.2fr_1fr] gap-2.5">
                             <input
@@ -1704,7 +1777,7 @@ export function Index() {
                           <>
                             <div>
                               <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                                Bedrooms <span className="text-red-400">*</span>
+                                Bedrooms <span className="text-red-500">*</span>
                               </label>
                               <input
                                 type="number"
@@ -1721,7 +1794,7 @@ export function Index() {
                             </div>
                             <div>
                               <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                                Bathrooms <span className="text-red-400">*</span>
+                                Bathrooms <span className="text-red-500">*</span>
                               </label>
                               <input
                                 type="number"
@@ -1738,7 +1811,7 @@ export function Index() {
                             </div>
                             <div>
                               <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                                Kitchens <span className="text-red-400">*</span>
+                                Kitchens <span className="text-red-500">*</span>
                               </label>
                               <input
                                 type="number"
@@ -1758,7 +1831,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                            Car Parking <span className="text-red-400">*</span>
+                            Car Parking <span className="text-red-500">*</span>
                           </label>
                           <select
                             value={propParking}
@@ -1774,7 +1847,7 @@ export function Index() {
 
                         <div>
                           <label className="mb-1.5 block text-[11px] font-bold text-slate-300">
-                            Condition <span className="text-red-400">*</span>
+                            Condition <span className="text-red-500">*</span>
                           </label>
                           <select
                             value={propCondition}
@@ -1834,7 +1907,7 @@ export function Index() {
                       </h2>
                       <div>
                         <label className="mb-2 block text-xs font-bold text-slate-300">
-                          Property Headline / Title <span className="text-red-400">*</span>
+                          Property Headline / Title <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -1851,7 +1924,7 @@ export function Index() {
 
                       <div>
                         <label className="mb-2 block text-xs font-bold text-slate-300">
-                          Detailed Property Description <span className="text-red-400">*</span>
+                          Detailed Property Description <span className="text-red-500">*</span>
                         </label>
                         <textarea
                           rows={4}
@@ -1870,7 +1943,7 @@ export function Index() {
                     {/* SECTION 6: Multiple Photos Upload */}
                     <div className="border-t border-sky-300/15 pt-7">
                       <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f4d06f]">
-                        6. Property Gallery Photos (Up to 6 Photos) <span className="text-red-400">*</span>
+                        6. Property Gallery Photos (Up to 6 Photos) <span className="text-red-500">*</span>
                       </h2>
                       <div className="mt-3 rounded-2xl border-2 border-dashed border-[#f4c414]/45 bg-[#070b14] p-6 text-center">
                         <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#f4c414] px-5 py-2.5 text-xs font-extrabold text-[#070b14] shadow-md transition hover:brightness-105">
@@ -1885,7 +1958,7 @@ export function Index() {
                           />
                         </label>
                         <p className="mt-2 text-[11px] text-slate-400">
-                          Front elevation, lounge, bedrooms aur kitchen ki clear tasveerein upload karein (Max 2.5MB each).
+                          Upload clear photos of the front elevation, lounge, bedrooms, and kitchen (Max 5MB each).
                         </p>
 
                         {propImages.length > 0 && (
@@ -1893,10 +1966,12 @@ export function Index() {
                             {propImages.map((imgSrc, idx) => (
                               <div
                                 key={idx}
+                                data-ayto-photo-box
                                 className="group relative overflow-hidden rounded-xl border border-sky-300/20"
                               >
                                 <img
                                   src={imgSrc}
+                                  data-ayto-photo
                                   alt={`Property preview ${idx + 1}`}
                                   className="h-32 w-full object-cover"
                                 />
@@ -1982,7 +2057,7 @@ export function Index() {
                         setAdminUnlocked(true);
                         toast.success("Welcome Owner! Admin Panel Unlocked.");
                       } else {
-                        toast.error("Galat PIN! Dobara koshish karein.");
+                        toast.error("Incorrect PIN! Please try again.");
                       }
                     }}
                     className="mt-5 space-y-3"
@@ -2014,7 +2089,7 @@ export function Index() {
                         Pending &amp; Live Posts ({userListings.length})
                       </h1>
                       <p className="text-xs text-slate-300">
-                        EasyPaisa (03314972426) payment check karke 1 click se Approve karein.
+                        Verify payment details and approve property posts with one click.
                       </p>
                     </div>
                     <button
@@ -2037,6 +2112,7 @@ export function Index() {
                           <div className="flex items-center gap-4">
                             <img
                               src={item.image}
+                              data-ayto-photo
                               alt={item.title}
                               className="h-20 w-24 shrink-0 rounded-xl object-cover"
                             />
@@ -2262,13 +2338,28 @@ export function Index() {
                         onClick={() => setOpen(item)}
                         className="group cursor-pointer overflow-hidden rounded-2xl border border-sky-300/15 bg-[#0e172a]/90 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/60"
                       >
-                        <div className="relative aspect-[16/10] overflow-hidden bg-[#131f36]">
+                        <div
+                          data-ayto-photo-box
+                          className="relative aspect-[16/10] overflow-hidden bg-[#131f36]"
+                        >
                           <img
-                            src={item.image}
+                            src={
+                              item.image &&
+                              (item.image.startsWith("data:image/") || item.image.startsWith("http"))
+                                ? item.image
+                                : propertySampleImages["House"]!
+                            }
+                            data-ayto-photo
+                            onError={(e) => {
+                              e.currentTarget.src = propertySampleImages["House"]!;
+                            }}
                             alt={item.title}
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#070b14]/80 via-transparent to-transparent" />
+                          <div
+                            data-ayto-photo-gradient
+                            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070b14]/80 via-transparent to-transparent"
+                          />
                           <span className="absolute left-3.5 top-3.5 rounded-lg bg-[#070b14]/90 px-3 py-1 text-xs font-extrabold text-[#f4c414] backdrop-blur-md">
                             {item.customPriceText}
                           </span>
@@ -2283,7 +2374,7 @@ export function Index() {
                           >
                             {!item.isApproved ? "Pending Verification" : item.listingStatus || "Available"}
                           </span>
-                          <span className="absolute bottom-3 left-3.5 inline-flex items-center gap-1 text-[11px] font-semibold text-white/90">
+                          <span className="absolute bottom-3 left-3.5 inline-flex items-center gap-1 rounded-md bg-[#070b14]/75 px-2 py-0.5 text-[11px] font-semibold text-white">
                             <Maximize2 className="h-3 w-3 text-[#f4c414]" /> {item.areaText}
                           </span>
                         </div>
@@ -2388,6 +2479,7 @@ export function Index() {
                   <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#131d33]">
                     <img
                       src={directorPhotos[0]}
+                      data-ayto-photo
                       draggable={false}
                       onContextMenu={(e) => e.preventDefault()}
                       onDragStart={(e) => e.preventDefault()}
@@ -2526,6 +2618,7 @@ export function Index() {
             <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
               <img
                 src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1800&q=80"
+                data-ayto-photo
                 alt="AYTO Properties Head Office & Branches"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
@@ -2619,6 +2712,7 @@ export function Index() {
             <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
               <img
                 src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80"
+                data-ayto-photo
                 alt="AYTO Properties Signature Projects"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
@@ -2663,6 +2757,7 @@ export function Index() {
                       <div className="relative aspect-[16/10] w-full overflow-hidden">
                         <img
                           src={proj.image}
+                          data-ayto-photo
                           alt={proj.title}
                           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
@@ -2713,6 +2808,7 @@ export function Index() {
             <section className="relative flex h-[280px] w-full items-center justify-center overflow-hidden sm:h-[360px]">
               <img
                 src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1800&q=80"
+                data-ayto-photo
                 alt="AYTO Properties Real Estate & Construction Services"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
@@ -2940,6 +3036,7 @@ export function Index() {
             <section className="relative flex h-[300px] w-full items-center justify-center overflow-hidden sm:h-[380px]">
               <img
                 src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=80"
+                data-ayto-photo
                 alt="AYTO Properties Architecture & Interior Gallery"
                 className="absolute inset-0 h-full w-full object-cover object-center"
               />
@@ -2985,6 +3082,7 @@ export function Index() {
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <img
                         src={item.image}
+                        data-ayto-photo
                         alt={item.title}
                         loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -3037,6 +3135,7 @@ export function Index() {
                   <div className="bg-black">
                     <img
                       src={lightboxImg.image}
+                      data-ayto-photo
                       alt={lightboxImg.title}
                       className="mx-auto max-h-[60vh] w-full object-contain"
                     />
@@ -3392,9 +3491,13 @@ export function Index() {
                         onClick={() => setOpen(p)}
                         className="group cursor-pointer rounded-2xl border border-sky-300/15 bg-[#0e172a]/85 p-2.5 shadow-lg backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-[#f4d06f]/50"
                       >
-                        <div className="relative aspect-square overflow-hidden rounded-xl bg-[#131f36] shadow-lg">
+                        <div
+                          data-ayto-photo-box
+                          className="relative aspect-square overflow-hidden rounded-xl bg-[#131f36] shadow-lg"
+                        >
                           <img
                             src={p.image}
+                            data-ayto-photo
                             alt={p.title}
                             loading="lazy"
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -3649,7 +3752,7 @@ export function Index() {
               Thank You!
             </h2>
             <p className="mt-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
-              Shukriya! Aap ki property listing successfully submit ho gayi hai. AYTO Properties ki team verification ke baad isay website par live kar degi.
+              Thank you for submitting your property! Your listing has been received and will go live on the website once verified by the AYTO Properties team.
             </p>
             <button
               type="button"
@@ -3731,6 +3834,7 @@ export function Index() {
                     >
                       <img
                         src={item.image}
+                        data-ayto-photo
                         alt={item.title}
                         className="h-36 w-full rounded-xl object-cover"
                       />
