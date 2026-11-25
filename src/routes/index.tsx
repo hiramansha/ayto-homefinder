@@ -647,6 +647,17 @@ export function Index() {
         if (el instanceof HTMLAnchorElement && el.href.includes("3314972426")) {
           el.href = el.href.replace(/3314972426/g, "3364785098");
         }
+        if (el.closest("footer") && el.textContent?.includes("0336-4785098")) {
+          const htmlEl = el as HTMLElement;
+          htmlEl.style.backgroundColor = "transparent";
+          htmlEl.style.background = "transparent";
+          htmlEl.style.boxShadow = "none";
+          htmlEl.style.padding = "0";
+          if (htmlEl.parentElement && htmlEl.parentElement.closest("footer")) {
+            htmlEl.parentElement.style.backgroundColor = "transparent";
+            htmlEl.parentElement.style.background = "transparent";
+          }
+        }
       });
     };
 
@@ -1593,6 +1604,47 @@ export function Index() {
         }
         html:not(.dark) .bg-red-500,
         html:not(.dark) [class*="bg-[#25D366]"] {
+          color: #ffffff !important;
+        }
+
+        /* ================= FOOTER PHONE CLEANUP & SOCIAL ICONS FIX ================= */
+        footer a[href^="tel:"],
+        footer a[href^="tel:"] *,
+        footer [class*="bg-[#25D366]"],
+        footer [class*="bg-emerald"],
+        footer [class*="bg-green"] {
+          background-color: transparent !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+          border-radius: 0 !important;
+        }
+        html:not(.dark) footer a[href^="tel:"],
+        html:not(.dark) footer a[href^="tel:"] * {
+          color: #475569 !important;
+        }
+        html.dark footer a[href^="tel:"],
+        html.dark footer a[href^="tel:"] * {
+          color: #cbd5e1 !important;
+        }
+
+        [data-ayto-social-bar] a,
+        [data-ayto-social-bar] button,
+        [data-ayto-social-bar] svg {
+          color: #ffffff !important;
+          fill: #ffffff !important;
+        }
+        [data-ayto-social-bar] [data-ayto-twitter] {
+          background-color: #0f1419 !important;
+          color: #ffffff !important;
+        }
+        [data-ayto-social-bar] [data-ayto-facebook] {
+          background-color: #1877F2 !important;
+          color: #ffffff !important;
+        }
+        [data-ayto-social-bar] [data-ayto-whatsapp] {
+          background-color: #25D366 !important;
           color: #ffffff !important;
         }
 
@@ -3894,16 +3946,17 @@ export function Index() {
               <span className="font-semibold text-white">AYTO Properties &amp; Builders</span>
             </p>
 
-            <div className="flex items-center gap-3.5">
+            <div data-ayto-social-bar className="flex items-center gap-3.5">
               <a
                 href="https://www.facebook.com/profile.php?id=61596721197006"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
+                data-ayto-facebook
                 title="AYTO Properties Official Facebook"
                 className="grid h-10 w-10 place-items-center rounded-full bg-[#1877F2] text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
-                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.3A21 21 0 0 0 14.6 2C12.3 2 10.7 3.4 10.7 6v2.5H8V12h2.7v10H14V12h2.7l.4-3.5H14Z" /></svg>
+                <svg className="h-5 w-5 fill-white" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.3A21 21 0 0 0 14.6 2C12.3 2 10.7 3.4 10.7 6v2.5H8V12h2.7v10H14V12h2.7l.4-3.5H14Z" /></svg>
               </a>
 
               <a
@@ -3918,7 +3971,7 @@ export function Index() {
                 }}
                 className="grid h-10 w-10 place-items-center rounded-full text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
-                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                <svg className="h-5 w-5 fill-white" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                 </svg>
               </a>
@@ -3928,20 +3981,24 @@ export function Index() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter"
-                title="Twitter"
+                data-ayto-twitter
+                title="Twitter / X"
+                style={{ backgroundColor: "#0f1419", color: "#ffffff" }}
                 className="grid h-10 w-10 place-items-center rounded-full bg-[#0f1419] text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
-                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2.3h3.4l-7.4 8.4 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9L.9 2.3h7l4.8 6.4 5.5-6.4Zm-1.2 17.9h1.9L7.1 4.2H5.1l11.9 16Z" /></svg>
+                <svg className="h-4 w-4 fill-white" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2.3h3.4l-7.4 8.4 8.7 11.5h-6.8l-5.3-7-6.1 7H1.3l7.9-9L.9 2.3h7l4.8 6.4 5.5-6.4Zm-1.2 17.9h1.9L7.1 4.2H5.1l11.9 16Z" /></svg>
               </a>
 
               <button
                 type="button"
                 onClick={() => openWhatsAppChat()}
                 aria-label="WhatsApp"
+                data-ayto-whatsapp
                 title="WhatsApp (+92 336-4785098)"
+                style={{ backgroundColor: "#25D366", color: "#ffffff" }}
                 className="grid h-10 w-10 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-200 hover:scale-110"
               >
-                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z" /></svg>
+                <svg className="h-5 w-5 fill-white" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z" /></svg>
               </button>
             </div>
           </div>
@@ -4314,7 +4371,7 @@ export function Index() {
         title="WhatsApp (+92 336-4785098)"
         className="fixed bottom-6 right-6 z-50 grid h-[66px] w-[66px] place-items-center rounded-full bg-[#25D366] text-white shadow-[0_8px_26px_rgba(37,211,102,0.5)] transition-transform duration-200 hover:scale-110"
       >
-        <svg className="h-9 w-9 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+        <svg className="h-9 w-9 fill-white" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z" />
         </svg>
       </button>
