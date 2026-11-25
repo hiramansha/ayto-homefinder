@@ -353,7 +353,7 @@ function compressImageFile(file: File): Promise<string> {
 
 function RoyalArchitecturalBackdrop() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-gradient-to-b from-[#070b14] via-[#0b1322] to-[#070c16]">
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-gradient-to-b from-[#fbf9f3] via-[#f6f1e3] to-[#fbf9f3] dark:from-[#070b14] dark:via-[#0b1322] dark:to-[#070c16]">
       <svg
         className="ayto-lattice-pulse absolute inset-0 h-full w-full opacity-35"
         xmlns="http://www.w3.org/2000/svg"
@@ -368,13 +368,13 @@ function RoyalArchitecturalBackdrop() {
             <path
               d="M46 0 L92 46 L46 92 L0 46 Z"
               fill="none"
-              stroke="rgba(148, 185, 255, 0.14)"
+              stroke="rgba(180, 142, 34, 0.14)"
               strokeWidth="1"
             />
             <path
               d="M46 16 L76 46 L46 76 L16 46 Z"
               fill="none"
-              stroke="rgba(244, 208, 111, 0.08)"
+              stroke="rgba(212, 175, 55, 0.08)"
               strokeWidth="0.8"
             />
           </pattern>
@@ -382,9 +382,9 @@ function RoyalArchitecturalBackdrop() {
         <rect width="100%" height="100%" fill="url(#ayto-diamond-grid)" />
       </svg>
 
-      <div className="ayto-aurora-1 absolute -left-32 -top-24 h-[520px] w-[520px] rounded-full bg-[#1a3c78]/35 blur-[135px]" />
+      <div className="ayto-aurora-1 absolute -left-32 -top-24 h-[520px] w-[520px] rounded-full bg-[#1a3c78]/10 blur-[135px] dark:bg-[#1a3c78]/35" />
       <div className="ayto-aurora-2 absolute -right-24 top-1/4 h-[500px] w-[500px] rounded-full bg-[#d4af37]/16 blur-[145px]" />
-      <div className="ayto-aurora-3 absolute bottom-[-10%] left-1/4 h-[480px] w-[480px] rounded-full bg-[#124563]/35 blur-[135px]" />
+      <div className="ayto-aurora-3 absolute bottom-[-10%] left-1/4 h-[480px] w-[480px] rounded-full bg-[#124563]/10 blur-[135px] dark:bg-[#124563]/35" />
 
       <div className="absolute right-[-60px] top-[-10%] h-[125%] w-[680px] overflow-hidden opacity-90">
         <div className="ayto-beam-left absolute right-[290px] top-[-10%] h-[135%] w-[2px] -rotate-[22deg] bg-gradient-to-b from-transparent via-[#f4d06f]/85 to-transparent shadow-[0_0_24px_4px_rgba(244,208,111,0.55)]" />
@@ -1430,6 +1430,7 @@ export function Index() {
       className="relative min-h-screen bg-[#070b14] text-white selection:bg-[#f4c414] selection:text-[#070b14]"
     >
       <style>{`
+        /* ================= DARK THEME ================= */
         html.dark, html.dark body, html.dark #top,
         html.dark #top > div:has(header),
         html.dark header,
@@ -1437,20 +1438,114 @@ export function Index() {
           background-color: #070b14 !important;
           background: #070b14 !important;
         }
-        /* Ensure property photos always render crisply in both Light and Dark themes */
+
+        /* ================= LIGHT THEME SUPPORT ================= */
+        html:not(.dark) #top {
+          background-color: #f8f6f0 !important;
+          color: #0f172a !important;
+        }
+
+        /* Light Theme: Modals, Cards, Dashboard & Post Property Containers */
+        html:not(.dark) [class*="bg-[#0b1322]"],
+        html:not(.dark) [class*="bg-[#0e172a]"],
+        html:not(.dark) [class*="bg-[#0f192d]"] {
+          background-color: #ffffff !important;
+          color: #0f172a !important;
+          border-color: rgba(180, 142, 34, 0.35) !important;
+          box-shadow: 0 18px 40px -15px rgba(15, 23, 42, 0.12) !important;
+        }
+
+        /* Light Theme: Inputs, Inner Boxes & Tab Switchers */
+        html:not(.dark) [class*="bg-[#070b14]"],
+        html:not(.dark) [class*="bg-[#080f1d]"],
+        html:not(.dark) [class*="bg-[#050912]"] {
+          background-color: #f4f1ea !important;
+          color: #0f172a !important;
+          border-color: rgba(15, 23, 42, 0.15) !important;
+        }
+
+        /* Light Theme: Gradient Banners inside Dashboard & Post Form */
+        html:not(.dark) [class*="from-[#13264a]"] {
+          background: linear-gradient(to right, #fdf8e7, #f5eedc, #efe4c8) !important;
+        }
+
+        /* Light Theme: Text Colors inside Cards, Pages & Modals */
+        html:not(.dark) main .text-white,
+        html:not(.dark) .fixed .text-white {
+          color: #0f172a !important;
+        }
+        html:not(.dark) main .text-slate-300,
+        html:not(.dark) main .text-slate-200,
+        html:not(.dark) main .text-slate-400,
+        html:not(.dark) .fixed .text-slate-300,
+        html:not(.dark) .fixed .text-slate-400,
+        html:not(.dark) [class*="text-slate-300"],
+        html:not(.dark) [class*="text-slate-200"] {
+          color: #475569 !important;
+        }
+        html:not(.dark) [class*="text-[#f4d06f]"] {
+          color: #9a7409 !important;
+        }
+
+        /* Keep Dark Badges & Yellow Buttons Readable in Light Mode */
+        html:not(.dark) [class*="bg-[#f4c414]"],
+        html:not(.dark) [class*="bg-[#f4c414]"] * {
+          color: #070b14 !important;
+        }
+        html:not(.dark) .bg-emerald-500,
+        html:not(.dark) .bg-amber-400 {
+          color: #070b14 !important;
+        }
+        html:not(.dark) .bg-red-500,
+        html:not(.dark) [class*="bg-[#25D366]"] {
+          color: #ffffff !important;
+        }
+
+        /* ================= FIX DASHBOARD IMAGES IN LIGHT & DARK ================= */
         [data-ayto-photo-box] {
+          background-color: #e2e8f0 !important;
+          position: relative !important;
+          overflow: hidden !important;
+        }
+        html.dark [data-ayto-photo-box] {
           background-color: #131f36 !important;
         }
+        [data-ayto-photo-box] img,
         [data-ayto-photo] {
           opacity: 1 !important;
           visibility: visible !important;
           display: block !important;
           mix-blend-mode: normal !important;
           filter: none !important;
+          position: relative !important;
+          z-index: 1 !important;
+        }
+        [data-ayto-photo-box] span,
+        [data-ayto-photo-box] button {
+          z-index: 3 !important;
+        }
+        [data-ayto-photo-box] [class*="bg-[#070b14]"] {
+          background-color: rgba(15, 23, 42, 0.88) !important;
+          color: #ffffff !important;
+        }
+        [data-ayto-photo-box] [class*="text-[#f4c414]"] {
+          color: #f4c414 !important;
         }
         [data-ayto-photo-gradient] {
-          background: linear-gradient(to top, rgba(7, 11, 20, 0.72), transparent 55%) !important;
+          z-index: 2 !important;
+          background: linear-gradient(to top, rgba(7, 11, 20, 0.65), transparent 55%) !important;
         }
+
+        /* Keep Hero & Page Banner Overlay Text Readable */
+        .ayto-banner-overlay,
+        .ayto-banner-overlay h1,
+        .ayto-banner-overlay p {
+          color: #ffffff !important;
+        }
+        .ayto-banner-overlay p:first-child {
+          color: #f4d06f !important;
+        }
+
         header {
           left: 0 !important;
           right: 0 !important;
