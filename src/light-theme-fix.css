@@ -1,28 +1,28 @@
 /* ============================================================================
-   AYTO HOMEFINDER — LIGHT THEME & PAGE HEADER FIXES
-   Dark Theme remains 100% untouched.
+   AYTO HOMEFINDER — LIGHT THEME & PAGE HEADER FIXES (HIGH SPECIFICITY)
+   Dark Theme & Home Page Hero Banner remain 100% untouched.
    ============================================================================ */
 
 /* 1. Base Light Theme Background & Text */
-html:not(.dark) #top {
+html:not(.dark) body #top {
   background-color: #f8f6f0 !important;
   color: #0f172a !important;
 }
 
 /* 2. Light Theme: Modals, Cards, Dashboard, Query Form & Post Property Containers */
-html:not(.dark) [class*="bg-[#0b1322]"],
-html:not(.dark) [class*="bg-[#0e172a]"],
-html:not(.dark) [class*="bg-[#0f192d]"],
-html:not(.dark) [class*="bg-[#16181D]"],
-html:not(.dark) [class*="bg-[#1c1d21]"],
-html:not(.dark) [class*="bg-[#1f2024]"],
-html:not(.dark) [class*="bg-[#232428]"],
-html:not(.dark) [class*="bg-[#26272b]"],
-html:not(.dark) [class*="bg-zinc-900"],
-html:not(.dark) [class*="bg-neutral-900"],
-html:not(.dark) main form[class*="bg-"],
-html:not(.dark) #contact form,
-html:not(.dark) #contact > div > div[class*="rounded-"] {
+html:not(.dark) body #top [class*="bg-[#0b1322]"],
+html:not(.dark) body #top [class*="bg-[#0e172a]"],
+html:not(.dark) body #top [class*="bg-[#0f192d]"],
+html:not(.dark) body #top [class*="bg-[#16181D]"],
+html:not(.dark) body #top [class*="bg-[#1c1d21]"],
+html:not(.dark) body #top [class*="bg-[#1f2024]"],
+html:not(.dark) body #top [class*="bg-[#232428]"],
+html:not(.dark) body #top [class*="bg-[#26272b]"],
+html:not(.dark) body #top [class*="bg-zinc-900"],
+html:not(.dark) body #top [class*="bg-neutral-900"],
+html:not(.dark) body #top main form[class*="bg-"],
+html:not(.dark) body #top #contact form,
+html:not(.dark) body #top #contact > div > div[class*="rounded-"] {
   background-color: #ffffff !important;
   color: #0f172a !important;
   border-color: rgba(180, 142, 34, 0.35) !important;
@@ -30,153 +30,127 @@ html:not(.dark) #contact > div > div[class*="rounded-"] {
 }
 
 /* 3. Light Theme: Inputs, Select Dropdowns & Inner Boxes */
-html:not(.dark) [class*="bg-[#070b14]"]:not([data-ayto-photo-box]):not([data-ayto-photo-badge]):not([data-ayto-banner-hero]),
-html:not(.dark) [class*="bg-[#080f1d]"]:not([data-ayto-photo-box]):not([data-ayto-banner-hero]),
-html:not(.dark) [class*="bg-[#050912]"]:not([data-ayto-photo-box]):not([data-ayto-banner-hero]),
-html:not(.dark) main input,
-html:not(.dark) main select,
-html:not(.dark) main textarea {
+html:not(.dark) body #top [class*="bg-[#070b14]"]:not([data-ayto-photo-box]):not([data-ayto-photo-badge]):not([data-ayto-banner-hero]),
+html:not(.dark) body #top [class*="bg-[#080f1d]"]:not([data-ayto-photo-box]):not([data-ayto-banner-hero]),
+html:not(.dark) body #top [class*="bg-[#050912]"]:not([data-ayto-photo-box]):not([data-ayto-banner-hero]),
+html:not(.dark) body #top main input,
+html:not(.dark) body #top main select,
+html:not(.dark) body #top main textarea {
   background-color: #f8f6f0 !important;
   color: #0f172a !important;
   border-color: rgba(180, 142, 34, 0.35) !important;
 }
-html:not(.dark) main label {
+html:not(.dark) body #top main label {
   color: #334155 !important;
 }
 
 /* 4. Light Theme: Gradient Banners inside Dashboard & Post Form */
-html:not(.dark) [class*="from-[#13264a]"] {
+html:not(.dark) body #top [class*="from-[#13264a]"] {
   background: linear-gradient(to right, #fdf8e7, #f5eedc, #efe4c8) !important;
 }
 
-/* 5. Light Theme: Text Colors inside Cards, Pages & Modals */
-html:not(.dark) main .text-white,
-html:not(.dark) .fixed .text-white {
+/* 5. Light Theme: General Text Colors inside Cards, Pages & Modals */
+html:not(.dark) body #top main .text-white,
+html:not(.dark) body .fixed .text-white {
   color: #0f172a !important;
 }
-html:not(.dark) main .text-slate-300,
-html:not(.dark) main .text-slate-200,
-html:not(.dark) main .text-slate-400,
-html:not(.dark) main .text-zinc-300,
-html:not(.dark) main .text-zinc-400,
-html:not(.dark) main .text-neutral-300,
-html:not(.dark) main .text-neutral-400,
-html:not(.dark) .fixed .text-slate-300,
-html:not(.dark) .fixed .text-slate-400 {
+html:not(.dark) body #top main .text-slate-300,
+html:not(.dark) body #top main .text-slate-200,
+html:not(.dark) body #top main .text-slate-400,
+html:not(.dark) body #top main .text-zinc-300,
+html:not(.dark) body #top main .text-zinc-400,
+html:not(.dark) body #top main .text-neutral-300,
+html:not(.dark) body #top main .text-neutral-400,
+html:not(.dark) body .fixed .text-slate-300,
+html:not(.dark) body .fixed .text-slate-400 {
   color: #475569 !important;
 }
-html:not(.dark) [class*="text-[#f4d06f]"] {
+html:not(.dark) body #top [class*="text-[#f4d06f]"] {
   color: #9a7409 !important;
 }
 
 /* 6. Keep Dark Badges & Yellow Buttons Readable in Light Mode */
-html:not(.dark) [class*="bg-[#f4c414]"],
-html:not(.dark) [class*="bg-[#f4c414]"] * {
+html:not(.dark) body #top [class*="bg-[#f4c414]"],
+html:not(.dark) body #top [class*="bg-[#f4c414]"] * {
   color: #070b14 !important;
 }
-html:not(.dark) .bg-emerald-500,
-html:not(.dark) .bg-amber-400 {
+html:not(.dark) body #top .bg-emerald-500,
+html:not(.dark) body #top .bg-amber-400 {
   color: #070b14 !important;
 }
-html:not(.dark) .bg-red-500,
-html:not(.dark) [class*="bg-[#25D366]"] {
+html:not(.dark) body #top .bg-red-500,
+html:not(.dark) body #top [class*="bg-[#25D366]"] {
   color: #ffffff !important;
 }
 
 /* 7. Query Form "Back to Home" Button Top Spacing Fix */
-main.ayto-page-enter.pt-20 {
+body #top main.ayto-page-enter.pt-20 {
   padding-top: 7rem !important;
 }
 
-/* 8. Centered Page Hero Banners (Our Offices, Projects, Services, Gallery) */
-html:not(.dark) [data-ayto-banner-hero] {
-  border-bottom: 1px solid rgba(180, 142, 34, 0.35) !important;
-}
-html:not(.dark) [data-ayto-banner-hero] > img {
-  opacity: 1 !important;
-  filter: saturate(1.08) contrast(1.03) !important;
-}
-html:not(.dark) [data-ayto-banner-hero] > .ayto-banner-shade {
-  position: absolute !important;
-  inset: 0 !important;
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 253, 248, 0.88) 0%,
-    rgba(248, 244, 232, 0.78) 55%,
-    rgba(245, 240, 226, 0.86) 100%
-  ) !important;
-  backdrop-filter: none !important;
-  z-index: 1 !important;
-}
-html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content,
-html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content * {
-  text-shadow: none !important;
-}
-html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content h1 {
-  color: #0f172a !important;
-  font-weight: 800 !important;
-  text-align: center !important;
-}
-html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content p {
-  color: #334155 !important;
-  font-weight: 500 !important;
-  text-align: center !important;
-}
-html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content p:first-child,
-html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content p:first-child * {
-  color: #8a6405 !important;
-  font-weight: 700 !important;
-}
 /* ============================================================================
-   9. FORCE PAGE HERO BANNER TEXT & OVERLAY IN LIGHT MODE (ALL PAGES)
+   8. ALL SUB-PAGE HERO BANNERS (OUR OFFICES, PROJECTS, SERVICES, GALLERY)
+   Targets every inner page banner without touching Home Hero or Dark Mode
    ============================================================================ */
-html:not(.dark) main > section:first-of-type,
-html:not(.dark) main > div:first-of-type > section:first-of-type,
-html:not(.dark) [data-ayto-banner-hero] {
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero],
+html:not(.dark) body #top main.ayto-page-enter > section:first-child,
+html:not(.dark) body #top main.ayto-page-enter > div > section:first-child {
   position: relative !important;
   border-bottom: 1px solid rgba(180, 142, 34, 0.35) !important;
 }
 
-/* Make the background image overlay warm cream & translucent so text pops */
-html:not(.dark) [data-ayto-banner-hero] > div:not(.ayto-banner-content):not([class*="max-w-"]),
-html:not(.dark) [data-ayto-banner-hero] > .ayto-banner-shade,
-html:not(.dark) main > section:first-of-type > div.absolute.inset-0 {
+/* Clean warm cream frosted glass over banner background image */
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] > .ayto-banner-shade,
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] > div:first-of-type,
+html:not(.dark) body #top main.ayto-page-enter > section:first-child > div.absolute {
+  position: absolute !important;
+  inset: 0 !important;
   background: linear-gradient(
     to bottom,
     rgba(252, 249, 242, 0.88),
     rgba(248, 244, 232, 0.82),
-    rgba(252, 249, 242, 0.92)
+    rgba(252, 249, 242, 0.94)
   ) !important;
+  backdrop-filter: blur(2px) !important;
   opacity: 1 !important;
 }
 
-/* Force ALL headings inside top page banners to Deep Navy */
-html:not(.dark) [data-ayto-banner-hero] h1,
-html:not(.dark) [data-ayto-banner-hero] h2,
-html:not(.dark) main > section:first-of-type h1,
-html:not(.dark) main > section:first-of-type h2 {
+/* Keep background photo crisp underneath */
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] > img,
+html:not(.dark) body #top main.ayto-page-enter > section:first-child > img {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Main Page Title (e.g. "Our Real Estate & Construction Services", "Project & Interior Gallery") */
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] h1,
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] h2,
+html:not(.dark) body #top main.ayto-page-enter > section:first-child h1,
+html:not(.dark) body #top main.ayto-page-enter > section:first-child h2 {
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
+  font-weight: 800 !important;
   opacity: 1 !important;
   text-shadow: none !important;
 }
 
-/* Force ALL paragraphs & subtitles inside top page banners to Dark Slate / Gold */
-html:not(.dark) [data-ayto-banner-hero] p,
-html:not(.dark) [data-ayto-banner-hero] span,
-html:not(.dark) main > section:first-of-type p,
-html:not(.dark) main > section:first-of-type span {
+/* Subtitle / Description paragraph in banner */
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] p,
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] span,
+html:not(.dark) body #top main.ayto-page-enter > section:first-child p,
+html:not(.dark) body #top main.ayto-page-enter > section:first-child span {
   color: #334155 !important;
   -webkit-text-fill-color: #334155 !important;
+  font-weight: 500 !important;
   opacity: 1 !important;
   text-shadow: none !important;
 }
 
-/* Eyebrow / Kicker text (e.g. WHAT WE OFFER, VISUAL PORTFOLIO) in Rich Gold */
-html:not(.dark) [data-ayto-banner-hero] p:first-child,
-html:not(.dark) [data-ayto-banner-hero] span:first-child,
-html:not(.dark) main > section:first-of-type p[class*="uppercase"],
-html:not(.dark) main > section:first-of-type span[class*="uppercase"] {
+/* Top Gold Kicker (e.g. "WHAT WE OFFER", "VISUAL PORTFOLIO", "OUR GLOBAL PRESENCE") */
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] .ayto-banner-content > p:first-child,
+html:not(.dark) body #top main.ayto-page-enter [data-ayto-banner-hero] p:first-of-type,
+html:not(.dark) body #top main.ayto-page-enter > section:first-child p:first-of-type,
+html:not(.dark) body #top main.ayto-page-enter > section:first-child [class*="uppercase"] {
   color: #8a6405 !important;
   -webkit-text-fill-color: #8a6405 !important;
   font-weight: 700 !important;
