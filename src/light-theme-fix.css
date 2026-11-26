@@ -1,0 +1,117 @@
+/* ============================================================================
+   AYTO HOMEFINDER — LIGHT THEME & PAGE HEADER FIXES
+   Dark Theme remains 100% untouched.
+   ============================================================================ */
+
+/* 1. Base Light Theme Background & Text */
+html:not(.dark) #top {
+  background-color: #f8f6f0 !important;
+  color: #0f172a !important;
+}
+
+/* 2. Light Theme: Modals, Cards, Dashboard, Query Form & Post Property Containers */
+html:not(.dark) [class*="bg-[#0b1322]"],
+html:not(.dark) [class*="bg-[#0e172a]"],
+html:not(.dark) [class*="bg-[#0f192d]"],
+html:not(.dark) [class*="bg-[#16181D]"],
+html:not(.dark) [class*="bg-[#1c1d21]"],
+html:not(.dark) [class*="bg-[#1f2024]"],
+html:not(.dark) [class*="bg-[#232428]"],
+html:not(.dark) [class*="bg-[#26272b]"],
+html:not(.dark) [class*="bg-zinc-900"],
+html:not(.dark) [class*="bg-neutral-900"],
+html:not(.dark) main form[class*="bg-"],
+html:not(.dark) #contact form,
+html:not(.dark) #contact > div > div[class*="rounded-"] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(180, 142, 34, 0.35) !important;
+  box-shadow: 0 18px 40px -15px rgba(15, 23, 42, 0.12) !important;
+}
+
+/* 3. Light Theme: Inputs, Select Dropdowns & Inner Boxes */
+html:not(.dark) [class*="bg-[#070b14]"]:not([data-ayto-photo-box]):not([data-ayto-photo-badge]):not([data-ayto-banner-hero]),
+html:not(.dark) [class*="bg-[#080f1d]"]:not([data-ayto-photo-box]):not([data-ayto-banner-hero]),
+html:not(.dark) [class*="bg-[#050912]"]:not([data-ayto-photo-box]):not([data-ayto-banner-hero]),
+html:not(.dark) main input,
+html:not(.dark) main select,
+html:not(.dark) main textarea {
+  background-color: #f8f6f0 !important;
+  color: #0f172a !important;
+  border-color: rgba(180, 142, 34, 0.35) !important;
+}
+html:not(.dark) main label {
+  color: #334155 !important;
+}
+
+/* 4. Light Theme: Gradient Banners inside Dashboard & Post Form */
+html:not(.dark) [class*="from-[#13264a]"] {
+  background: linear-gradient(to right, #fdf8e7, #f5eedc, #efe4c8) !important;
+}
+
+/* 5. Light Theme: Text Colors inside Cards, Pages & Modals */
+html:not(.dark) main .text-white,
+html:not(.dark) .fixed .text-white {
+  color: #0f172a !important;
+}
+html:not(.dark) main .text-slate-300,
+html:not(.dark) main .text-slate-200,
+html:not(.dark) main .text-slate-400,
+html:not(.dark) main .text-zinc-300,
+html:not(.dark) main .text-zinc-400,
+html:not(.dark) main .text-neutral-300,
+html:not(.dark) main .text-neutral-400,
+html:not(.dark) .fixed .text-slate-300,
+html:not(.dark) .fixed .text-slate-400 {
+  color: #475569 !important;
+}
+html:not(.dark) [class*="text-[#f4d06f]"] {
+  color: #9a7409 !important;
+}
+
+/* 6. Keep Dark Badges & Yellow Buttons Readable in Light Mode */
+html:not(.dark) [class*="bg-[#f4c414]"],
+html:not(.dark) [class*="bg-[#f4c414]"] * {
+  color: #070b14 !important;
+}
+html:not(.dark) .bg-emerald-500,
+html:not(.dark) .bg-amber-400 {
+  color: #070b14 !important;
+}
+html:not(.dark) .bg-red-500,
+html:not(.dark) [class*="bg-[#25D366]"] {
+  color: #ffffff !important;
+}
+
+/* 7. Query Form "Back to Home" Button Top Spacing Fix */
+main.ayto-page-enter.pt-20 {
+  padding-top: 7rem !important;
+}
+
+/* 8. Centered Page Hero Banners (Our Offices, Projects, Services, Gallery) */
+html:not(.dark) [data-ayto-banner-hero] {
+  border-bottom: 1px solid rgba(180, 142, 34, 0.25) !important;
+}
+html:not(.dark) [data-ayto-banner-hero] > .ayto-banner-shade {
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(251, 249, 243, 0.86),
+    rgba(248, 245, 236, 0.80),
+    rgba(248, 246, 240, 0.94)
+  ) !important;
+  backdrop-filter: blur(2px) !important;
+  z-index: 1 !important;
+}
+html:not(.dark) .ayto-banner-content h1 {
+  color: #0f172a !important;
+  text-align: center !important;
+}
+html:not(.dark) .ayto-banner-content p {
+  color: #475569 !important;
+  text-align: center !important;
+}
+html:not(.dark) .ayto-banner-content p:first-child {
+  color: #9a7409 !important;
+}
