@@ -90,28 +90,40 @@ main.ayto-page-enter.pt-20 {
 
 /* 8. Centered Page Hero Banners (Our Offices, Projects, Services, Gallery) */
 html:not(.dark) [data-ayto-banner-hero] {
-  border-bottom: 1px solid rgba(180, 142, 34, 0.25) !important;
+  border-bottom: 1px solid rgba(180, 142, 34, 0.35) !important;
+}
+html:not(.dark) [data-ayto-banner-hero] > img {
+  opacity: 1 !important;
+  filter: saturate(1.08) contrast(1.03) !important;
 }
 html:not(.dark) [data-ayto-banner-hero] > .ayto-banner-shade {
   position: absolute !important;
   inset: 0 !important;
-  background: linear-gradient(
-    to bottom,
-    rgba(251, 249, 243, 0.86),
-    rgba(248, 245, 236, 0.80),
-    rgba(248, 246, 240, 0.94)
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 253, 248, 0.88) 0%,
+    rgba(248, 244, 232, 0.78) 55%,
+    rgba(245, 240, 226, 0.86) 100%
   ) !important;
-  backdrop-filter: blur(2px) !important;
+  backdrop-filter: none !important;
   z-index: 1 !important;
 }
-html:not(.dark) .ayto-banner-content h1 {
+html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content,
+html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content * {
+  text-shadow: none !important;
+}
+html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content h1 {
   color: #0f172a !important;
+  font-weight: 800 !important;
   text-align: center !important;
 }
-html:not(.dark) .ayto-banner-content p {
-  color: #475569 !important;
+html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content p {
+  color: #334155 !important;
+  font-weight: 500 !important;
   text-align: center !important;
 }
-html:not(.dark) .ayto-banner-content p:first-child {
-  color: #9a7409 !important;
+html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content p:first-child,
+html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content p:first-child * {
+  color: #8a6405 !important;
+  font-weight: 700 !important;
 }
