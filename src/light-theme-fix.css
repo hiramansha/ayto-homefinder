@@ -127,3 +127,57 @@ html:not(.dark) [data-ayto-banner-hero] .ayto-banner-content p:first-child * {
   color: #8a6405 !important;
   font-weight: 700 !important;
 }
+/* ============================================================================
+   9. FORCE PAGE HERO BANNER TEXT & OVERLAY IN LIGHT MODE (ALL PAGES)
+   ============================================================================ */
+html:not(.dark) main > section:first-of-type,
+html:not(.dark) main > div:first-of-type > section:first-of-type,
+html:not(.dark) [data-ayto-banner-hero] {
+  position: relative !important;
+  border-bottom: 1px solid rgba(180, 142, 34, 0.35) !important;
+}
+
+/* Make the background image overlay warm cream & translucent so text pops */
+html:not(.dark) [data-ayto-banner-hero] > div:not(.ayto-banner-content):not([class*="max-w-"]),
+html:not(.dark) [data-ayto-banner-hero] > .ayto-banner-shade,
+html:not(.dark) main > section:first-of-type > div.absolute.inset-0 {
+  background: linear-gradient(
+    to bottom,
+    rgba(252, 249, 242, 0.88),
+    rgba(248, 244, 232, 0.82),
+    rgba(252, 249, 242, 0.92)
+  ) !important;
+  opacity: 1 !important;
+}
+
+/* Force ALL headings inside top page banners to Deep Navy */
+html:not(.dark) [data-ayto-banner-hero] h1,
+html:not(.dark) [data-ayto-banner-hero] h2,
+html:not(.dark) main > section:first-of-type h1,
+html:not(.dark) main > section:first-of-type h2 {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+/* Force ALL paragraphs & subtitles inside top page banners to Dark Slate / Gold */
+html:not(.dark) [data-ayto-banner-hero] p,
+html:not(.dark) [data-ayto-banner-hero] span,
+html:not(.dark) main > section:first-of-type p,
+html:not(.dark) main > section:first-of-type span {
+  color: #334155 !important;
+  -webkit-text-fill-color: #334155 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+/* Eyebrow / Kicker text (e.g. WHAT WE OFFER, VISUAL PORTFOLIO) in Rich Gold */
+html:not(.dark) [data-ayto-banner-hero] p:first-child,
+html:not(.dark) [data-ayto-banner-hero] span:first-child,
+html:not(.dark) main > section:first-of-type p[class*="uppercase"],
+html:not(.dark) main > section:first-of-type span[class*="uppercase"] {
+  color: #8a6405 !important;
+  -webkit-text-fill-color: #8a6405 !important;
+  font-weight: 700 !important;
+}
